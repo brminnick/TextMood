@@ -31,12 +31,15 @@ namespace TextMood.Functions
             var textMessage = new TextModel(GetTextMessage(httpRequestBody, log));
 
             log.Info("Retrieving Sentiment Score");
-            var sentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
+            textMessage.SentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
 
             log.Info("Saving TextModel to Database");
             await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
 
-            return httpRequest.CreateResponse($"Text Sentiment: {EmojiServices.GetEmoji(sentimentScore)}");
+            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMessage.SentimentScore)}";
+
+            log.Info($"Sending OK Response: {response}");
+            return httpRequest.CreateResponse(System.Net.HttpStatusCode.OK, response);
         }
 
         static string GetTextMessage(string httpRequestBody, TraceWriter log)

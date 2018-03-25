@@ -5,15 +5,21 @@ using TextMood.Shared;
 
 namespace TextMood.Backend.Common
 {
+    [Table(Name = "TextModels")]
     public class TextModel : ITextModel
     {
-        public TextModel(string text)
+        #region Constructrors
+        public TextModel(string text) : this() => Text = text;
+
+        [Obsolete("Use Overloaded Constructor")]
+        public TextModel()
         {
             Id = Guid.NewGuid().ToString();
-            Text = text;
             UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
+        #endregion
 
+        #region Properties
         [Column(Name = nameof(Id), IsPrimaryKey = true, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public string Id { get; set; }
 
@@ -31,5 +37,6 @@ namespace TextMood.Backend.Common
 
         [Column(Name = nameof(IsDeleted), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public bool IsDeleted { get; set; }
+        #endregion
     }
 }
