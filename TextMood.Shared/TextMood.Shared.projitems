@@ -9,6 +9,6 @@
     <Import_RootNamespace>TextMood.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)TextModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITextModel.cs" />
   </ItemGroup>
 </Project>

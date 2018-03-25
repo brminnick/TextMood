@@ -15,7 +15,7 @@ namespace TextMood.Backend.Common
 	public static class TextMoodDatabase
     {
         #region Constant Fields
-        readonly static string _connectionString = ConfigurationManager.ConnectionStrings["XamListDatabaseConnectionString"].ConnectionString;
+        readonly static string _connectionString = ConfigurationManager.ConnectionStrings["TextMoodDatabaseConnectionString"].ConnectionString;
         #endregion
 
         #region Methods

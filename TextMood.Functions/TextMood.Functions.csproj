@@ -24,5 +24,8 @@
     <Folder Include="Services\" />
     <Folder Include="Constants\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj" />
+  </ItemGroup>
   <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
 </Project>
