@@ -6,6 +6,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.ProjectOxford.Text" Version="1.1.7" />
+    <PackageReference Include="Twilio" Version="5.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj" />
