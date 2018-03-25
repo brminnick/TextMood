@@ -28,7 +28,7 @@ namespace TextMood.Functions
             var httpRequestBody = await httpRequest.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             log.Info("Creating New Text Model");
-            var textMessage = new TextModel(GetTextMessage(httpRequestBody, log));
+            var textMessage = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
             log.Info("Retrieving Sentiment Score");
             textMessage.SentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
@@ -39,21 +39,7 @@ namespace TextMood.Functions
             var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMessage.SentimentScore)}";
 
             log.Info($"Sending OK Response: {response}");
-            return httpRequest.CreateResponse(System.Net.HttpStatusCode.OK, response);
-        }
-
-        static string GetTextMessage(string httpRequestBody, TraceWriter log)
-        {
-            var formValues = httpRequestBody?.Split('&')
-                                ?.Select(value => value.Split('='))
-                                ?.ToDictionary(pair => Uri.UnescapeDataString(pair[0]).Replace("+", " "),
-                                              pair => Uri.UnescapeDataString(pair[1]).Replace("+", " "));
-
-            foreach (var value in formValues)
-                log.Info($"Key: {value.Key}, Value: {value.Value}");
-
-            var textMessageKeyValuePair = formValues.Where(x => x.Key?.ToUpper()?.Equals("BODY") ?? false)?.FirstOrDefault();
-            return textMessageKeyValuePair?.Value;
+            return httpRequest.CreateResponse(System.Net.HttpStatusCode.OK, TwilioServices.CreateTwilioResponse(response));
         }
     }
 }
