@@ -11,49 +11,59 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
+using TextMood.Backend.Common;
+using TextMood.Shared;
+
 namespace TextMood.Functions
 {
-	public static class AnalyzeTextSentiment
-	{
-		[FunctionName(nameof(AnalyzeTextSentiment))]
-		public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest httpRequest, TraceWriter log)
-		{
-			log.Info("Text Message Received");
+    public static class AnalyzeTextSentiment
+    {
+        [FunctionName(nameof(AnalyzeTextSentiment))]
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest httpRequest, TraceWriter log)
+        {
+            log.Info("Text Message Received");
 
-			var httpRequestBody = GetHttpRequestBody(httpRequest, log);
-			var textMessage = GetTextMessage(httpRequestBody, log);
+            log.Info("Parsing Request Message");
+            var httpRequestBody = GetHttpRequestBody(httpRequest, log);
 
-			var sentimentScore = await TextAnalysisServices.GetSentiment(textMessage).ConfigureAwait(false);
+            log.Info("Creating New Text Model");
+            var textMessage = new TextModel(GetTextMessage(httpRequestBody, log));
 
-			return new OkObjectResult($"Text Sentiment: {EmojiServices.GetEmoji(sentimentScore)}");
-		}
+            log.Info("Retrieving Sentiment Score");
+            var sentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
 
-		static string GetHttpRequestBody(HttpRequest req, TraceWriter log)
-		{
-			var data = string.Empty;
+            log.Info("Saving TextModel to Database");
+            await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
 
-			req.EnableRewind();
+            return new OkObjectResult($"Text Sentiment: {EmojiServices.GetEmoji(sentimentScore)}");
+        }
 
-			using (var reader = new StreamReader(req.Body, Encoding.UTF8, true, 1024, true))
-				data = reader.ReadToEnd();
+        static string GetHttpRequestBody(HttpRequest req, TraceWriter log)
+        {
+            var data = string.Empty;
 
-			req.Body.Position = 0;
+            req.EnableRewind();
 
-			return data;
-		}
+            using (var reader = new StreamReader(req.Body, Encoding.UTF8, true, 1024, true))
+                data = reader.ReadToEnd();
 
-		static string GetTextMessage(string httpRequestBody, TraceWriter log)
-		{
-			var formValues = httpRequestBody?.Split('&')
-								?.Select(value => value.Split('='))
-								?.ToDictionary(pair => Uri.UnescapeDataString(pair[0]).Replace("+", " "),
-											  pair => Uri.UnescapeDataString(pair[1]).Replace("+", " "));
+            req.Body.Position = 0;
 
-			foreach (var value in formValues)
-				log.Info($"Key: {value.Key}, Value: {value.Value}");
+            return data;
+        }
 
-			var textMessageKeyValuePair = formValues.Where(x => x.Key?.ToUpper()?.Equals("BODY") ?? false)?.FirstOrDefault();
-			return textMessageKeyValuePair?.Value;
-		}
-	}
+        static string GetTextMessage(string httpRequestBody, TraceWriter log)
+        {
+            var formValues = httpRequestBody?.Split('&')
+                                ?.Select(value => value.Split('='))
+                                ?.ToDictionary(pair => Uri.UnescapeDataString(pair[0]).Replace("+", " "),
+                                              pair => Uri.UnescapeDataString(pair[1]).Replace("+", " "));
+
+            foreach (var value in formValues)
+                log.Info($"Key: {value.Key}, Value: {value.Value}");
+
+            var textMessageKeyValuePair = formValues.Where(x => x.Key?.ToUpper()?.Equals("BODY") ?? false)?.FirstOrDefault();
+            return textMessageKeyValuePair?.Value;
+        }
+    }
 }
