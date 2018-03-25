@@ -8,8 +8,6 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using TextMood.Shared;
-
 namespace TextMood.Backend.Common
 {
 	public static class TextMoodDatabase
