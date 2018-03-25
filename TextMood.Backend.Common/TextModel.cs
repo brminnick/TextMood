@@ -9,13 +9,16 @@ namespace TextMood.Backend.Common
     public class TextModel : ITextModel
     {
         #region Constructrors
-        public TextModel(string text) : this() => Text = text;
+        public TextModel(string text)
+        {
+            Id = Guid.NewGuid().ToString();
+            Text = text;
+            UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
+        }
 
         [Obsolete("Use Overloaded Constructor")]
         public TextModel()
         {
-            Id = Guid.NewGuid().ToString();
-            UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
         #endregion
 
@@ -27,7 +30,7 @@ namespace TextMood.Backend.Common
         public string Text { get; set; }
 
         [Column(Name = nameof(SentimentScore), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        public float? SentimentScore { get; set; }
+        public float SentimentScore { get; set; }
 
         [Column(Name = nameof(CreatedAt), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public DateTimeOffset CreatedAt { get; set; }
