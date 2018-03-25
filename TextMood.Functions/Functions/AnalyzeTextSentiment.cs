@@ -13,6 +13,7 @@ using TextMood.Backend.Common;
 
 namespace TextMood.Functions
 {
+    [StorageAccount(QueueNames.AzureWebJobsStorage)]
 	public static class AnalyzeTextSentiment
 	{
 		readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
@@ -20,26 +21,24 @@ namespace TextMood.Functions
 		static JsonSerializer Serializer => _serializerHolder.Value;
 
 		[FunctionName(nameof(AnalyzeTextSentiment))]
-		public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
+		public static HttpResponseMessage Run(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest,
+            [Queue(QueueNames.TextModelForDatabase)] out TextModel textModelForDatabase, TraceWriter log)
 		{
 			log.Info("Text Message Received");
 
 			log.Info("Parsing Request Message");
-			var httpRequestBody = await httpRequest.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var httpRequestBody = httpRequest.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
 			log.Info("Creating New Text Model");
-			var textMessage = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+            textModelForDatabase = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
 			log.Info("Retrieving Sentiment Score");
-			textMessage.SentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
+            textModelForDatabase.SentimentScore = TextAnalysisServices.GetSentiment(textModelForDatabase.Text).GetAwaiter().GetResult() ?? -1;
 
-			log.Info("Saving TextModel to Database");
-			await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
-
-			var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMessage.SentimentScore)}";
+            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textModelForDatabase.SentimentScore)}";
 
 			log.Info($"Sending OK Response: {response}");
-
 			return new HttpResponseMessage { Content = new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml") };
 		}
 	}
