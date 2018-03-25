@@ -13,33 +13,34 @@ using TextMood.Backend.Common;
 
 namespace TextMood.Functions
 {
-    public static class AnalyzeTextSentiment
-    {
-        readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
+	public static class AnalyzeTextSentiment
+	{
+		readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
 
-        static JsonSerializer Serializer => _serializerHolder.Value;
+		static JsonSerializer Serializer => _serializerHolder.Value;
 
-        [FunctionName(nameof(AnalyzeTextSentiment))]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
-        {
-            log.Info("Text Message Received");
+		[FunctionName(nameof(AnalyzeTextSentiment))]
+		public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
+		{
+			log.Info("Text Message Received");
 
-            log.Info("Parsing Request Message");
-            var httpRequestBody = await httpRequest.Content.ReadAsStringAsync().ConfigureAwait(false);
+			log.Info("Parsing Request Message");
+			var httpRequestBody = await httpRequest.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            log.Info("Creating New Text Model");
-            var textMessage = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+			log.Info("Creating New Text Model");
+			var textMessage = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
-            log.Info("Retrieving Sentiment Score");
-            textMessage.SentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
+			log.Info("Retrieving Sentiment Score");
+			textMessage.SentimentScore = await TextAnalysisServices.GetSentiment(textMessage.Text).ConfigureAwait(false);
 
-            log.Info("Saving TextModel to Database");
-            await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
+			log.Info("Saving TextModel to Database");
+			await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
 
-            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMessage.SentimentScore)}";
+			var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMessage.SentimentScore)}";
 
-            log.Info($"Sending OK Response: {response}");
-            return httpRequest.CreateResponse(System.Net.HttpStatusCode.OK, TwilioServices.CreateTwilioResponse(response));
-        }
-    }
+			log.Info($"Sending OK Response: {response}");
+
+			return new HttpResponseMessage { Content = new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml") };
+		}
+	}
 }
