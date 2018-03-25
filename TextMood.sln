@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{1464ABAC-E14C-417F-99EE-D3D0478A2E88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{1464ABAC-E14C-417F-99EE-D3D0478A2E88}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TextMood.Shared", "TextMood.Shared\TextMood.Shared.shproj", "{DAA78ECE-0390-4E5A-A392-3130F55E43EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Backend.Common", "TextMood.Backend.Common\TextMood.Backend.Common.csproj", "{E5BCE4C8-74F5-4A4A-93E4-FC4B79961DEA}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TextMood.Shared\TextMood.Shared.projitems*{daa78ece-0390-4e5a-a392-3130f55e43ec}*SharedItemsImports = 13
+		TextMood.Shared\TextMood.Shared.projitems*{e5bce4c8-74f5-4a4a-93e4-fc4b79961dea}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
