@@ -1,30 +1,31 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-
+using Newtonsoft.Json;
 using TextMood.Backend.Common;
-using TextMood.Shared;
 
 namespace TextMood.Functions
 {
     public static class AnalyzeTextSentiment
     {
+        readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
+
+        static JsonSerializer Serializer => _serializerHolder.Value;
+
         [FunctionName(nameof(AnalyzeTextSentiment))]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest httpRequest, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
         {
             log.Info("Text Message Received");
 
             log.Info("Parsing Request Message");
-            var httpRequestBody = GetHttpRequestBody(httpRequest, log);
+            var httpRequestBody = await httpRequest.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             log.Info("Creating New Text Model");
             var textMessage = new TextModel(GetTextMessage(httpRequestBody, log));
@@ -35,21 +36,7 @@ namespace TextMood.Functions
             log.Info("Saving TextModel to Database");
             await TextMoodDatabase.InsertTextModel(textMessage).ConfigureAwait(false);
 
-            return new OkObjectResult($"Text Sentiment: {EmojiServices.GetEmoji(sentimentScore)}");
-        }
-
-        static string GetHttpRequestBody(HttpRequest req, TraceWriter log)
-        {
-            var data = string.Empty;
-
-            req.EnableRewind();
-
-            using (var reader = new StreamReader(req.Body, Encoding.UTF8, true, 1024, true))
-                data = reader.ReadToEnd();
-
-            req.Body.Position = 0;
-
-            return data;
+            return httpRequest.CreateResponse($"Text Sentiment: {EmojiServices.GetEmoji(sentimentScore)}");
         }
 
         static string GetTextMessage(string httpRequestBody, TraceWriter log)
