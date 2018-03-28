@@ -9,11 +9,11 @@ using TextMood.Backend.Common;
 
 namespace TextMood.Functions.Functions
 {
-    [StorageAccount(QueueNames.AzureWebJobsStorage)]
+    [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
     public static class UpdatePhillipsHueLight
     {
         [FunctionName(nameof(UpdatePhillipsHueLight))]
-        public static async Task Run([QueueTrigger(QueueNames.UpdatePhillipsHueLight)]string message, TraceWriter log)
+        public static async Task Run([QueueTrigger(QueueNameConstants.UpdatePhillipsHueLight)]string message, TraceWriter log)
         {
             log.Info("Retrieving All Text Models From Database");
             System.Collections.Generic.IList<TextModel> allTextModelsFromDatabase = new System.Collections.Generic.List<TextModel>();

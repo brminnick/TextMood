@@ -1,4 +1,4 @@
-﻿namespace TextMood.Functions
+﻿namespace TextMood.Shared
 {
     public static class EmojiConstants
     {
