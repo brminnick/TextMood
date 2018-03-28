@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>TextMood.Droid</RootNamespace>
     <AssemblyName>TextMood.Droid</AssemblyName>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>

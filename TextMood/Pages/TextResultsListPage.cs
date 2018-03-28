@@ -57,7 +57,6 @@ namespace TextMood
         {
             var listView = sender as ListView;
             listView.SelectedItem = null;
-        }));
         }
         #endregion
     }
