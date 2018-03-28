@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace TextMood.Functions.Functions
         public static async Task Run([QueueTrigger(QueueNameConstants.UpdatePhillipsHueLight)]string message, TraceWriter log)
         {
             log.Info("Retrieving All Text Models From Database");
-            System.Collections.Generic.IList<TextModel> allTextModelsFromDatabase = new System.Collections.Generic.List<TextModel>();
+            IList<TextModel> allTextModelsFromDatabase = new List<TextModel>();
             try
             {
                 allTextModelsFromDatabase = await TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
