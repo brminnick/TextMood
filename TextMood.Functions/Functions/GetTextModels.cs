@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,12 +12,12 @@ namespace TextMood.Functions
 	public static class GetTextModels
 	{
 		[FunctionName(nameof(GetTextModels))]
-		public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
+		public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequestMessage httpRequest, TraceWriter log)
 		{
 			log.Info("Retrieving Text Models from Database");
 			try
 			{
-				var textModelList = TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
+				var textModelList = await TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
 				return httpRequest.CreateResponse(System.Net.HttpStatusCode.OK, textModelList);
 			}
 			catch (System.Exception e)

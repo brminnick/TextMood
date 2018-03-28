@@ -6,7 +6,7 @@ using TextMood.Shared;
 namespace TextMood.Backend.Common
 {
     [Table(Name = "TextModels")]
-    public class TextModel : ITextModel
+    public class TextModel
     {
         #region Constructrors
         public TextModel(string text)
@@ -23,6 +23,12 @@ namespace TextMood.Backend.Common
         #endregion
 
         #region Properties
+        public float? SentimentScore
+        {
+            get => (float)SentimentScore_FromDatabase;
+            set => SentimentScore_FromDatabase = value ?? -1;
+        }
+
         [Column(Name = nameof(Id), IsPrimaryKey = true, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public string Id { get; set; }
 
@@ -30,7 +36,7 @@ namespace TextMood.Backend.Common
         public string Text { get; set; }
 
         [Column(Name = nameof(SentimentScore), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        public float? SentimentScore { get; set; }
+        public double SentimentScore_FromDatabase { get; set; }
 
         [Column(Name = nameof(CreatedAt), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public DateTimeOffset CreatedAt { get; set; }

@@ -10,7 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj" />
-    <ProjectReference Include="..\TextMood\TextMood.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -24,4 +23,5 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+  <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" />
 </Project>
