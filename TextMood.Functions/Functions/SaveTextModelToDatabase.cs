@@ -5,19 +5,19 @@ using TextMood.Backend.Common;
 
 namespace TextMood.Functions
 {
-    [StorageAccount(QueueNames.AzureWebJobsStorage)]
+    [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
     public static class SaveTextModelToDatabase
     {
         [FunctionName(nameof(SaveTextModelToDatabase))]
         public static void Run(
-            [QueueTrigger(QueueNames.TextModelForDatabase)]TextModel textModel, 
-            [Queue(QueueNames.UpdatePhillipsHueLight)] out string queueMessage,
+            [QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextModel textModel, 
+            [Queue(QueueNameConstants.UpdatePhillipsHueLight)] out string queueMessage,
             TraceWriter log)
         {
             log.Info("Saving TextModel to Database");
             TextMoodDatabase.InsertTextModel(textModel).GetAwaiter().GetResult();
 
-            queueMessage = QueueNames.UpdatePhillipsHueLight;
+            queueMessage = QueueNameConstants.UpdatePhillipsHueLight;
         }
     }
 }

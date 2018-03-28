@@ -13,7 +13,7 @@ using TextMood.Backend.Common;
 
 namespace TextMood.Functions
 {
-    [StorageAccount(QueueNames.AzureWebJobsStorage)]
+    [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
 	public static class AnalyzeTextSentiment
 	{
 		readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
@@ -23,7 +23,7 @@ namespace TextMood.Functions
 		[FunctionName(nameof(AnalyzeTextSentiment))]
 		public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest,
-            [Queue(QueueNames.TextModelForDatabase)] out TextModel textModelForDatabase, TraceWriter log)
+            [Queue(QueueNameConstants.TextModelForDatabase)] out TextModel textModelForDatabase, TraceWriter log)
 		{
 			log.Info("Text Message Received");
 
