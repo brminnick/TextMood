@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj" />
+    <ProjectReference Include="..\TextMood\TextMood.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />

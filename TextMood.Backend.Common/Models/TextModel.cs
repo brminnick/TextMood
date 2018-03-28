@@ -30,7 +30,7 @@ namespace TextMood.Backend.Common
         public string Text { get; set; }
 
         [Column(Name = nameof(SentimentScore), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        public float SentimentScore { get; set; }
+        public float? SentimentScore { get; set; }
 
         [Column(Name = nameof(CreatedAt), IsPrimaryKey = false, CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public DateTimeOffset CreatedAt { get; set; }
