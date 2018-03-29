@@ -55,8 +55,8 @@ namespace TextMood
 
 			var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
 
-			_titleLabel.Text = $"{emoji} {textModel.Text}";
-			_descriptionLabel.Text = $"Received: {textModel.CreatedAt.ToLocalTime().ToString("g")}";
+			_titleLabel.Text = textModel.Text;
+			_descriptionLabel.Text = $"{emoji} {textModel.CreatedAt.ToLocalTime().ToString("g")}";
 		}
 		#endregion
 	}
