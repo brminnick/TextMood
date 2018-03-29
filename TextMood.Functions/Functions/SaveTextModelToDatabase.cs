@@ -15,6 +15,8 @@ namespace TextMood.Functions
             TraceWriter log)
         {
             log.Info("Saving TextModel to Database");
+            
+			textModel.Text = textModel.Text.Substring(0, 255);
             TextMoodDatabase.InsertTextModel(textModel).GetAwaiter().GetResult();
 
             queueMessage = QueueNameConstants.UpdatePhillipsHueLight;
