@@ -2,7 +2,7 @@
 
 namespace TextMood.Shared
 {
-    public interface ITextModel
+    public interface ITextMoodModel
     {
 		string Id { get; set; }
 		string Text { get; set; }

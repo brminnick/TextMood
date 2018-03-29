@@ -5,7 +5,7 @@ namespace TextMood
 {
 	abstract class TextResultsService : BaseHttpClientService
     {
-		public static Task<List<TextModel>> GetTextModels() =>
-			GetDataObjectFromAPI<List<TextModel>>(BackendConstants.GetEmotionResultsAPIUrl);
+		public static Task<List<TextMoodModel>> GetTextModels() =>
+			GetDataObjectFromAPI<List<TextMoodModel>>(BackendConstants.GetEmotionResultsAPIUrl);
     }
 }
