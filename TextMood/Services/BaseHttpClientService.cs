@@ -49,14 +49,14 @@ namespace TextMood
                 using (var json = new JsonTextReader(reader))
                 {
                     if (json == null)
-                        return default(TDataObject);
+                        return default;
 
                     return await Task.Run(() => Serializer.Deserialize<TDataObject>(json)).ConfigureAwait(false);
                 }
             }
             catch (Exception)
             {
-                return default(TDataObject);
+                return default;
             }
             finally
             {
@@ -122,7 +122,7 @@ namespace TextMood
             {
                 UpdateActivityIndicatorStatus(true);
 
-                return await Client.SendAsync(httpRequest);
+                return await Client.SendAsync(httpRequest).ConfigureAwait(false);
             }
             catch (Exception)
             {
