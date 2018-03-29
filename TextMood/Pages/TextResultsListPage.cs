@@ -17,12 +17,12 @@ namespace TextMood
             {
                 ItemTemplate = new DataTemplate(typeof(TextMoodViewCell)),
                 IsPullToRefreshEnabled = true,
-                BackgroundColor = ColorConstants.PageBackgroundColor,
                 HasUnevenRows = true,
             };
             _textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(ViewModel.IsRefreshing));
             _textModelList.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.TextList));
             _textModelList.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.PullToRefreshCommand));
+			_textModelList.SetBinding(ListView.BackgroundColorProperty, nameof(ViewModel.BackgroundColor));
 
             Content = _textModelList;
 

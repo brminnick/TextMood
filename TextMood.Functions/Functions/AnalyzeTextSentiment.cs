@@ -1,9 +1,6 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -16,7 +13,7 @@ using TextMood.Shared;
 
 namespace TextMood.Functions
 {
-    [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
+	[StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
 	public static class AnalyzeTextSentiment
 	{
 		readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
@@ -26,7 +23,7 @@ namespace TextMood.Functions
 		[FunctionName(nameof(AnalyzeTextSentiment))]
 		public static HttpResponseMessage Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest,
-            [Queue(QueueNameConstants.TextModelForDatabase)] out TextModel textModelForDatabase, TraceWriter log)
+            [Queue(QueueNameConstants.TextModelForDatabase)] out TextMoodModel textModelForDatabase, TraceWriter log)
 		{
 			log.Info("Text Message Received");
 
@@ -34,7 +31,7 @@ namespace TextMood.Functions
             var httpRequestBody = httpRequest.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
 			log.Info("Creating New Text Model");
-            textModelForDatabase = new TextModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+            textModelForDatabase = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
 			log.Info("Retrieving Sentiment Score");
             textModelForDatabase.SentimentScore = TextAnalysisServices.GetSentiment(textModelForDatabase.Text).GetAwaiter().GetResult() ?? -1;

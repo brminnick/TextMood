@@ -4,9 +4,9 @@ using TextMood.Shared;
 
 namespace TextMood
 {
-	public class TextModel : ITextModel
+	public class TextMoodModel : ITextMoodModel
 	{
-		public TextModel(string text)
+		public TextMoodModel(string text)
 		{
 			Id = Guid.NewGuid().ToString();
 			Text = text;

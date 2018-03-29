@@ -6,10 +6,10 @@ using TextMood.Shared;
 namespace TextMood.Backend.Common
 {
     [Table(Name = "TextModels")]
-    public class TextModel
+	public class TextMoodModel : ITextMoodModel
     {
         #region Constructrors
-        public TextModel(string text)
+        public TextMoodModel(string text)
         {
             Id = Guid.NewGuid().ToString();
             Text = text;
@@ -17,7 +17,7 @@ namespace TextMood.Backend.Common
         }
 
         [Obsolete("Use Overloaded Constructor")]
-        public TextModel()
+        public TextMoodModel()
         {
         }
         #endregion
