@@ -51,13 +51,13 @@ namespace TextMood
 		{
 			base.OnBindingContextChanged();
 
-			var textModel = BindingContext as TextModel;
+			var textModel = BindingContext as TextMoodModel;
 
 			var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
 
 			_titleLabel.Text = $"{emoji} {textModel.Text}";
-			_descriptionLabel.Text = $"{textModel.CreatedAt}";
+			_descriptionLabel.Text = $"Received: {textModel.CreatedAt.ToLocalTime().ToString("g")}";
 		}
-		#endregion Methods
+		#endregion
 	}
 }

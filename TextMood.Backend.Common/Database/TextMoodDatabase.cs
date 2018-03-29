@@ -17,21 +17,21 @@ namespace TextMood.Backend.Common
         #endregion
 
         #region Methods
-        public static Task<IList<TextModel>> GetAllTextModels()
+        public static Task<IList<TextMoodModel>> GetAllTextModels()
 		{
-            Func<DataContext, IList<TextModel>> getAllTextModelsFunction = dataContext => dataContext.GetTable<TextModel>().ToList();
+            Func<DataContext, IList<TextMoodModel>> getAllTextModelsFunction = dataContext => dataContext.GetTable<TextMoodModel>().ToList();
             return PerformDatabaseFunction(getAllTextModelsFunction);
         }
 
-        public static Task<TextModel> GetTextModel(string id)
+        public static Task<TextMoodModel> GetTextModel(string id)
         {
-            Func<DataContext, TextModel> getTextModelFunction = dataContext => dataContext.GetTable<TextModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+            Func<DataContext, TextMoodModel> getTextModelFunction = dataContext => dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
             return PerformDatabaseFunction(getTextModelFunction);
         }
 
-        public static Task<TextModel> InsertTextModel(TextModel text)
+        public static Task<TextMoodModel> InsertTextModel(TextMoodModel text)
         {
-            Func<DataContext, TextModel> insertTextModelFunction = dataContext =>
+            Func<DataContext, TextMoodModel> insertTextModelFunction = dataContext =>
             {
                 if (string.IsNullOrWhiteSpace(text.Id))
                     text.Id = Guid.NewGuid().ToString();
@@ -39,7 +39,7 @@ namespace TextMood.Backend.Common
                 text.CreatedAt = DateTimeOffset.UtcNow;
                 text.UpdatedAt = DateTimeOffset.UtcNow;
 
-                dataContext.GetTable<TextModel>().InsertOnSubmit(text);
+                dataContext.GetTable<TextMoodModel>().InsertOnSubmit(text);
 
                 return text;
             };
@@ -47,21 +47,21 @@ namespace TextMood.Backend.Common
             return PerformDatabaseFunction(insertTextModelFunction);
         }
 
-        public static Task<TextModel> PatchTextModel(TextModel text)
+        public static Task<TextMoodModel> PatchTextModel(TextMoodModel text)
         {
-            var textModelDelta = new Delta<TextModel>();
+            var textModelDelta = new Delta<TextMoodModel>();
 
-            textModelDelta.TrySetPropertyValue(nameof(TextModel.Text), text.Text);
-            textModelDelta.TrySetPropertyValue(nameof(TextModel.IsDeleted), text.IsDeleted);
+            textModelDelta.TrySetPropertyValue(nameof(TextMoodModel.Text), text.Text);
+            textModelDelta.TrySetPropertyValue(nameof(TextMoodModel.IsDeleted), text.IsDeleted);
 
             return PatchTextModel(text.Id, textModelDelta);
         }
 
-        public static Task<TextModel> PatchTextModel(string id, Delta<TextModel> text)
+        public static Task<TextMoodModel> PatchTextModel(string id, Delta<TextMoodModel> text)
         {
-            Func<DataContext, TextModel> patchTextModelFunction = dataContext =>
+            Func<DataContext, TextMoodModel> patchTextModelFunction = dataContext =>
             {
-                var textFromDatabase = dataContext.GetTable<TextModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
 
                 text.Patch(textFromDatabase);
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
@@ -72,11 +72,11 @@ namespace TextMood.Backend.Common
             return PerformDatabaseFunction(patchTextModelFunction);
         }
 
-        public static Task<TextModel> DeleteTextModel(string id)
+        public static Task<TextMoodModel> DeleteTextModel(string id)
         {
-            Func<DataContext, TextModel> deleteTextModelFunction = dataContext =>
+            Func<DataContext, TextMoodModel> deleteTextModelFunction = dataContext =>
             {
-                var textFromDatabase = dataContext.GetTable<TextModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
 
                 textFromDatabase.IsDeleted = true;
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
@@ -87,13 +87,13 @@ namespace TextMood.Backend.Common
             return PerformDatabaseFunction(deleteTextModelFunction);
         }
 
-        public static Task<TextModel> RemoveTextModel(string id)
+        public static Task<TextMoodModel> RemoveTextModel(string id)
         {
-            Func<DataContext, TextModel> removetextDatabaseFunction = dataContext =>
+            Func<DataContext, TextMoodModel> removetextDatabaseFunction = dataContext =>
             {
-                var textFromDatabase = dataContext.GetTable<TextModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
 
-                dataContext.GetTable<TextModel>().DeleteOnSubmit(textFromDatabase);
+                dataContext.GetTable<TextMoodModel>().DeleteOnSubmit(textFromDatabase);
 
                 return textFromDatabase;
             };

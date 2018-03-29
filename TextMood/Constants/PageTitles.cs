@@ -2,6 +2,6 @@
 {
     public static class PageTitles
     {
-        public const string TextResultsPage = "Text Results"
+		public const string TextResultsPage = "Text Messages";
     }
 }

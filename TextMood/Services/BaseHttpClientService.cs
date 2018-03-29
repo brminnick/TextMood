@@ -54,9 +54,8 @@ namespace TextMood
                     return await Task.Run(() => Serializer.Deserialize<TDataObject>(json)).ConfigureAwait(false);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                AppCenterHelpers.LogException(e);
                 return default(TDataObject);
             }
             finally
@@ -76,9 +75,8 @@ namespace TextMood
 
                 return await Client.PostAsync(apiUrl, httpContent).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                AppCenterHelpers.LogException(e);
                 return null;
             }
             finally
@@ -106,9 +104,8 @@ namespace TextMood
 
                 return await Client.SendAsync(httpRequest).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                AppCenterHelpers.LogException(e);
                 return null;
             }
             finally
@@ -127,9 +124,8 @@ namespace TextMood
 
                 return await Client.SendAsync(httpRequest);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                AppCenterHelpers.LogException(e);
                 return null;
             }
             finally

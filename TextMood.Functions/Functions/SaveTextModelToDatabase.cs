@@ -10,7 +10,7 @@ namespace TextMood.Functions
     {
         [FunctionName(nameof(SaveTextModelToDatabase))]
         public static void Run(
-            [QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextModel textModel, 
+            [QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextMoodModel textModel, 
             [Queue(QueueNameConstants.UpdatePhillipsHueLight)] out string queueMessage,
             TraceWriter log)
         {
