@@ -25,8 +25,8 @@ namespace TextMood
 
 		#region Properties
 		public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
-			(_pullToRefreshCommand = new Command(async () => await ExecutePullToRefreshCommand()));
-
+			(_pullToRefreshCommand = new Command(async () => await ExecutePullToRefreshCommand().ConfigureAwait(false)));
+        
 		public IList<ITextMoodModel> TextList
 		{
 			get => _textList;

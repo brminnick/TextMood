@@ -105,7 +105,7 @@ namespace TextMood.Backend.Common
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                await connection.OpenAsync();
+                await connection.OpenAsync().ConfigureAwait(false);
 
                 var dbContext = new DataContext(connection);
 
