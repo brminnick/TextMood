@@ -60,11 +60,7 @@ namespace TextMood
                 
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 
-				var averageSentiment = (double)TextModelServices.GetAverageSentimentScore(recentTextMoodList);
-				if (averageSentiment < 0)
-					BackgroundColor = default;
-				else
-					BackgroundColor = Color.FromRgba(1 - averageSentiment, averageSentiment, 0, 0.5);
+				SetTextResultsListBackgroundColor(recentTextMoodList);
 			}
 			catch (Exception e)
 			{
@@ -74,6 +70,14 @@ namespace TextMood
 			{
 				IsRefreshing = false;
 			}
+        }
+		void SetTextResultsListBackgroundColor(List<ITextMoodModel> textMoodModelList)
+		{
+			var averageSentiment = (double)TextModelServices.GetAverageSentimentScore(textMoodModelList);
+            if (averageSentiment < 0)
+                BackgroundColor = default;
+            else
+                BackgroundColor = Color.FromRgba(1 - averageSentiment, averageSentiment, 0, 0.5);
 		}
 
 		void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
