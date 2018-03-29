@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Xamarin.Forms;
-using System.Linq;
+
 using TextMood.Shared;
 
 namespace TextMood
@@ -56,11 +57,14 @@ namespace TextMood
 
 				var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
 				var recentTextMoodList = TextModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
-
+                
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 
 				var averageSentiment = (double)TextModelServices.GetAverageSentimentScore(recentTextMoodList);
-				BackgroundColor = Color.FromRgb(1 - averageSentiment, averageSentiment, 0);
+				if (averageSentiment < 0)
+					BackgroundColor = default;
+				else
+					BackgroundColor = Color.FromRgba(1 - averageSentiment, averageSentiment, 0, 0.5);
 			}
 			catch (Exception e)
 			{
