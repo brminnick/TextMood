@@ -84,7 +84,7 @@ namespace TextMood
 				UpdateActivityIndicatorStatus(false);
 			}
 		}
-        
+
 		protected static async Task<HttpResponseMessage> PutObjectToAPI<T>(string apiUrl, T data)
 		{
 			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data)).ConfigureAwait(false);

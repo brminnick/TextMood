@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Windows.Input;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-
-using Xamarin.Forms;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 using TextMood.Shared;
+
+using Xamarin.Forms;
 
 namespace TextMood
 {
@@ -85,14 +86,14 @@ namespace TextMood
 			BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
 		}
 
-		Task UpdatePhillipsHueLight(float averageSentiment)
+		ValueTask<HttpResponseMessage> UpdatePhillipsHueLight(float averageSentiment)
 		{
 			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
 			var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
 
 			return PhillipsHueBridgeServices.UpdateLightBulbColor(hue);
 		}
-
+        
 		void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
 		#endregion
 	}
