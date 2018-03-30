@@ -9,10 +9,11 @@
     <Import_RootNamespace>TextMood.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Services\TextModelServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\TextMoodModelServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ITextMoodModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EmojiServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\EmojiConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\PhillipsHueServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Services\" />
