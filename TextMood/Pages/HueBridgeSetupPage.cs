@@ -14,7 +14,7 @@ namespace TextMood
 			_bridgeIPEntry = new Entry
 			{
 				Placeholder = "0.0.0.0",
-				Keyboard = Keyboard.Numeric
+				Keyboard = Device.RuntimePlatform.Equals(Device.iOS) ? Keyboard.Numeric : Keyboard.Default,
 			};
 			_bridgeIPEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIPEntryText));
 
