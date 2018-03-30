@@ -6,11 +6,7 @@ namespace TextMood
     {
 		public App()
 		{
-			MainPage = new NavigationPage(new TextResultsListPage())
-			{
-				BarTextColor = ColorConstants.BarTextColor,
-				BarBackgroundColor = ColorConstants.BarBackgroundColor
-			};
+			MainPage = new BaseNavigationPage(new TextResultsListPage());
 		}
     }
 }

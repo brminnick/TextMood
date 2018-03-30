@@ -18,7 +18,7 @@ namespace TextMood.Functions
 		{
 			var sentimentDocument = new SentimentDocument { Id = "1", Text = text };
 			var sentimentRequest = new SentimentRequest { Documents = new List<IDocument> { { sentimentDocument } } };
-
+            
 			var sentimentResults = await SentimentClient.GetSentimentAsync(sentimentRequest).ConfigureAwait(false);
 			var documentResult = sentimentResults.Documents.FirstOrDefault();
 

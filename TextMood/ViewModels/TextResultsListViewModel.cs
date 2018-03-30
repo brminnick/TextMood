@@ -26,7 +26,7 @@ namespace TextMood
 		#region Properties
 		public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
 			(_pullToRefreshCommand = new Command(async () => await ExecutePullToRefreshCommand().ConfigureAwait(false)));
-        
+
 		public IList<ITextMoodModel> TextList
 		{
 			get => _textList;
@@ -50,7 +50,12 @@ namespace TextMood
 		async Task ExecutePullToRefreshCommand()
 		{
 			await UpdateTextResultsList().ConfigureAwait(false);
-			SetTextResultsListBackgroundColor(TextList);
+
+			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+
+			SetTextResultsListBackgroundColor(averageSentiment);
+
+			await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
 		async Task UpdateTextResultsList()
@@ -60,7 +65,7 @@ namespace TextMood
 				IsRefreshing = true;
 
 				var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
-				var recentTextMoodList = TextModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
+				var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 			}
@@ -74,13 +79,18 @@ namespace TextMood
 			}
 		}
 
-		void SetTextResultsListBackgroundColor(IList<ITextMoodModel> textMoodModelList)
+		void SetTextResultsListBackgroundColor(float averageSentiment)
 		{
-			var averageSentiment = (double)TextModelServices.GetAverageSentimentScore(textMoodModelList);
-			if (averageSentiment < 0 || averageSentiment > 1)
-				BackgroundColor = default;
-			else
-				BackgroundColor = Color.FromRgba(1 - averageSentiment, averageSentiment, 0, 0.5);
+			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
+			BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
+		}
+
+		Task UpdatePhillipsHueLight(float averageSentiment)
+		{
+			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
+			var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
+
+			return PhillipsHueBridgeServices.UpdateLightBulbColor(hue);
 		}
 
 		void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
