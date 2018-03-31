@@ -17,7 +17,7 @@ namespace TextMood.Functions.Functions
         static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnection(SignalRConstants.SignalRHubUrl));
         static Lazy<IHubProxy> _proxyHolder = new Lazy<IHubProxy>(() =>
         {
-            var proxy = Hub.CreateHubProxy(SignalRConstants.TextMoodModelHub);
+            var proxy = Hub.CreateHubProxy(SignalRConstants.TextMoodModelHubName);
             Hub.Start().GetAwaiter().GetResult();
             return proxy;
         });
@@ -28,7 +28,7 @@ namespace TextMood.Functions.Functions
 		[FunctionName(nameof(SendUpdate))]
 		public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, TraceWriter log)
 		{
-           await Proxy.Invoke(SignalRConstants.TextMoodModelHub, textModel).ConfigureAwait(false);
+           await Proxy.Invoke(SignalRConstants.TextMoodModelHubName, textModel).ConfigureAwait(false);
 		}
 	}
 }
