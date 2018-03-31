@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 
@@ -11,31 +12,23 @@ using TextMood.Shared;
 namespace TextMood.Functions.Functions
 {
 	[StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-	public static class UpdatePhillipsHueLight
+	public static class SendUpdate
 	{
-		[FunctionName(nameof(UpdatePhillipsHueLight))]
-		public static async Task Run([QueueTrigger(QueueNameConstants.UpdatePhillipsHueLight)]string message, TraceWriter log)
+        static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnection(SignalRConstants.SignalRHubUrl));
+        static Lazy<IHubProxy> _proxyHolder = new Lazy<IHubProxy>(() =>
+        {
+            var proxy = Hub.CreateHubProxy(SignalRConstants.TextMoodModelHub);
+            Hub.Start().GetAwaiter().GetResult();
+            return proxy;
+        });
+
+        static HubConnection Hub => _hubHolder.Value;
+        static IHubProxy Proxy => _proxyHolder.Value;
+
+		[FunctionName(nameof(SendUpdate))]
+		public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, TraceWriter log)
 		{
-			var allTextModelsFromDatabase = await TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
-			log.Info($"Retrived {allTextModelsFromDatabase?.Count ?? -1} Text Models");
-
-			log.Info($"Current Utc Time: {DateTimeOffset.UtcNow}");
-
-			var textModelsFromPastHour = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(allTextModelsFromDatabase), TimeSpan.FromHours(1));
-			log.Info($"Retrived {textModelsFromPastHour?.Count ?? -1} Text Models");
-
-			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(textModelsFromPastHour);
-			log.Info($"One Hour Running Sentiment Average: {averageSentiment}");
-
-			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
-			var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
-
-			SendUpdateToPhillipsHue();
-		}
-
-		static void SendUpdateToPhillipsHue()
-		{
-            
+           await Proxy.Invoke(SignalRConstants.TextMoodModelHub, textModel).ConfigureAwait(false);
 		}
 	}
 }
