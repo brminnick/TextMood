@@ -23,6 +23,7 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Services\ConnectivityService.cs" />
+      <Compile Remove="Models\PhillipsHueRequestModel.cs" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
 </Project>
