@@ -20,6 +20,8 @@ namespace TextMood
 
 		protected static async ValueTask<IHubProxy> GetProxy()
 		{
+			Proxy.ToString();
+
 			if (!_isInitialized)
 			{
 				await Hub.Start().ConfigureAwait(false);
