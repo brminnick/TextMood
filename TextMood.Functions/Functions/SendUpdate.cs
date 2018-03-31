@@ -28,7 +28,7 @@ namespace TextMood.Functions.Functions
 		[FunctionName(nameof(SendUpdate))]
 		public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, TraceWriter log)
 		{
-           await Proxy.Invoke(SignalRConstants.TextMoodModelHubName, textModel).ConfigureAwait(false);
+           await Proxy.Invoke(SignalRConstants.SendNewTextMoodModelName, textModel).ConfigureAwait(false);
 		}
 	}
 }
