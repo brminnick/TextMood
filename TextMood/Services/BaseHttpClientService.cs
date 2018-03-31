@@ -29,9 +29,9 @@ namespace TextMood
 		#endregion
 
 		#region Methods
-		protected static Task<T> GetFromAPI<T>(string apiUrl) => GetFromAPI<T, object>(apiUrl);
+		protected static Task<T> GetObjectFromAPI<T>(string apiUrl) => GetObjectFromAPI<T, object>(apiUrl);
 
-		protected static async Task<TResponseData> GetFromAPI<TResponseData, TRequestData>(string apiUrl, TRequestData data = default)
+		protected static async Task<TResponseData> GetObjectFromAPI<TResponseData, TRequestData>(string apiUrl, TRequestData data = default)
 		{
 			var stringPayload = string.Empty;
 
@@ -66,7 +66,7 @@ namespace TextMood
 				using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
 					return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
 			}
-			catch(Exception e)
+			catch
 			{
 				return default;
 			}
