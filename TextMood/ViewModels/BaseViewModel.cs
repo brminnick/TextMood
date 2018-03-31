@@ -5,26 +5,26 @@ using System.Runtime.CompilerServices;
 
 namespace TextMood
 {
-    public class BaseViewModel : INotifyPropertyChanged
-    {
-        #region Events
-        public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
+	public class BaseViewModel : INotifyPropertyChanged
+	{
+		#region Events
+		public event PropertyChangedEventHandler PropertyChanged;
+		#endregion
 
-        #region Methods
-        protected void SetProperty<T>(ref T backingStore, T value, Action onChanged = null, [CallerMemberName] string propertyname = "")
-        {
-            if (EqualityComparer<T>.Default.Equals(backingStore, value))
-                return;
+		#region Methods
+		protected void SetProperty<T>(ref T backingStore, T value, Action onChanged = null, [CallerMemberName] string propertyname = "")
+		{
+			if (EqualityComparer<T>.Default.Equals(backingStore, value))
+				return;
 
-            backingStore = value;
+			backingStore = value;
 
-            onChanged?.Invoke();
+			onChanged?.Invoke();
 
-            OnPropertyChanged(propertyname);
-        }
+			OnPropertyChanged(propertyname);
+		}
 
-        void OnPropertyChanged([CallerMemberName]string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        #endregion
-    }
+		protected void OnPropertyChanged([CallerMemberName]string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+		#endregion
+	}
 }

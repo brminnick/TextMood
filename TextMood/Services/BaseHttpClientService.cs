@@ -29,9 +29,9 @@ namespace TextMood
 		#endregion
 
 		#region Methods
-		protected static Task<T> GetDataObjectFromAPI<T>(string apiUrl) => GetDataObjectFromAPI<T, object>(apiUrl);
+		protected static Task<T> GetFromAPI<T>(string apiUrl) => GetFromAPI<T, object>(apiUrl);
 
-		protected static async Task<TDataObject> GetDataObjectFromAPI<TDataObject, TPayloadData>(string apiUrl, TPayloadData data = default(TPayloadData))
+		protected static async Task<TResponseData> GetFromAPI<TResponseData, TRequestData>(string apiUrl, TRequestData data = default)
 		{
 			var stringPayload = string.Empty;
 
@@ -45,16 +45,9 @@ namespace TextMood
 				UpdateActivityIndicatorStatus(true);
 
 				using (var stream = await Client.GetStreamAsync(apiUrl).ConfigureAwait(false))
-				using (var reader = new StreamReader(stream))
-				using (var json = new JsonTextReader(reader))
-				{
-					if (json == null)
-						return default;
-
-					return await Task.Run(() => Serializer.Deserialize<TDataObject>(json)).ConfigureAwait(false);
-				}
+					return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch
 			{
 				return default;
 			}
@@ -64,9 +57,24 @@ namespace TextMood
 			}
 		}
 
-		protected static async Task<HttpResponseMessage> PostObjectToAPI<T>(string apiUrl, T data)
+		protected static async Task<TResponseData> PostObjectToAPI<TResponseData, TRequestData>(string apiUrl, TRequestData requestData)
 		{
-			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data)).ConfigureAwait(false);
+			var responseMessage = await PostObjectToAPI(apiUrl, requestData).ConfigureAwait(false);
+
+			try
+			{
+				using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+					return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+			}
+			catch(Exception e)
+			{
+				return default;
+			}
+		}
+
+		protected static async Task<HttpResponseMessage> PostObjectToAPI<T>(string apiUrl, T requestData)
+		{
+			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(requestData)).ConfigureAwait(false);
 
 			var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
 			try
@@ -75,7 +83,7 @@ namespace TextMood
 
 				return await Client.PostAsync(apiUrl, httpContent).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch
 			{
 				return null;
 			}
@@ -103,7 +111,7 @@ namespace TextMood
 
 				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch
 			{
 				return null;
 			}
@@ -132,7 +140,7 @@ namespace TextMood
 
 				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch
 			{
 				return null;
 			}
@@ -152,7 +160,7 @@ namespace TextMood
 
 				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch
 			{
 				return null;
 			}
@@ -195,6 +203,18 @@ namespace TextMood
 			client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
 			return client;
+		}
+
+		static async Task<T> DeserializeContentStream<T>(Stream contentStream)
+		{
+			using (var reader = new StreamReader(contentStream))
+			using (var json = new JsonTextReader(reader))
+			{
+				if (json == null)
+					return default;
+
+				return await Task.Run(() => Serializer.Deserialize<T>(json));
+			}
 		}
 		#endregion
 	}

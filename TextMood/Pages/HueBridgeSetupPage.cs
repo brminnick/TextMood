@@ -5,66 +5,111 @@ namespace TextMood
 {
 	public class HueBridgeSetupPage : BaseContentPage<HueBridgeSetupViewModel>
 	{
-		readonly Entry _bridgeIPEntry;
-		readonly Button _saveButton, _cancelButton;
+		readonly Entry _bridgeIPEntry, _bridgeIDEntry;
+		readonly Button _saveButton, _cancelButton, _autoDetectButton;
 
 		public HueBridgeSetupPage()
 		{
+			var bridgeIDLabel = new Label { Text = "Phillips Hue Bridge ID" };
+
+			_bridgeIDEntry = new Entry { Placeholder = "Eg: 001788fffe75a1d2" };
+			_bridgeIDEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIDEntryText));
+			_bridgeIDEntry.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
+
 			var bridgeIPLabel = new Label { Text = "Phillips Hue Bridge IP Address" };
+
 			_bridgeIPEntry = new Entry
 			{
 				Placeholder = "0.0.0.0",
 				Keyboard = Device.RuntimePlatform.Equals(Device.iOS) ? Keyboard.Numeric : Keyboard.Default,
 			};
 			_bridgeIPEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIPEntryText));
+			_bridgeIPEntry.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
 
-			_saveButton = new Button
+			_autoDetectButton = new Button
 			{
-				Text = "Save",
-				Margin = new Thickness(0, 10, 0, 0)
+				Text = "Auto Detect",
+				Margin = new Thickness(0, 10)
 			};
+			_autoDetectButton.SetBinding(Button.CommandProperty, nameof(ViewModel.AutoDetectButtonCommand));
+
+			_saveButton = new Button { Text = "Save" };
 			_saveButton.SetBinding(IsEnabledProperty, nameof(ViewModel.IsSaveButtonEnabled));
+			_saveButton.SetBinding(Button.CommandProperty, nameof(ViewModel.SaveButtonCommand));
 
 			_cancelButton = new Button { Text = "Cancel" };
 
+			var activityIndicator = new ActivityIndicator { InputTransparent = true };
+			activityIndicator.SetBinding(IsVisibleProperty, new Binding(nameof(ViewModel.AreEntriesEnabled), BindingMode.Default, new InverseBooleanConverter(), ViewModel.AreEntriesEnabled));
+			activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, new Binding(nameof(ViewModel.AreEntriesEnabled), BindingMode.Default, new InverseBooleanConverter(), ViewModel.AreEntriesEnabled));
+
+
+
 			Title = "Configure Bridge";
 
-			Content = new StackLayout
+			var stackLayout = new StackLayout
 			{
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
 				Children = {
+					bridgeIDLabel,
+					_bridgeIDEntry,
 					bridgeIPLabel,
 					_bridgeIPEntry,
+					_autoDetectButton,
 					_saveButton,
 					_cancelButton
 				}
 			};
+
+			var absoluteLayout = new AbsoluteLayout();
+			absoluteLayout.Children.Add(stackLayout, new Rectangle(.5, .5, -1, -1), AbsoluteLayoutFlags.PositionProportional);
+			absoluteLayout.Children.Add(activityIndicator, new Rectangle(.5, .5, -1, -1), AbsoluteLayoutFlags.PositionProportional);
+
+			Content = absoluteLayout;
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			_bridgeIDEntry.Text = PhillipsHueBridgeServices.PhillipsHueBridgeID;
+			_bridgeIPEntry.Text = PhillipsHueBridgeServices.PhillipsHueBridgeIPAddress;
 		}
 
 		protected override void SubscribeEventHandlers()
 		{
-			_saveButton.Clicked += HandleSaveToolBarItemClicked;
-			_cancelButton.Clicked += HandleCancelToolBarItemClicked;
+			ViewModel.SaveFailed += HandleSaveFailed;
+			ViewModel.SaveCompleted += HandleSaveCompleted;
+			_cancelButton.Clicked += HandleCancelButtonClicked;
+			ViewModel.AutoDiscoveryCompleted += HandleAutoDiscoveryCompleted;
 		}
 
 		protected override void UnsubscribeEventHandlers()
 		{
-			_saveButton.Clicked -= HandleSaveToolBarItemClicked;
-			_cancelButton.Clicked -= HandleCancelToolBarItemClicked;
+			ViewModel.SaveFailed -= HandleSaveFailed;
+			ViewModel.SaveCompleted -= HandleSaveCompleted;
+			_cancelButton.Clicked -= HandleCancelButtonClicked;
+			ViewModel.AutoDiscoveryCompleted -= HandleAutoDiscoveryCompleted;
 		}
 
-		void HandleSaveToolBarItemClicked(object sender, EventArgs e)
+		void HandleSaveFailed(object sender, string message) =>
+			Device.BeginInvokeOnMainThread(async () => await DisplayAlert("Save Failed", message, "OK"));
+
+		void HandleSaveCompleted(object sender, EventArgs e)
 		{
-			PhillipsHueBridgeServices.PhillipsHueBridgeIPAddress = _bridgeIPEntry.Text;
-			ClosePage();
+			Device.BeginInvokeOnMainThread(async () =>
+			{
+				await DisplayAlert("Bridge Saved", "", "OK");
+				ClosePage();
+			});
 		}
 
-		void HandleCancelToolBarItemClicked(object sender, EventArgs e) => ClosePage();
+		void HandleAutoDiscoveryCompleted(object sender, string message) =>
+			Device.BeginInvokeOnMainThread(async () => await DisplayAlert("Auto Discovery Completed", message, "OK"));
 
-		void ClosePage() =>
-			Device.BeginInvokeOnMainThread(async () => await Navigation.PopModalAsync());
+		void HandleCancelButtonClicked(object sender, EventArgs e) => ClosePage();
 
-
+		void ClosePage() => Device.BeginInvokeOnMainThread(async () => await Navigation.PopModalAsync());
 	}
 }
