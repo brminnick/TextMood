@@ -6,9 +6,9 @@ namespace SignalRHub
 {
     public class TextMoodModelHub : Hub
     {
-        public void Hello(TextMoodModel textMoodModel)
+		public void SendNewTextMoodModel(TextMoodModel textMoodModel)
         {
-            Clients.All.broadcastMessage(textMoodModel);
+            Clients.Others.SendNewTextMoodModel(textMoodModel);
         }
     }
 }

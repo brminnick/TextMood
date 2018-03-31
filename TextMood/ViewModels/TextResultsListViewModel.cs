@@ -18,6 +18,7 @@ namespace TextMood
 		Color _backgroundColor;
 		IList<ITextMoodModel> _textList;
 		ICommand _pullToRefreshCommand;
+		Command<ITextMoodModel> _addTextMoodModelCommand;
 		#endregion
 
 		#region Events
@@ -25,6 +26,10 @@ namespace TextMood
 		#endregion
 
 		#region Properties
+		public Command<ITextMoodModel> AddTextMoodModelCommand => _addTextMoodModelCommand ??
+		    (_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel)));
+
+
 		public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
 			(_pullToRefreshCommand = new Command(async () => await ExecutePullToRefreshCommand().ConfigureAwait(false)));
 
@@ -50,7 +55,7 @@ namespace TextMood
 		#region Methods
 		async Task ExecutePullToRefreshCommand()
 		{
-			await UpdateTextResultsList().ConfigureAwait(false);
+			await UpdateTextResultsListFromRemoteDatabase().ConfigureAwait(false);
 
 			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
@@ -59,7 +64,21 @@ namespace TextMood
 			await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
-		async Task UpdateTextResultsList()
+		async Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
+		{
+			var textList = TextList;
+			textList.Add(textMoodModel);
+
+			TextList = new List<ITextMoodModel>(textList.OrderByDescending(x => x.CreatedAt).ToList());
+
+			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+
+            SetTextResultsListBackgroundColor(averageSentiment);
+
+            await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
+		}
+
+		async Task UpdateTextResultsListFromRemoteDatabase()
 		{
 			try
 			{
@@ -95,7 +114,7 @@ namespace TextMood
 
 				await PhillipsHueBridgeServices.UpdateLightBulbColor(hue).ConfigureAwait(false);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				OnErrorTriggered(e.Message);
 			}
