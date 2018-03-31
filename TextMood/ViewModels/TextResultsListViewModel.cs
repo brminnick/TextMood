@@ -86,14 +86,21 @@ namespace TextMood
 			BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
 		}
 
-		ValueTask<HttpResponseMessage> UpdatePhillipsHueLight(float averageSentiment)
+		async Task UpdatePhillipsHueLight(float averageSentiment)
 		{
-			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
-			var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
+			try
+			{
+				var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
+				var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
 
-			return PhillipsHueBridgeServices.UpdateLightBulbColor(hue);
+				await PhillipsHueBridgeServices.UpdateLightBulbColor(hue).ConfigureAwait(false);
+			}
+			catch(Exception e)
+			{
+				OnErrorTriggered(e.Message);
+			}
 		}
-        
+
 		void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
 		#endregion
 	}
