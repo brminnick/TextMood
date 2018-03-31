@@ -44,7 +44,7 @@ namespace TextMood
 		}
 
 		public static Task<List<PhillipsHueBridgeDiscoveryModel>> AutoDetectBridges() =>
-			GetFromAPI<List<PhillipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
+			GetObjectFromAPI<List<PhillipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
 
 		public static async ValueTask<HttpResponseMessage> UpdateLightBulbColor(int hue)
 		{
