@@ -1,7 +1,10 @@
 ﻿using System.Threading.Tasks;
+
 using Microsoft.AspNet.SignalR.Client;
+
+using TextMood.Shared;
+
 using Xamarin.Forms;
-using System.Collections.Generic;
 
 namespace TextMood
 {
@@ -11,7 +14,7 @@ namespace TextMood
 		{
 			var proxy = await GetProxy().ConfigureAwait(false);
 
-			proxy.On<TextMoodModel>("SendNewTextMoodModel", textMoodModel =>
+			proxy.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
 			{
 				var textResultsListViewModel = GetTextResultsListViewModel();
 				textResultsListViewModel?.AddTextMoodModelCommand?.Execute(textMoodModel);
