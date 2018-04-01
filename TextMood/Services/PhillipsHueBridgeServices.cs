@@ -50,7 +50,7 @@ namespace TextMood
 			if (!isBridgeReachable)
 				throw new Exception(GetBridgeNotFoundErrorMessage());
 
-			var deviceType = new PhillipsHueDeviceTypeModel { Devicetype = string.Empty };
+			var deviceType = new PhillipsHueDeviceTypeModel { DeviceType = string.Empty };
 			return await PostObjectToAPI<List<PhillipsHueUserNameDiscoveryModel>, PhillipsHueDeviceTypeModel>($"http://{PhillipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
 		}
 
@@ -63,7 +63,7 @@ namespace TextMood
 			if (!isBridgeReachable)
 				throw new Exception(GetBridgeNotFoundErrorMessage());
 
-			var hueRequest = new State
+			var hueRequest = new LightModel
 			{
 				On = true,
 				Hue = hue,
