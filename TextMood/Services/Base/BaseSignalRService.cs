@@ -36,6 +36,6 @@ namespace TextMood
 
 			return Proxy;
 		}
-		#endregions
+		#endregion
 	}
 }
