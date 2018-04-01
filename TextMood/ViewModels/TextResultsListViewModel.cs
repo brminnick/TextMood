@@ -114,9 +114,9 @@ namespace TextMood
 
 				await PhillipsHueBridgeServices.UpdateLightBulbColor(hue).ConfigureAwait(false);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				OnErrorTriggered(e.Message);
+				OnErrorTriggered("Unable to reach Phillips Hue Bridge. Tap Setup to get started.");
 			}
 		}
 
