@@ -1,8 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Linq;
+﻿using Xamarin.Forms;
 
-using Xamarin.Forms;
 using TextMood.Shared;
 
 namespace TextMood
