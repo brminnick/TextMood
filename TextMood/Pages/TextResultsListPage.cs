@@ -35,11 +35,13 @@ namespace TextMood
 		#endregion
 
 		#region Methods
-		protected override void OnAppearing()
+		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
 
 			Device.BeginInvokeOnMainThread(_textModelList.BeginRefresh);
+
+			await SignalRService.Subscribe().ConfigureAwait(false);
 		}
 
 		protected override void SubscribeEventHandlers()
