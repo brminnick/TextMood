@@ -16,8 +16,8 @@ namespace TextMood.Functions
 		{
 			log.Info("Saving TextModel to Database");
 
-			if (textModel.Text.Length > 255)
-				textModel.Text = textModel.Text.Substring(0, 255);
+			if (textModel.Text.Length > 128)
+				textModel.Text = textModel.Text.Substring(0, 128);
 
 			TextMoodDatabase.InsertTextModel(textModel).GetAwaiter().GetResult();
 
