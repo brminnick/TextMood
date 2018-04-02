@@ -13,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{6D57
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobile", "Mobile", "{35E46352-F114-421D-AD12-B3CF4C71D1E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.iOS", "iOS\TextMood.iOS.csproj", "{D14E2159-7652-4255-93B9-04ADC48C3CA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.iOS", "TextMood.iOS\TextMood.iOS.csproj", "{D14E2159-7652-4255-93B9-04ADC48C3CA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Droid", "Droid\TextMood.Droid.csproj", "{693FDC28-39BB-4EA3-8E6E-DD2476F38CA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Droid", "TextMood.Droid\TextMood.Droid.csproj", "{693FDC28-39BB-4EA3-8E6E-DD2476F38CA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood", "TextMood\TextMood.csproj", "{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}"
 EndProject

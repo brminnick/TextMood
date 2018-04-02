@@ -91,7 +91,10 @@ namespace TextMood
 			}
 			catch (Exception e)
 			{
-				OnErrorTriggered(e.InnerException.Message);
+				if (e?.InnerException?.Message != null)
+					OnErrorTriggered(e.InnerException.Message);
+				else
+					OnErrorTriggered(e.Message);
 			}
 			finally
 			{
