@@ -5,61 +5,40 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 using Plugin.Connectivity;
-using Plugin.Settings;
 
 using Xamarin.Forms;
 
 namespace TextMood
 {
-	abstract class PhillipsHueBridgeServices : BaseHttpClientService
+	abstract class PhillipsHueBridgeAPIServices : BaseHttpClientService
 	{
-		#region Properties
-		public static string PhillipsHueBridgeIPAddress
-		{
-			get => CrossSettings.Current.GetValueOrDefault(nameof(PhillipsHueBridgeIPAddress), string.Empty);
-			set => CrossSettings.Current.AddOrUpdateValue(nameof(PhillipsHueBridgeIPAddress), value);
-		}
-
-		public static string PhillipsHueBridgeID
-		{
-			get => CrossSettings.Current.GetValueOrDefault(nameof(PhillipsHueBridgeID), string.Empty);
-			set => CrossSettings.Current.AddOrUpdateValue(nameof(PhillipsHueBridgeID), value);
-		}
-
-		public static string PhillipsBridgeUserName
-		{
-			get => CrossSettings.Current.GetValueOrDefault(nameof(PhillipsBridgeUserName), string.Empty);
-			set => CrossSettings.Current.AddOrUpdateValue(nameof(PhillipsBridgeUserName), value);
-		}
-		#endregion
-
 		#region Methods
-		public static async ValueTask<int> GetNumberOfLights()
+		public static async ValueTask<int> GetNumberOfLights(string phillipsHueBridgeIPAddress, string phillipsHueBridgeUsername)
 		{
-			var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
+			var isBridgeReachable = await IsBridgeReachable(phillipsHueBridgeIPAddress).ConfigureAwait(false);
 			if (!isBridgeReachable)
 				throw new Exception(GetBridgeNotFoundErrorMessage());
 
-			var lightsResponseJObject = await GetObjectFromAPI<JObject>($"http://{PhillipsHueBridgeIPAddress}/api/{PhillipsBridgeUserName}/lights").ConfigureAwait(false);
+			var lightsResponseJObject = await GetObjectFromAPI<JObject>($"http://{phillipsHueBridgeIPAddress}/api/{phillipsHueBridgeUsername}/lights").ConfigureAwait(false);
 			return lightsResponseJObject.Count;
 		}
 
-		public static async ValueTask<List<PhillipsHueUserNameDiscoveryModel>> AutoDetectUserName()
+		public static async ValueTask<List<PhillipsHueUsernameDiscoveryModel>> AutoDetectUsername(string phillipsHueBridgeIPAddress)
 		{
-			var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
+			var isBridgeReachable = await IsBridgeReachable(phillipsHueBridgeIPAddress).ConfigureAwait(false);
 			if (!isBridgeReachable)
 				throw new Exception(GetBridgeNotFoundErrorMessage());
 
 			var deviceType = new PhillipsHueDeviceTypeModel { DeviceType = string.Empty };
-			return await PostObjectToAPI<List<PhillipsHueUserNameDiscoveryModel>, PhillipsHueDeviceTypeModel>($"http://{PhillipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
+			return await PostObjectToAPI<List<PhillipsHueUsernameDiscoveryModel>, PhillipsHueDeviceTypeModel>($"http://{phillipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
 		}
 
 		public static Task<List<PhillipsHueBridgeDiscoveryModel>> AutoDetectBridges() =>
 			GetObjectFromAPI<List<PhillipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
 
-		public static async Task UpdateLightBulbColor(int hue)
+		public static async Task UpdateLightBulbColor(string phillipsHueBridgeIPAddress, string phillipsHueBridgeUsername, int hue)
 		{
-			var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
+			var isBridgeReachable = await IsBridgeReachable(phillipsHueBridgeIPAddress).ConfigureAwait(false);
 			if (!isBridgeReachable)
 				throw new Exception(GetBridgeNotFoundErrorMessage());
 
@@ -71,21 +50,21 @@ namespace TextMood
 				Brightness = 255
 			};
 
-			var numberOfLights = await GetNumberOfLights().ConfigureAwait(false);
+			var numberOfLights = await GetNumberOfLights(phillipsHueBridgeIPAddress, phillipsHueBridgeUsername).ConfigureAwait(false);
 
 			var lightAPIPutList = new List<Task>();
 			for (int lightNumber = 1; lightNumber <= numberOfLights; lightNumber++)
-				lightAPIPutList.Add(PutObjectToAPI($"http://{PhillipsHueBridgeIPAddress}/api/{PhillipsBridgeUserName}/lights/{lightNumber}/state", hueRequest));
+				lightAPIPutList.Add(PutObjectToAPI($"http://{phillipsHueBridgeIPAddress}/api/{phillipsHueBridgeUsername}/lights/{lightNumber}/state", hueRequest));
 
 			await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
 		}
 
-		static async ValueTask<bool> IsBridgeReachable()
+		static async ValueTask<bool> IsBridgeReachable(string phillipsHueBridgeIPAddress)
 		{
 			try
 			{
 				return CrossConnectivity.Current.IsConnected
-										&& await CrossConnectivity.Current.IsRemoteReachable(PhillipsHueBridgeIPAddress).ConfigureAwait(false);
+										&& await CrossConnectivity.Current.IsRemoteReachable(phillipsHueBridgeIPAddress).ConfigureAwait(false);
 			}
 			catch (ArgumentNullException)
 			{

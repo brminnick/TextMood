@@ -49,6 +49,7 @@ namespace TextMood
 			_textModelList.ItemTapped += HandleItemTapped;
 			ViewModel.ErrorTriggered += HandleErrorTriggered;
 			_setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
+			BaseSignalRService.InitializationFailed += HandleInitializationFailed;
 		}
 
 		protected override void UnsubscribeEventHandlers()
@@ -56,13 +57,17 @@ namespace TextMood
 			_textModelList.ItemTapped -= HandleItemTapped;
 			ViewModel.ErrorTriggered -= HandleErrorTriggered;
 			_setupPageToolbarItem.Clicked -= HandleSetupPageToolbarItemClicked;
+			BaseSignalRService.InitializationFailed -= HandleInitializationFailed;
 		}
 
 		void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) =>
-		    Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
+			Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
 
-		void HandleErrorTriggered(object sender, string e) =>
-			Device.BeginInvokeOnMainThread(async () => await DisplayAlert("Error", e, "OK "));
+		void HandleErrorTriggered(object sender, string message) => DisplayErrorMessage(message);
+
+		void HandleInitializationFailed(object sender, string message) => DisplayErrorMessage(message);
+
+		void DisplayErrorMessage(string message) => Device.BeginInvokeOnMainThread(async () => await DisplayAlert("Error", message, "OK "));
 
 		void HandleItemTapped(object sender, ItemTappedEventArgs e)
 		{
