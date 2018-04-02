@@ -73,8 +73,8 @@ namespace TextMood
 		{
 			base.OnAppearing();
 
-			_bridgeIDEntry.Text = PhillipsHueBridgeServices.PhillipsHueBridgeID;
-			_bridgeIPEntry.Text = PhillipsHueBridgeServices.PhillipsHueBridgeIPAddress;
+			_bridgeIDEntry.Text = PhillipsHueBridgeSettings.PhillipsHueBridgeID;
+			_bridgeIPEntry.Text = PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress;
 		}
 
 		protected override void SubscribeEventHandlers()

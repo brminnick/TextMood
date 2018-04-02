@@ -2,7 +2,7 @@
 
 namespace TextMood
 {
-    public class PhillipsHueUserNameDiscoveryModel
+    public class PhillipsHueUsernameDiscoveryModel
     {
 		[JsonProperty("error")]
 		public Error Error { get; set; }
@@ -26,6 +26,6 @@ namespace TextMood
 	public class Success
     {
         [JsonProperty("username")]
-        public string Username { get; set; }
+		public string Username { get; set; }
     }
 }
