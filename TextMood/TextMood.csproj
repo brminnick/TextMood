@@ -22,6 +22,7 @@
         <Folder Include="Views\" />
         <Folder Include="Pages\Base\" />
         <Folder Include="Services\Base\" />
+        <Folder Include="Settings\" />
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Services\ConnectivityService.cs" />

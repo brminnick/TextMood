@@ -18,6 +18,10 @@ namespace TextMood
 		static bool _isInitialized;
 		#endregion
 
+		#region Events
+		public static event EventHandler<string> InitializationFailed;
+		#endregion
+
 		#region Properties
 		static HubConnection Hub => _hubHolder.Value;
 		static IHubProxy Proxy => _proxyHolder.Value;
@@ -30,12 +34,21 @@ namespace TextMood
 
 			if (!_isInitialized)
 			{
-				await Hub.Start().ConfigureAwait(false);
-				_isInitialized = true;
+				try
+				{
+					await Hub.Start().ConfigureAwait(false);
+					_isInitialized = true;
+				}
+				catch (Exception e)
+				{
+					OnInitializationFailed(e.Message);
+				}
 			}
 
 			return Proxy;
 		}
+
+		static void OnInitializationFailed(string message) => InitializationFailed?.Invoke(null, message);
 		#endregion
 	}
 }

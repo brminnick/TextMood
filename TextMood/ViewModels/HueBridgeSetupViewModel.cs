@@ -24,7 +24,7 @@ namespace TextMood
 
 		#region Properties
 		public ICommand SaveButtonCommand => _saveButtonCommand ??
-			(_saveButtonCommand = new Command(async () => await ExecuteSaveButtonCommand()));
+			(_saveButtonCommand = new Command(async () => await ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText)));
 
 		public ICommand AutoDetectButtonCommand => _autoDetectButtonCommand ??
 			(_autoDetectButtonCommand = new Command(async () => await ExecuteAutoDetectButtonCommand()));
@@ -57,7 +57,7 @@ namespace TextMood
 
 			try
 			{
-				var autoDetectedBridgeList = await PhillipsHueBridgeServices.AutoDetectBridges().ConfigureAwait(false);
+				var autoDetectedBridgeList = await PhillipsHueBridgeAPIServices.AutoDetectBridges().ConfigureAwait(false);
 
 				foreach (var bridge in autoDetectedBridgeList)
 				{
@@ -72,7 +72,7 @@ namespace TextMood
 
 				OnAutoDiscoveryCompleted($"Bridge Not Found");
 			}
-			catch (Exception)
+			catch
 			{
 				BridgeIPEntryText = string.Empty;
 				OnAutoDiscoveryCompleted($"Bridge Not Found");
@@ -83,28 +83,28 @@ namespace TextMood
 			}
 		}
 
-		async Task ExecuteSaveButtonCommand()
+		async Task ExecuteSaveButtonCommand(string phillipsHueIPAddress, string phillipsHueID)
 		{
 			AreEntriesEnabled = false;
 
 			try
 			{
-				var userNameResponseList = await PhillipsHueBridgeServices.AutoDetectUserName().ConfigureAwait(false);
+				var usernameResponseList = await PhillipsHueBridgeAPIServices.AutoDetectUsername(phillipsHueIPAddress).ConfigureAwait(false);
 
-				foreach (var userNameResponse in userNameResponseList)
+				foreach (var usernameResponse in usernameResponseList ?? new System.Collections.Generic.List<PhillipsHueUsernameDiscoveryModel>())
 				{
-					if (userNameResponse.Error != null)
+					if (usernameResponse.Error != null)
 					{
 						var textInfo = new CultureInfo("en-US", false).TextInfo;
-						OnSaveFailed($"{textInfo.ToTitleCase(userNameResponse.Error.Description)} for Bridge IP: {PhillipsHueBridgeServices.PhillipsHueBridgeIPAddress}");
+						OnSaveFailed($"{textInfo.ToTitleCase(usernameResponse.Error.Description)} for Bridge IP: {phillipsHueIPAddress}");
 						return;
 					}
 
-					if (userNameResponse.Success != null)
+					if (usernameResponse.Success != null)
 					{
-						PhillipsHueBridgeServices.PhillipsBridgeUserName = userNameResponse.Success.Username;
-						PhillipsHueBridgeServices.PhillipsHueBridgeID = BridgeIDEntryText;
-						PhillipsHueBridgeServices.PhillipsHueBridgeIPAddress = BridgeIPEntryText;
+						PhillipsHueBridgeSettings.PhillipsBridgeUsername = usernameResponse.Success.Username;
+						PhillipsHueBridgeSettings.PhillipsHueBridgeID = phillipsHueIPAddress;
+						PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress = phillipsHueID;
 						OnSaveCompleted();
 						return;
 					}
@@ -126,7 +126,7 @@ namespace TextMood
 			{
 				return text.Length.Equals(16) && Regex.IsMatch(text, @"^[a-zA-Z0-9]+$");
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}
@@ -160,7 +160,7 @@ namespace TextMood
 
 				return false;
 			}
-			catch (Exception)
+			catch
 			{
 				return false;
 			}

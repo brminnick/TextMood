@@ -27,7 +27,7 @@ namespace TextMood
 
 		#region Properties
 		public Command<ITextMoodModel> AddTextMoodModelCommand => _addTextMoodModelCommand ??
-		    (_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel)));
+			(_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel)));
 
 
 		public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
@@ -73,9 +73,9 @@ namespace TextMood
 
 			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
-            SetTextResultsListBackgroundColor(averageSentiment);
+			SetTextResultsListBackgroundColor(averageSentiment);
 
-            await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
+			await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
 		async Task UpdateTextResultsListFromRemoteDatabase()
@@ -115,7 +115,9 @@ namespace TextMood
 				var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
 				var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
 
-				await PhillipsHueBridgeServices.UpdateLightBulbColor(hue).ConfigureAwait(false);
+				await PhillipsHueBridgeAPIServices.UpdateLightBulbColor(PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress,
+																		PhillipsHueBridgeSettings.PhillipsBridgeUsername,
+																		hue).ConfigureAwait(false);
 			}
 			catch (Exception)
 			{
