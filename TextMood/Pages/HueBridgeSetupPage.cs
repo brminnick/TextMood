@@ -10,13 +10,13 @@ namespace TextMood
 
 		public HueBridgeSetupPage()
 		{
-			var bridgeIDLabel = new Label { Text = "Phillips Hue Bridge ID" };
+			var bridgeIDLabel = new Label { Text = "Philips Hue Bridge ID" };
 
 			_bridgeIDEntry = new Entry { Placeholder = "Eg: 001788fffe75a1d2" };
 			_bridgeIDEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIDEntryText));
 			_bridgeIDEntry.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
 
-			var bridgeIPLabel = new Label { Text = "Phillips Hue Bridge IP Address" };
+			var bridgeIPLabel = new Label { Text = "Philips Hue Bridge IP Address" };
 
 			_bridgeIPEntry = new Entry
 			{
@@ -73,8 +73,8 @@ namespace TextMood
 		{
 			base.OnAppearing();
 
-			_bridgeIDEntry.Text = PhillipsHueBridgeSettings.PhillipsHueBridgeID;
-			_bridgeIPEntry.Text = PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress;
+			_bridgeIDEntry.Text = PhilipsHueBridgeSettings.Id;
+			_bridgeIPEntry.Text = PhilipsHueBridgeSettings.IPAddress;
 		}
 
 		protected override void SubscribeEventHandlers()

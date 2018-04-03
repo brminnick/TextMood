@@ -1,7 +1,7 @@
 ﻿using System;
 namespace TextMood.Shared
 {
-	public static class PhillipsHueServices
+	public static class PhilipsHueServices
 	{
 		public static int ConvertToHue(float red, float green, float blue)
 		{
@@ -37,8 +37,8 @@ namespace TextMood.Shared
 
 			hue = (int)Math.Round(hue, 0);
 
-			var hueForPhillips = (int)Math.Round(hue / 360 * 65535);
-			return hueForPhillips;
+			var hueForPhilips = (int)Math.Round(hue / 360 * 65535);
+			return hueForPhilips;
 		}
 	}
 }

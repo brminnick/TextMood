@@ -2,7 +2,7 @@
 
 namespace TextMood
 {
-    public class PhillipsHueUsernameDiscoveryModel
+    public class PhilipsHueUsernameDiscoveryModel
     {
 		[JsonProperty("error")]
 		public Error Error { get; set; }
