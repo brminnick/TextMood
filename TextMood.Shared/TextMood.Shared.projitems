@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ITextMoodModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EmojiServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\EmojiConstants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\PhillipsHueServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\PhilipsHueServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Services\" />

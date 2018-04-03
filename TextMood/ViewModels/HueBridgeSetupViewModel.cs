@@ -57,7 +57,7 @@ namespace TextMood
 
 			try
 			{
-				var autoDetectedBridgeList = await PhillipsHueBridgeAPIServices.AutoDetectBridges().ConfigureAwait(false);
+				var autoDetectedBridgeList = await PhilipsHueBridgeAPIServices.AutoDetectBridges().ConfigureAwait(false);
 
 				foreach (var bridge in autoDetectedBridgeList)
 				{
@@ -83,28 +83,28 @@ namespace TextMood
 			}
 		}
 
-		async Task ExecuteSaveButtonCommand(string phillipsHueIPAddress, string phillipsHueID)
+		async Task ExecuteSaveButtonCommand(string philipsHueBridgeIPAddress, string philipsHueBridgeID)
 		{
 			AreEntriesEnabled = false;
 
 			try
 			{
-				var usernameResponseList = await PhillipsHueBridgeAPIServices.AutoDetectUsername(phillipsHueIPAddress).ConfigureAwait(false);
+				var usernameResponseList = await PhilipsHueBridgeAPIServices.AutoDetectUsername(philipsHueBridgeIPAddress).ConfigureAwait(false);
 
-				foreach (var usernameResponse in usernameResponseList ?? new System.Collections.Generic.List<PhillipsHueUsernameDiscoveryModel>())
+				foreach (var usernameResponse in usernameResponseList ?? new System.Collections.Generic.List<PhilipsHueUsernameDiscoveryModel>())
 				{
 					if (usernameResponse.Error != null)
 					{
 						var textInfo = new CultureInfo("en-US", false).TextInfo;
-						OnSaveFailed($"{textInfo.ToTitleCase(usernameResponse.Error.Description)} for Bridge IP: {phillipsHueIPAddress}");
+						OnSaveFailed($"{textInfo.ToTitleCase(usernameResponse.Error.Description)} for Bridge IP: {philipsHueBridgeIPAddress}");
 						return;
 					}
 
 					if (usernameResponse.Success != null)
 					{
-						PhillipsHueBridgeSettings.PhillipsBridgeUsername = usernameResponse.Success.Username;
-						PhillipsHueBridgeSettings.PhillipsHueBridgeID = phillipsHueID;
-						PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress = phillipsHueIPAddress;
+						PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
+						PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
+						PhilipsHueBridgeSettings.IPAddress = philipsHueBridgeIPAddress;
 						OnSaveCompleted();
 						return;
 					}
