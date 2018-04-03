@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNet.SignalR.Client.Hubs;
 
 using TextMood.Shared;
 
@@ -28,6 +29,8 @@ namespace TextMood
 		#endregion
 
 		#region Methods
+		protected static HubConnection GetHubConnection() => Hub;
+
 		protected static async ValueTask<IHubProxy> GetProxy()
 		{
 			Proxy.ToString();

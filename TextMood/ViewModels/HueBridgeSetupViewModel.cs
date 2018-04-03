@@ -103,8 +103,8 @@ namespace TextMood
 					if (usernameResponse.Success != null)
 					{
 						PhillipsHueBridgeSettings.PhillipsBridgeUsername = usernameResponse.Success.Username;
-						PhillipsHueBridgeSettings.PhillipsHueBridgeID = phillipsHueIPAddress;
-						PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress = phillipsHueID;
+						PhillipsHueBridgeSettings.PhillipsHueBridgeID = phillipsHueID;
+						PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress = phillipsHueIPAddress;
 						OnSaveCompleted();
 						return;
 					}
