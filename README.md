@@ -1,9 +1,10 @@
 # TextMood
+
 An IoT + Azure sample that detects the sentiment of incoming text messages, performs sentiment analysis on the text, and changes the color of a Philips Hue lightbulb to correspond with the average sentiment.
 
 ## Architecture
 
-![](https://github.com/brminnick/Videos/blob/master/TextMood/TextMoodArchitecture.png)
+![Text Mood Architecture](https://github.com/brminnick/Videos/blob/master/TextMood/TextMoodArchitecture.png)
 
 ## Demo
 
@@ -16,4 +17,4 @@ An IoT + Azure sample that detects the sentiment of incoming text messages, perf
 7. The phone on the right displays the new message, then updates its background color to match the average sentiment of the received messages
 8. The phone on the right then simultaneously changes the light color of the Philips Hue light to match the average sentiment
 
-![](https://github.com/brminnick/Videos/blob/master/TextMood/TextMoodGif.gif)
+![Text Mood Demo](https://github.com/brminnick/Videos/blob/master/TextMood/TextMoodGif.gif)
