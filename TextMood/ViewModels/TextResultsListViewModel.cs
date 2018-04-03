@@ -61,7 +61,7 @@ namespace TextMood
 
 			SetTextResultsListBackgroundColor(averageSentiment);
 
-			await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
+			await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
 		async Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
@@ -75,7 +75,7 @@ namespace TextMood
 
 			SetTextResultsListBackgroundColor(averageSentiment);
 
-			await UpdatePhillipsHueLight(averageSentiment).ConfigureAwait(false);
+			await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
 		async Task UpdateTextResultsListFromRemoteDatabase()
@@ -108,20 +108,20 @@ namespace TextMood
 			BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
 		}
 
-		async Task UpdatePhillipsHueLight(float averageSentiment)
+		async Task UpdatePhilipsHueLight(float averageSentiment)
 		{
 			try
 			{
 				var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
-				var hue = PhillipsHueServices.ConvertToHue(red, green, blue);
+				var hue = PhilipsHueServices.ConvertToHue(red, green, blue);
 
-				await PhillipsHueBridgeAPIServices.UpdateLightBulbColor(PhillipsHueBridgeSettings.PhillipsHueBridgeIPAddress,
-																		PhillipsHueBridgeSettings.PhillipsBridgeUsername,
+				await PhilipsHueBridgeAPIServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.IPAddress,
+																		PhilipsHueBridgeSettings.Username,
 																		hue).ConfigureAwait(false);
 			}
 			catch (Exception)
 			{
-				OnErrorTriggered("Unable to reach Phillips Hue Bridge. Tap Setup to get started.");
+				OnErrorTriggered("Unable to reach Philips Hue Bridge. Tap Setup to get started.");
 			}
 		}
 

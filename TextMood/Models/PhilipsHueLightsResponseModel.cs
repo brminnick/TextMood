@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 
-using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
 namespace TextMood
 {
-	public class PhillipsHueLightsResponseModel
+	public class PhilipsHueLightsResponseModel
 	{
 		[JsonProperty("state")]
 		public State State { get; set; }

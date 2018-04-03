@@ -10,14 +10,21 @@ namespace TextMood
 {
 	public abstract class SignalRService : BaseSignalRService
 	{
-		public static bool IsSubscribed => GetIsSubscribed();
-
-        public static async Task Subscribe()
+		public static bool IsConnected
 		{
-			if (IsSubscribed)
+			get
+			{
+				var hub = GetHubConnection();
+				return hub.State.Equals(ConnectionState.Connected);
+			}
+		}
+
+		public static async Task Subscribe()
+		{
+			if (IsConnected)
 				return;
 
-			var proxy = await GetProxy().ConfigureAwait(false);          
+			var proxy = await GetProxy().ConfigureAwait(false);
 
 			proxy.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
 			{
@@ -29,13 +36,7 @@ namespace TextMood
 		static TextResultsListViewModel GetTextResultsListViewModel()
 		{
 			var navigationPage = Application.Current.MainPage as NavigationPage;
-			return navigationPage.RootPage.BindingContext as TextResultsListViewModel;         
-		}
-
-		static bool GetIsSubscribed()
-		{
-			var hub = GetHubConnection();
-			return hub.State.Equals(ConnectionState.Connected);
+			return navigationPage.RootPage.BindingContext as TextResultsListViewModel;
 		}
 	}
 }

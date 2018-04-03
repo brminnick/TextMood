@@ -2,7 +2,7 @@
 
 namespace TextMood
 {
-    public class PhillipsHueBridgeDiscoveryModel
+    public class PhilipsHueBridgeDiscoveryModel
     {
 		[JsonProperty("id")]
         public string Id { get; set; }
