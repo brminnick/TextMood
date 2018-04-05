@@ -115,7 +115,7 @@ namespace TextMood
 				var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
 				var hue = PhilipsHueServices.ConvertToHue(red, green, blue);
 
-				await PhilipsHueBridgeAPIServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.IPAddress,
+				await PhilipsHueBridgeAPIServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.IPAddress.ToString(),
 																		PhilipsHueBridgeSettings.Username,
 																		hue).ConfigureAwait(false);
 			}

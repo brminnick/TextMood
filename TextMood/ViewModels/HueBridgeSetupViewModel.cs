@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -104,7 +105,7 @@ namespace TextMood
 					{
 						PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
 						PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
-						PhilipsHueBridgeSettings.IPAddress = philipsHueBridgeIPAddress;
+						PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
 						OnSaveCompleted();
 						return;
 					}
@@ -132,42 +133,7 @@ namespace TextMood
 			}
 		}
 
-		bool IsValidIPAddress(string text)
-		{
-			try
-			{
-				var indexOfFirstDecimal = text.IndexOf('.');
-				var indexOfSecondDecimal = text.IndexOf('.', indexOfFirstDecimal + 1);
-				var indexOfThirdDecimal = text.IndexOf('.', indexOfSecondDecimal + 1);
-
-				var firstOctetText = text.Substring(0, indexOfFirstDecimal);
-				var isFirstOctectTextAnInt = int.TryParse(firstOctetText, out int firstOctetInt);
-
-				var secondOctetText = text.Substring(indexOfFirstDecimal + 1, indexOfSecondDecimal - indexOfFirstDecimal - 1);
-				var isSecondOctectTextAnInt = int.TryParse(secondOctetText, out int secondOctetInt);
-
-				var thirdOctetText = text.Substring(indexOfSecondDecimal + 1, indexOfThirdDecimal - indexOfSecondDecimal - 1);
-				var isThirdOctectTextAnInt = int.TryParse(thirdOctetText, out int thirdOctetInt);
-
-				var fourthOctetText = text.Substring(indexOfThirdDecimal + 1);
-				var isFourthOctectTextAnInt = int.TryParse(fourthOctetText, out int fourthOctetInt);
-
-				if (!isFirstOctectTextAnInt || !isSecondOctectTextAnInt || !isThirdOctectTextAnInt || !isFourthOctectTextAnInt)
-					return false;
-
-				if (IsNumberBetween0And255(firstOctetInt) && IsNumberBetween0And255(secondOctetInt) && IsNumberBetween0And255(thirdOctetInt) && IsNumberBetween0And255(fourthOctetInt))
-					return true;
-
-				return false;
-			}
-			catch
-			{
-				return false;
-			}
-
-			bool IsNumberBetween0And255(int number) => number >= 0 && number <= 255;
-		}
-
+		bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);      
 		void OnSaveFailed(string message) => SaveFailed?.Invoke(this, message);
 		void OnSaveCompleted() => SaveCompleted?.Invoke(this, EventArgs.Empty);
 		void OnAutoDiscoveryCompleted(string message) => AutoDiscoveryCompleted?.Invoke(this, message);
