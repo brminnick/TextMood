@@ -74,7 +74,7 @@ namespace TextMood
 			base.OnAppearing();
 
 			_bridgeIDEntry.Text = PhilipsHueBridgeSettings.Id;
-			_bridgeIPEntry.Text = PhilipsHueBridgeSettings.IPAddress;
+			_bridgeIPEntry.Text = PhilipsHueBridgeSettings.IPAddress.ToString();
 		}
 
 		protected override void SubscribeEventHandlers()
