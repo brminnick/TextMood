@@ -50,6 +50,7 @@ namespace TextMood
 			ViewModel.ErrorTriggered += HandleErrorTriggered;
 			_setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
 			BaseSignalRService.InitializationFailed += HandleInitializationFailed;
+			ViewModel.PhilipsHueBridgeConnectionFailed += HandlePhilipsHueBridgeConnectionFailed;
 		}
 
 		protected override void UnsubscribeEventHandlers()
@@ -58,10 +59,30 @@ namespace TextMood
 			ViewModel.ErrorTriggered -= HandleErrorTriggered;
 			_setupPageToolbarItem.Clicked -= HandleSetupPageToolbarItemClicked;
 			BaseSignalRService.InitializationFailed -= HandleInitializationFailed;
+			ViewModel.PhilipsHueBridgeConnectionFailed -= HandlePhilipsHueBridgeConnectionFailed;
 		}
 
-		void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) =>
-			Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
+		void HandlePhilipsHueBridgeConnectionFailed(object sender, EventArgs e)
+		{
+			Device.BeginInvokeOnMainThread(async () =>
+			{
+				var selectionResult = await DisplayAlert("Could Not Connect to Philips Hue Bridge", "Would you like to setup a bridge, or disable the connection?", "Setup Bridge", "Disable Bridge");
+
+				if (selectionResult)
+				{
+					NavigateToSetupPage();
+				}
+				else
+				{
+					PhilipsHueBridgeSettings.IsEnabled = false;
+					await DisplayAlert("Philips Hue Bridge Connection Disabled", "You can configure the bridge connection anytime by tapping \"Setup\"", "OK");
+				}
+			});
+		}
+
+		void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) => NavigateToSetupPage();
+
+		void NavigateToSetupPage() => Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
 
 		void HandleErrorTriggered(object sender, string message) => DisplayErrorMessage(message);
 

@@ -6,9 +6,10 @@ using Plugin.Settings;
 
 namespace TextMood
 {
-	public static class PhilipsHueBridgeSettings
+	abstract class PhilipsHueBridgeSettings : BaseSettings
 	{
 		#region Fields
+		static bool _isEnabled;
 		static string _id, _username;
 		static IPAddress _ipAddress;
 		#endregion
@@ -24,6 +25,12 @@ namespace TextMood
 			}
 		}
 
+        public static bool IsEnabled
+		{
+			get => GetSetting(ref _isEnabled, true);
+			set => SetSetting(ref _isEnabled, value);
+		}
+
 		public static string Id
 		{
 			get => GetSetting(ref _id);
@@ -34,21 +41,6 @@ namespace TextMood
 		{
 			get => GetSetting(ref _username);
 			set => SetSetting(ref _username, value);         
-		}
-		#endregion
-
-		#region Methods
-		static string GetSetting(ref string backingStore, string defaultValue = "", [CallerMemberName]string propertyName = "") =>
-			backingStore ?? (backingStore = CrossSettings.Current.GetValueOrDefault(propertyName, defaultValue));
-
-		static void SetSetting(ref string backingStore, string value, [CallerMemberName]string propertyName = "")
-		{
-			if (EqualityComparer<string>.Default.Equals(backingStore, value))
-				return;
-
-			backingStore = value;
-
-			CrossSettings.Current.AddOrUpdateValue(propertyName, value);
 		}
 		#endregion
 	}
