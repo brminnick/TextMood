@@ -5,7 +5,6 @@ namespace TextMood
 {
 	public class HueBridgeSetupPage : BaseContentPage<HueBridgeSetupViewModel>
 	{
-		readonly Switch _isBridgeConnectedSwitch;
 		readonly Entry _bridgeIPEntry, _bridgeIDEntry;
 		readonly Button _saveButton, _cancelButton, _autoDetectButton;
 
@@ -27,32 +26,12 @@ namespace TextMood
 			_bridgeIPEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIPEntryText));
 			_bridgeIPEntry.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
 
-			var isBridgeConnectedLabel = new Label
-			{
-				Text = "Enable Philips Hue Bridge",
-				HorizontalTextAlignment = TextAlignment.Center,
-				VerticalTextAlignment = TextAlignment.Center
-			};
-
-			_isBridgeConnectedSwitch = new Switch();
-			_isBridgeConnectedSwitch.SetBinding(Switch.IsToggledProperty, nameof(ViewModel.IsBridgeConnectedSwitchToggled));
-
-			var switchStackLayout = new StackLayout
-			{
-				Orientation = StackOrientation.Horizontal,
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center,
-				Margin = new Thickness(0, 10, 0, 0),
-				Children = { isBridgeConnectedLabel, _isBridgeConnectedSwitch }
-			};
-
 			_autoDetectButton = new Button
 			{
 				Text = "Auto Detect",
 				Margin = new Thickness(0, 10)
 			};
 			_autoDetectButton.SetBinding(Button.CommandProperty, nameof(ViewModel.AutoDetectButtonCommand));
-			_autoDetectButton.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
 
 			_saveButton = new Button { Text = "Save" };
 			_saveButton.SetBinding(IsEnabledProperty, nameof(ViewModel.IsSaveButtonEnabled));
@@ -61,8 +40,10 @@ namespace TextMood
 			_cancelButton = new Button { Text = "Cancel" };
 
 			var activityIndicator = new ActivityIndicator { InputTransparent = true };
-			activityIndicator.SetBinding(IsVisibleProperty, nameof(ViewModel.IsActivityIndicatorVisible));
-			activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, nameof(ViewModel.IsActivityIndicatorVisible));
+			activityIndicator.SetBinding(IsVisibleProperty, new Binding(nameof(ViewModel.AreEntriesEnabled), BindingMode.Default, new InverseBooleanConverter(), ViewModel.AreEntriesEnabled));
+			activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, new Binding(nameof(ViewModel.AreEntriesEnabled), BindingMode.Default, new InverseBooleanConverter(), ViewModel.AreEntriesEnabled));
+
+
 
 			Title = "Configure Bridge";
 
@@ -75,7 +56,6 @@ namespace TextMood
 					_bridgeIDEntry,
 					bridgeIPLabel,
 					_bridgeIPEntry,
-					switchStackLayout,
 					_autoDetectButton,
 					_saveButton,
 					_cancelButton
@@ -95,7 +75,6 @@ namespace TextMood
 
 			_bridgeIDEntry.Text = PhilipsHueBridgeSettings.Id;
 			_bridgeIPEntry.Text = PhilipsHueBridgeSettings.IPAddress.ToString();
-			_isBridgeConnectedSwitch.IsToggled = PhilipsHueBridgeSettings.IsEnabled;
 		}
 
 		protected override void SubscribeEventHandlers()
@@ -121,7 +100,7 @@ namespace TextMood
 		{
 			Device.BeginInvokeOnMainThread(async () =>
 			{
-				await DisplayAlert("Bridge Settings Updated", "", "OK");
+				await DisplayAlert("Bridge Saved", "", "OK");
 				ClosePage();
 			});
 		}

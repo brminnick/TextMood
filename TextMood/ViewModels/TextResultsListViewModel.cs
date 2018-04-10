@@ -23,7 +23,6 @@ namespace TextMood
 
 		#region Events
 		public event EventHandler<string> ErrorTriggered;
-		public event EventHandler PhilipsHueBridgeConnectionFailed;
 		#endregion
 
 		#region Properties
@@ -61,7 +60,7 @@ namespace TextMood
 			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
 			SetTextResultsListBackgroundColor(averageSentiment);
-            
+
 			await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
@@ -111,9 +110,6 @@ namespace TextMood
 
 		async Task UpdatePhilipsHueLight(float averageSentiment)
 		{
-			if (!PhilipsHueBridgeSettings.IsEnabled)
-				return;
-
 			try
 			{
 				var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
@@ -125,12 +121,11 @@ namespace TextMood
 			}
 			catch (Exception)
 			{
-				OnPhilipsHueBridgeConnectionFailed();
+				OnErrorTriggered("Unable to reach Philips Hue Bridge. Tap Setup to get started.");
 			}
 		}
 
 		void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
-		void OnPhilipsHueBridgeConnectionFailed() => PhilipsHueBridgeConnectionFailed?.Invoke(this, EventArgs.Empty);
 		#endregion
 	}
 }
