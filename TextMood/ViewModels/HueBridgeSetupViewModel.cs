@@ -11,12 +11,8 @@ namespace TextMood
 {
 	public class HueBridgeSetupViewModel : BaseViewModel
 	{
-		#region Constant Fields
-		const string _bridgeNotFoundErrorMessage = "Bridge Not Found";
-		#endregion
-
 		#region Fields
-		bool _areEntriesEnabled = true, _isBridgeConnectedSwitchToggled, _isActivityIndicatorVisible;
+		bool _areEntriesEnabled = true;
 		string _bridgeIDEntryText, _bridgeIPEntryText;
 		ICommand _autoDetectButtonCommand, _saveButtonCommand;
 		#endregion
@@ -34,9 +30,7 @@ namespace TextMood
 		public ICommand AutoDetectButtonCommand => _autoDetectButtonCommand ??
 			(_autoDetectButtonCommand = new Command(async () => await ExecuteAutoDetectButtonCommand()));
 
-		public bool IsSaveButtonEnabled => !IsBridgeConnectedSwitchToggled || (IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText) && !IsActivityIndicatorVisible);
-
-		public bool AreEntriesEnabled => !IsActivityIndicatorVisible && IsBridgeConnectedSwitchToggled;
+		public bool IsSaveButtonEnabled => IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText);
 
 		public string BridgeIDEntryText
 		{
@@ -50,23 +44,17 @@ namespace TextMood
 			set => SetProperty(ref _bridgeIPEntryText, value, () => OnPropertyChanged(nameof(IsSaveButtonEnabled)));
 		}
 
-		public bool IsActivityIndicatorVisible
+		public bool AreEntriesEnabled
 		{
-			get => _isActivityIndicatorVisible;
-			set => SetProperty(ref _isActivityIndicatorVisible, value, NotifyIsActivityIndicatorVisibleProperties);
-		}
-
-		public bool IsBridgeConnectedSwitchToggled
-		{
-			get => _isBridgeConnectedSwitchToggled;
-			set => SetProperty(ref _isBridgeConnectedSwitchToggled, value, NotifyIsBridgeConnectedSwitchToggledProperties);
+			get => _areEntriesEnabled;
+			set => SetProperty(ref _areEntriesEnabled, value);
 		}
 		#endregion
 
 		#region Methods
 		async Task ExecuteAutoDetectButtonCommand()
 		{
-			IsActivityIndicatorVisible = true;
+			AreEntriesEnabled = false;
 
 			try
 			{
@@ -83,58 +71,44 @@ namespace TextMood
 					}
 				}
 
-				OnAutoDiscoveryCompleted(_bridgeNotFoundErrorMessage);
+				OnAutoDiscoveryCompleted($"Bridge Not Found");
 			}
 			catch
 			{
 				BridgeIPEntryText = string.Empty;
-				OnAutoDiscoveryCompleted(_bridgeNotFoundErrorMessage);
+				OnAutoDiscoveryCompleted($"Bridge Not Found");
 			}
 			finally
 			{
-				IsActivityIndicatorVisible = false;
+				AreEntriesEnabled = true;
 			}
 		}
 
 		async Task ExecuteSaveButtonCommand(string philipsHueBridgeIPAddress, string philipsHueBridgeID)
 		{
-			IsActivityIndicatorVisible = true;
+			AreEntriesEnabled = false;
 
 			try
 			{
-				PhilipsHueBridgeSettings.IsEnabled = IsBridgeConnectedSwitchToggled;
+				var usernameResponseList = await PhilipsHueBridgeAPIServices.AutoDetectUsername(philipsHueBridgeIPAddress).ConfigureAwait(false);
 
-				if (IsBridgeConnectedSwitchToggled)
+				foreach (var usernameResponse in usernameResponseList ?? new System.Collections.Generic.List<PhilipsHueUsernameDiscoveryModel>())
 				{
-					var usernameResponseList = await PhilipsHueBridgeAPIServices.AutoDetectUsername(philipsHueBridgeIPAddress).ConfigureAwait(false);
-					if (usernameResponseList == null)
+					if (usernameResponse.Error != null)
 					{
-						OnSaveFailed(_bridgeNotFoundErrorMessage);
+						var textInfo = new CultureInfo("en-US", false).TextInfo;
+						OnSaveFailed($"{textInfo.ToTitleCase(usernameResponse.Error.Description)} for Bridge IP: {philipsHueBridgeIPAddress}");
 						return;
 					}
 
-					foreach (var usernameResponse in usernameResponseList)
+					if (usernameResponse.Success != null)
 					{
-						if (usernameResponse.Error != null)
-						{
-							var textInfo = new CultureInfo("en-US", false).TextInfo;
-							OnSaveFailed($"{textInfo.ToTitleCase(usernameResponse.Error.Description)} for Bridge IP: {philipsHueBridgeIPAddress}");
-							return;
-						}
-
-						if (usernameResponse.Success != null)
-						{
-							PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
-							PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
-							PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
-							OnSaveCompleted();
-							return;
-						}
+						PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
+						PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
+						PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
+						OnSaveCompleted();
+						return;
 					}
-				}
-				else
-				{
-					OnSaveCompleted();
 				}
 			}
 			catch (Exception e)
@@ -143,7 +117,7 @@ namespace TextMood
 			}
 			finally
 			{
-				IsActivityIndicatorVisible = false;
+				AreEntriesEnabled = true;
 			}
 		}
 
@@ -159,19 +133,7 @@ namespace TextMood
 			}
 		}
 
-		private void NotifyIsBridgeConnectedSwitchToggledProperties()
-        {
-            OnPropertyChanged(nameof(AreEntriesEnabled));
-            OnPropertyChanged(nameof(IsSaveButtonEnabled));
-        }
-
-		void NotifyIsActivityIndicatorVisibleProperties()
-		{
-			OnPropertyChanged(nameof(AreEntriesEnabled));
-			OnPropertyChanged(nameof(IsSaveButtonEnabled));
-		}
-
-		bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);
+		bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);      
 		void OnSaveFailed(string message) => SaveFailed?.Invoke(this, message);
 		void OnSaveCompleted() => SaveCompleted?.Invoke(this, EventArgs.Empty);
 		void OnAutoDiscoveryCompleted(string message) => AutoDiscoveryCompleted?.Invoke(this, message);
