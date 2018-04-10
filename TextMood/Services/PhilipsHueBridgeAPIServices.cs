@@ -59,35 +59,35 @@ namespace TextMood
 			await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
 		}
 
+		static string GetBridgeNotFoundErrorMessage()
+        {
+            const string bridgeNotFoundError = "Bridge Not Found.";
+
+            switch (Device.Idiom)
+            {
+                case TargetIdiom.Desktop:
+                    return $"{bridgeNotFoundError} Ensure this computer and the Philips Bridge are connected to the same local network.";
+                case TargetIdiom.Phone:
+                    return $"{bridgeNotFoundError} Ensure this phone and the Philips Bridge are connected to the same local network.";
+                case TargetIdiom.Tablet:
+                    return $"{bridgeNotFoundError} Ensure this tablet and the Philips Bridge are connected to the same local network.";
+                case TargetIdiom.TV:
+                    return $"{bridgeNotFoundError} Ensure this TV and the Philips Bridge are connected to the same local network.";
+                default:
+                    return $"{bridgeNotFoundError} Ensure this app and the Philips Bridge are connected to the same local network.";
+            }
+        }
+
 		static async ValueTask<bool> IsBridgeReachable(string philipsHueBridgeIPAddress)
 		{
 			try
 			{
 				return CrossConnectivity.Current.IsConnected
-										&& await CrossConnectivity.Current.IsRemoteReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
+						&& await CrossConnectivity.Current.IsRemoteReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
 			}
 			catch (ArgumentNullException)
 			{
 				return false;
-			}
-		}
-
-		static string GetBridgeNotFoundErrorMessage()
-		{
-			const string bridgeNotFoundError = "Bridge Not Found.";
-
-			switch (Device.Idiom)
-			{
-				case TargetIdiom.Desktop:
-					return $"{bridgeNotFoundError} Ensure this computer and the Philips Bridge are connected to the same local network";
-				case TargetIdiom.Phone:
-					return $"{bridgeNotFoundError} Ensure this phone and the Philips Bridge are connected to the same local network";
-				case TargetIdiom.Tablet:
-					return $"{bridgeNotFoundError} Ensure this tablet and the Philips Bridge are connected to the same local network";
-				case TargetIdiom.TV:
-					return $"{bridgeNotFoundError} Ensure this TV and the Philips Bridge are connected to the same local network";
-				default:
-					return $"{bridgeNotFoundError} Ensure this app and the Philips Bridge are connected to the same local network";
 			}
 		}
 		#endregion
