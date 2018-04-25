@@ -85,8 +85,10 @@ namespace TextMood
 
 				OnAutoDiscoveryCompleted(_bridgeNotFoundErrorMessage);
 			}
-			catch
+			catch(Exception e)
 			{
+				DebugServices.Report(e);
+
 				BridgeIPEntryText = string.Empty;
 				OnAutoDiscoveryCompleted(_bridgeNotFoundErrorMessage);
 			}
@@ -139,6 +141,8 @@ namespace TextMood
 			}
 			catch (Exception e)
 			{
+				DebugServices.Report(e);
+
 				OnSaveFailed(e.Message);
 			}
 			finally
@@ -159,7 +163,7 @@ namespace TextMood
 			}
 		}
 
-		private void NotifyIsBridgeConnectedSwitchToggledProperties()
+		void NotifyIsBridgeConnectedSwitchToggledProperties()
         {
             OnPropertyChanged(nameof(AreEntriesEnabled));
             OnPropertyChanged(nameof(IsSaveButtonEnabled));
