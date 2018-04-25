@@ -61,7 +61,7 @@ namespace TextMood
 			var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
 			SetTextResultsListBackgroundColor(averageSentiment);
-            
+
 			await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
 		}
 
@@ -90,12 +90,15 @@ namespace TextMood
 
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 			}
+			catch (Exception e) when (e?.InnerException?.Message != null)
+			{
+				DebugServices.Report(e);
+				OnErrorTriggered(e.InnerException.Message);
+			}
 			catch (Exception e)
 			{
-				if (e?.InnerException?.Message != null)
-					OnErrorTriggered(e.InnerException.Message);
-				else
-					OnErrorTriggered(e.Message);
+				DebugServices.Report(e);
+				OnErrorTriggered(e.Message);
 			}
 			finally
 			{
@@ -123,8 +126,9 @@ namespace TextMood
 																		PhilipsHueBridgeSettings.Username,
 																		hue).ConfigureAwait(false);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				DebugServices.Report(e);
 				OnPhilipsHueBridgeConnectionFailed();
 			}
 		}

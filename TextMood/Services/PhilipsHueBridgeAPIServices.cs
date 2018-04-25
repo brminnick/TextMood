@@ -85,8 +85,9 @@ namespace TextMood
 				return CrossConnectivity.Current.IsConnected
 						&& await CrossConnectivity.Current.IsRemoteReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
 			}
-			catch (ArgumentNullException)
+			catch (ArgumentNullException e)
 			{
+				DebugServices.Report(e);
 				return false;
 			}
 		}
