@@ -5,6 +5,7 @@ using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 
 using Newtonsoft.Json;
 
@@ -29,27 +30,41 @@ namespace TextMood
 		#endregion
 
 		#region Methods
-		protected static Task<T> GetObjectFromAPI<T>(string apiUrl) => GetObjectFromAPI<T, object>(apiUrl);
-
-		protected static async Task<TResponseData> GetObjectFromAPI<TResponseData, TRequestData>(string apiUrl, TRequestData data = default)
+		protected static async Task<T> GetObjectFromAPI<T>(string apiUrl)
 		{
-			var stringPayload = string.Empty;
+			using (var responseMessage = await GetObjectFromAPI(apiUrl).ConfigureAwait(false))
+			{
+				try
+				{
+					UpdateActivityIndicatorStatus(true);
 
-			if (data != null)
-				stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data)).ConfigureAwait(false);
+					using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+						return await DeserializeContentStream<T>(stream).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return default;
+				}
+				finally
+				{
+					UpdateActivityIndicatorStatus(false);
+				}
+			}
+		}
 
-			var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
+		protected static async Task<HttpResponseMessage> GetObjectFromAPI(string apiUrl)
+		{
 			try
 			{
 				UpdateActivityIndicatorStatus(true);
 
-				using (var stream = await Client.GetStreamAsync(apiUrl).ConfigureAwait(false))
-					return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+				return await Client.GetAsync(apiUrl).ConfigureAwait(false);
 			}
-			catch
+			catch (Exception e)
 			{
-				return default;
+				Report(e);
+				return null;
 			}
 			finally
 			{
@@ -59,16 +74,18 @@ namespace TextMood
 
 		protected static async Task<TResponseData> PostObjectToAPI<TResponseData, TRequestData>(string apiUrl, TRequestData requestData)
 		{
-			var responseMessage = await PostObjectToAPI(apiUrl, requestData).ConfigureAwait(false);
-
-			try
+			using (var responseMessage = await PostObjectToAPI(apiUrl, requestData).ConfigureAwait(false))
 			{
-				using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
-					return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
-			}
-			catch
-			{
-				return default;
+				try
+				{
+					using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+						return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return default;
+				}
 			}
 		}
 
@@ -76,20 +93,40 @@ namespace TextMood
 		{
 			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(requestData)).ConfigureAwait(false);
 
-			var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-			try
+			using (var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json"))
 			{
-				UpdateActivityIndicatorStatus(true);
+				try
+				{
+					UpdateActivityIndicatorStatus(true);
 
-				return await Client.PostAsync(apiUrl, httpContent).ConfigureAwait(false);
+					return await Client.PostAsync(apiUrl, httpContent).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return null;
+				}
+				finally
+				{
+					UpdateActivityIndicatorStatus(false);
+				}
 			}
-			catch
+		}
+
+		protected static async Task<TResponseData> PutObjectToAPI<TResponseData, TRequestData>(string apiUrl, TRequestData requestData)
+		{
+			using (var responseMessage = await PutObjectToAPI(apiUrl, requestData).ConfigureAwait(false))
 			{
-				return null;
-			}
-			finally
-			{
-				UpdateActivityIndicatorStatus(false);
+				try
+				{
+					using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+						return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return default;
+				}
 			}
 		}
 
@@ -97,27 +134,41 @@ namespace TextMood
 		{
 			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
-			var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+			using (var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json"))
+			using (var httpRequest = new HttpRequestMessage(HttpMethod.Put, apiUrl) { Content = httpContent })
+			{
+				try
+				{
+					UpdateActivityIndicatorStatus(true);
 
-			var httpRequest = new HttpRequestMessage
-			{
-				Method = new HttpMethod("PUT"),
-				RequestUri = new Uri(apiUrl),
-				Content = httpContent
-			};
-			try
-			{
-				UpdateActivityIndicatorStatus(true);
+					return await Client.SendAsync(httpRequest).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return null;
+				}
+				finally
+				{
+					UpdateActivityIndicatorStatus(false);
+				}
+			}
+		}
 
-				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
-			}
-			catch
+		protected static async Task<TResponseData> PatchObjectToAPI<TResponseData, TRequestData>(string apiUrl, TRequestData requestData)
+		{
+			using (var responseMessage = await PatchObjectToAPI(apiUrl, requestData).ConfigureAwait(false))
 			{
-				return null;
-			}
-			finally
-			{
-				UpdateActivityIndicatorStatus(false);
+				try
+				{
+					using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+						return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return default;
+				}
 			}
 		}
 
@@ -125,52 +176,67 @@ namespace TextMood
 		{
 			var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
-			var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-			var httpRequest = new HttpRequestMessage
+			using (var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json"))
+			using (var httpRequest = new HttpRequestMessage(new HttpMethod("PATCH"), apiUrl) { Content = httpContent })
 			{
-				Method = new HttpMethod("PATCH"),
-				RequestUri = new Uri(apiUrl),
-				Content = httpContent
-			};
+				try
+				{
+					UpdateActivityIndicatorStatus(true);
 
-			try
-			{
-				UpdateActivityIndicatorStatus(true);
-
-				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
+					return await Client.SendAsync(httpRequest).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return null;
+				}
+				finally
+				{
+					UpdateActivityIndicatorStatus(false);
+				}
 			}
-			catch
+		}
+
+		protected static async Task<TResponseData> DeleteObjectFromAPI<TResponseData>(string apiUrl)
+		{
+			using (var responseMessage = await DeleteObjectFromAPI(apiUrl).ConfigureAwait(false))
 			{
-				return null;
-			}
-			finally
-			{
-				UpdateActivityIndicatorStatus(false);
+				try
+				{
+					using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+						return await DeserializeContentStream<TResponseData>(stream).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return default;
+				}
 			}
 		}
 
 		protected static async Task<HttpResponseMessage> DeleteObjectFromAPI(string apiUrl)
 		{
-			var httpRequest = new HttpRequestMessage(HttpMethod.Delete, new Uri(apiUrl));
+			using (var httpRequest = new HttpRequestMessage(HttpMethod.Delete, new Uri(apiUrl)))
+			{
+				try
+				{
+					UpdateActivityIndicatorStatus(true);
 
-			try
-			{
-				UpdateActivityIndicatorStatus(true);
-
-				return await Client.SendAsync(httpRequest).ConfigureAwait(false);
-			}
-			catch
-			{
-				return null;
-			}
-			finally
-			{
-				UpdateActivityIndicatorStatus(false);
+					return await Client.SendAsync(httpRequest).ConfigureAwait(false);
+				}
+				catch (Exception e)
+				{
+					Report(e);
+					return null;
+				}
+				finally
+				{
+					UpdateActivityIndicatorStatus(false);
+				}
 			}
 		}
 
-		static void UpdateActivityIndicatorStatus(bool isActivityIndicatorDisplayed)
+		protected static void UpdateActivityIndicatorStatus(bool isActivityIndicatorDisplayed)
 		{
 			if (isActivityIndicatorDisplayed)
 			{
@@ -199,8 +265,10 @@ namespace TextMood
 					break;
 
 			}
+
 			client.Timeout = timeout;
 			client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			return client;
 		}
@@ -213,9 +281,11 @@ namespace TextMood
 				if (json == null)
 					return default;
 
-				return await Task.Run(() => Serializer.Deserialize<T>(json));
+				return await Task.Run(() => Serializer.Deserialize<T>(json)).ConfigureAwait(false);
 			}
 		}
+
+		static void Report(Exception e, [CallerMemberName]string callerMemberName = "") => DebugServices.Report(e, callerMemberName: callerMemberName);
 		#endregion
 	}
 }
