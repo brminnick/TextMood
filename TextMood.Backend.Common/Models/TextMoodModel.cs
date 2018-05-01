@@ -23,9 +23,9 @@ namespace TextMood.Backend.Common
         #endregion
 
         #region Properties
-        public float? SentimentScore
+        public double? SentimentScore
         {
-            get => (float)SentimentScore_FromDatabase;
+            get => SentimentScore_FromDatabase;
             set => SentimentScore_FromDatabase = value ?? -1;
         }
 
