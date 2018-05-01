@@ -3,26 +3,26 @@ namespace TextMood.Shared
 {
 	public static class PhilipsHueServices
 	{
-		public static int ConvertToHue(float red, float green, float blue)
+		public static int ConvertToHue(double red, double green, double blue)
 		{
-			float hue;
+			double hue;
 			var min = Math.Min(Math.Min(red, green), blue);
 			var max = Math.Max(Math.Max(red, green), blue);
 
 			switch (max)
 			{
-				case float number when (number == min):
+				case double number when (number == min):
 					return -1;
 
-				case float number when (number == red):
+				case double number when (number == red):
 					hue = (green - blue) / (max - min);
 					break;
 
-				case float number when (max == green):
+				case double number when (max == green):
 					hue = 2f + (blue - red) / (max - min);
 					break;
 
-				case float number when (max == blue):
+				case double number when (max == blue):
 					hue = 4f + (red - green) / (max - min);
 					break;
 
