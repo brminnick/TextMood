@@ -90,7 +90,7 @@ namespace TextMood
 
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 			}
-			catch (Exception e) when (e?.InnerException?.Message != null)
+			catch (Exception e) when (!(e?.InnerException?.Message is null))
 			{
 				DebugServices.Report(e);
 				OnErrorTriggered(e.InnerException.Message);
@@ -106,13 +106,13 @@ namespace TextMood
 			}
 		}
 
-		void SetTextResultsListBackgroundColor(float averageSentiment)
+		void SetTextResultsListBackgroundColor(double averageSentiment)
 		{
 			var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
 			BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
 		}
 
-		async Task UpdatePhilipsHueLight(float averageSentiment)
+		async Task UpdatePhilipsHueLight(double averageSentiment)
 		{
 			if (!PhilipsHueBridgeSettings.IsEnabled)
 				return;
