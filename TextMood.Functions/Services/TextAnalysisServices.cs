@@ -3,26 +3,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Microsoft.ProjectOxford.Text.Core;
-using Microsoft.ProjectOxford.Text.Sentiment;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
+using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
 
 namespace TextMood.Functions
 {
 	static class TextAnalysisServices
-	{          
-		readonly static Lazy<SentimentClient> _sentimentClientHolder = new Lazy<SentimentClient>(() => new SentimentClient(CognitiveServicesConstants.TextSentimentAPIKey));
+	{
+		readonly static Lazy<TextAnalyticsAPI> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsAPI>(() =>
+            new TextAnalyticsAPI
+            {
+                AzureRegion = AzureRegions.Westus,
+                SubscriptionKey = CognitiveServicesConstants.TextSentimentAPIKey
+            });
 
-		static SentimentClient SentimentClient => _sentimentClientHolder.Value;
+        static TextAnalyticsAPI TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
 
-		public static async Task<float?> GetSentiment(string text)
-		{
-			var sentimentDocument = new SentimentDocument { Id = "1", Text = text };
-			var sentimentRequest = new SentimentRequest { Documents = new List<IDocument> { { sentimentDocument } } };
-            
-			var sentimentResults = await SentimentClient.GetSentimentAsync(sentimentRequest).ConfigureAwait(false);
-			var documentResult = sentimentResults.Documents.FirstOrDefault();
+        public static async Task<double?> GetSentiment(string text)
+        {
+            var sentimentDocument = new MultiLanguageBatchInput(new List<MultiLanguageInput> { { new MultiLanguageInput(id: "1", text: text) } });
 
-			return documentResult?.Score;
-		}
+            var sentimentResults = await TextAnalyticsApiClient.SentimentAsync(sentimentDocument).ConfigureAwait(false);
+
+            if (sentimentResults?.Errors?.Any() ?? false)
+            {
+                var exceptionList = sentimentResults.Errors.Select(x => new Exception($"Id: {x.Id}, Message: {x.Message}"));
+                throw new AggregateException(exceptionList);
+            }
+
+            var documentResult = sentimentResults?.Documents?.FirstOrDefault();
+
+            return documentResult?.Score;
+        }
 	}
 }
