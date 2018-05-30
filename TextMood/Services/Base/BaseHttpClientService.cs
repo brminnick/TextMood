@@ -190,7 +190,7 @@ namespace TextMood
 			}
 		}
 
-		static void Report(Exception e, [CallerMemberName]string callerMemberName = "") => DebugServices.Report(e, callerMemberName: callerMemberName);
+		static void Report(Exception e, [CallerMemberName]string callerMemberName = "") => DebugServices.Report(e, callerMemberName);
 		#endregion
 	}
 }
