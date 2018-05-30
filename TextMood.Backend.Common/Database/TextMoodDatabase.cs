@@ -114,7 +114,7 @@ namespace TextMood.Backend.Common
 
                 try
                 {
-                    return databaseFunction?.Invoke(dbContext) ?? default(TResult);
+                    return databaseFunction?.Invoke(dbContext) ?? default;
                 }
                 catch (Exception e)
                 {
@@ -123,7 +123,7 @@ namespace TextMood.Backend.Common
                     Debug.WriteLine(e.ToString());
                     Debug.WriteLine("");
 
-                    return default(TResult);
+					throw;
                 }
                 finally
                 {
