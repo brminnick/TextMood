@@ -17,7 +17,7 @@ namespace TextMood
 	{
 		#region Constant Fields
 		static readonly Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
-		static readonly Lazy<HttpClient> _clientHolder = new Lazy<HttpClient>(() => CreateHttpClient(TimeSpan.FromSeconds(5)));
+		static readonly Lazy<HttpClient> _clientHolder = new Lazy<HttpClient>(() => CreateHttpClient(TimeSpan.FromSeconds(60)));
 		#endregion
 
 		#region Fields
