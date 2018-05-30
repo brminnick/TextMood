@@ -14,7 +14,7 @@ namespace TextMood.Shared
 
 		public static (double red, double green, double blue) GetRGBFromSentimentScore(double? sentimentScore)
         {
-            if (sentimentScore == null || sentimentScore < 0 || sentimentScore > 1)
+            if (sentimentScore is null || sentimentScore < 0 || sentimentScore > 1)
                 return (1, 1, 1);
 
 			return (1 - (double)sentimentScore, (double)sentimentScore, 0);
