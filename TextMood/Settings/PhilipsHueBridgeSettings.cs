@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Runtime.CompilerServices;
+﻿using System.Net;
 
-using Plugin.Settings;
+using Xamarin.Essentials;
 
 namespace TextMood
 {
-	abstract class PhilipsHueBridgeSettings : BaseSettings
+    abstract class PhilipsHueBridgeSettings : BaseSettings
 	{
 		#region Fields
 		static bool _isEnabled;
@@ -17,11 +15,11 @@ namespace TextMood
 		#region Properties
 		public static IPAddress IPAddress
 		{
-			get => _ipAddress ?? (_ipAddress = IPAddress.Parse(CrossSettings.Current.GetValueOrDefault(nameof(IPAddress), "0.0.0.0")));
+			get => _ipAddress ?? (_ipAddress = IPAddress.Parse(Preferences.Get(nameof(IPAddress), "0.0.0.0")));
 			set
 			{
 				_ipAddress = value;
-				CrossSettings.Current.AddOrUpdateValue(nameof(IPAddress), value.ToString());
+				Preferences.Set(nameof(IPAddress), value.ToString());
 			}
 		}
 
