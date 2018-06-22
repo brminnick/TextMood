@@ -177,7 +177,7 @@ namespace TextMood
 				using (var reader = new StreamReader(contentStream))
 				using (var json = new JsonTextReader(reader))
 				{
-					if (json == null)
+					if (json is null)
 						return default;
 
 					return await Task.Run(() => Serializer.Deserialize<T>(json)).ConfigureAwait(false);

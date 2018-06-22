@@ -15,7 +15,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Twilio" Version="5.10.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Azure.CognitiveServices.Language" Version="1.0.0-preview" />
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics" Version="1.0.1-preview" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj" />
