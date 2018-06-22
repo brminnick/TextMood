@@ -1,24 +1,28 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
+using Microsoft.Rest;
 
 namespace TextMood.Functions
 {
-	static class TextAnalysisServices
-	{
-		readonly static Lazy<TextAnalyticsAPI> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsAPI>(() =>
-            new TextAnalyticsAPI
-            {
-                AzureRegion = AzureRegions.Westus,
-                SubscriptionKey = CognitiveServicesConstants.TextSentimentAPIKey
-            });
+    static class TextAnalysisServices
+    {
+        #region Constant Fields
+        readonly static Lazy<TextAnalyticsAPI> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsAPI>(() =>
+            new TextAnalyticsAPI(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)));
+        #endregion
 
+        #region Properties
         static TextAnalyticsAPI TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
+        #endregion
 
+        #region Methods
         public static async Task<double?> GetSentiment(string text)
         {
             var sentimentDocument = new MultiLanguageBatchInput(new List<MultiLanguageInput> { { new MultiLanguageInput(id: "1", text: text) } });
@@ -35,5 +39,25 @@ namespace TextMood.Functions
 
             return documentResult?.Score;
         }
-	}
+        #endregion
+
+        #region Classes
+        class ApiKeyServiceClientCredentials : ServiceClientCredentials
+        {
+            readonly string _subscriptionKey;
+
+            public ApiKeyServiceClientCredentials(string subscriptionKey) => _subscriptionKey = subscriptionKey;
+
+            public override Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                if (request is null)
+                    throw new ArgumentNullException(nameof(request));
+
+                request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+
+                return Task.FromResult<object>(null);
+            }
+        }
+        #endregion
+    }
 }
