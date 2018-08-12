@@ -4,62 +4,64 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
 
-using Plugin.Connectivity;
-
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace TextMood
 {
-	abstract class PhilipsHueBridgeAPIServices : BaseHttpClientService
-	{
-		#region Methods
-		public static async ValueTask<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
-		{
-			var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
-			if (!isBridgeReachable)
-				throw new Exception(GetBridgeNotFoundErrorMessage());
+    abstract class PhilipsHueBridgeAPIServices : BaseHttpClientService
+    {
+        #region Methods
+        public static async ValueTask<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
+        {
+            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
 
-			var lightsResponseJObject = await GetObjectFromAPI<JObject>($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights").ConfigureAwait(false);
-			return lightsResponseJObject.Count;
-		}
+            if (!isBridgeReachable)
+                throw new Exception(GetBridgeNotFoundErrorMessage());
 
-		public static async ValueTask<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername(string philipsHueBridgeIPAddress)
-		{
-			var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
-			if (!isBridgeReachable)
-				throw new Exception(GetBridgeNotFoundErrorMessage());
+            var lightsResponseJObject = await GetObjectFromAPI<JObject>($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights").ConfigureAwait(false);
+            return lightsResponseJObject.Count;
+        }
 
-			var deviceType = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
-			return await PostObjectToAPI<List<PhilipsHueUsernameDiscoveryModel>, PhilipsHueDeviceTypeModel>($"http://{philipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
-		}
+        public static async ValueTask<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername(string philipsHueBridgeIPAddress)
+        {
+            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
 
-		public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() =>
-			GetObjectFromAPI<List<PhilipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
+            if (!isBridgeReachable)
+                throw new Exception(GetBridgeNotFoundErrorMessage());
 
-		public static async Task UpdateLightBulbColor(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername, int hue)
-		{
-			var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
-			if (!isBridgeReachable)
-				throw new Exception(GetBridgeNotFoundErrorMessage());
+            var deviceType = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
+            return await PostObjectToAPI<List<PhilipsHueUsernameDiscoveryModel>, PhilipsHueDeviceTypeModel>($"http://{philipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
+        }
 
-			var hueRequest = new LightModel
-			{
-				On = true,
-				Hue = hue,
-				Saturation = hue >= 0 ? 255 : 0,
-				Brightness = 255
-			};
+        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() =>
+            GetObjectFromAPI<List<PhilipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
 
-			var numberOfLights = await GetNumberOfLights(philipsHueBridgeIPAddress, philipsHueBridgeUsername).ConfigureAwait(false);
+        public static async Task UpdateLightBulbColor(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername, int hue)
+        {
+            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
 
-			var lightAPIPutList = new List<Task>();
-			for (int lightNumber = 1; lightNumber <= numberOfLights; lightNumber++)
-				lightAPIPutList.Add(PutObjectToAPI($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights/{lightNumber}/state", hueRequest));
+            if (!isBridgeReachable)
+                throw new Exception(GetBridgeNotFoundErrorMessage());
 
-			await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
-		}
+            var hueRequest = new LightModel
+            {
+                On = true,
+                Hue = hue,
+                Saturation = hue >= 0 ? 255 : 0,
+                Brightness = 255
+            };
 
-		static string GetBridgeNotFoundErrorMessage()
+            var numberOfLights = await GetNumberOfLights(philipsHueBridgeIPAddress, philipsHueBridgeUsername).ConfigureAwait(false);
+
+            var lightAPIPutList = new List<Task>();
+            for (int lightNumber = 1; lightNumber <= numberOfLights; lightNumber++)
+                lightAPIPutList.Add(PutObjectToAPI($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights/{lightNumber}/state", hueRequest));
+
+            await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
+        }
+
+        static string GetBridgeNotFoundErrorMessage()
         {
             const string bridgeNotFoundError = "Bridge Not Found.";
 
@@ -78,19 +80,17 @@ namespace TextMood
             }
         }
 
-		static async ValueTask<bool> IsBridgeReachable(string philipsHueBridgeIPAddress)
-		{
-			try
-			{
-				return CrossConnectivity.Current.IsConnected
-						&& await CrossConnectivity.Current.IsRemoteReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
-			}
-			catch (ArgumentNullException e)
-			{
-				DebugServices.Report(e);
-				return false;
-			}
-		}
-		#endregion
-	}
+        static bool IsBridgeReachable(string philipsHueBridgeIPAddress)
+        {
+            if (Connectivity.NetworkAccess == NetworkAccess.None)
+                return false;
+
+            var ping = new System.Net.NetworkInformation.Ping();
+
+            var result = ping.Send(philipsHueBridgeIPAddress);
+
+            return result.Status == System.Net.NetworkInformation.IPStatus.Success;
+        }
+        #endregion
+    }
 }
