@@ -7,6 +7,7 @@ using System.Web.Http.OData;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace TextMood.Backend.Common
 {
@@ -123,7 +124,7 @@ namespace TextMood.Backend.Common
                     Debug.WriteLine(e.ToString());
                     Debug.WriteLine("");
 
-					throw;
+                    ExceptionDispatchInfo.Capture(e).Throw();
                 }
                 finally
                 {
