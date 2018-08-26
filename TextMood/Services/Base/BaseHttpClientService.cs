@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 
 using Newtonsoft.Json;
 
@@ -47,7 +48,7 @@ namespace TextMood
 			catch (Exception e)
 			{
 				Report(e);
-				throw;
+                ExceptionDispatchInfo.Capture(e).Throw();
 			}
 			finally
 			{
@@ -87,7 +88,21 @@ namespace TextMood
 
 		protected static Task<HttpResponseMessage> DeleteObjectFromAPI(string apiUrl) => SendAsync<object>(HttpMethod.Delete, apiUrl);
 
-		static HttpClient CreateHttpClient(TimeSpan timeout)
+        protected static void UpdateActivityIndicatorStatus(bool isActivityIndicatorDisplayed)
+        {
+            if (isActivityIndicatorDisplayed)
+            {
+                Device.BeginInvokeOnMainThread(() => Application.Current.MainPage.IsBusy = true);
+                _networkIndicatorCount++;
+            }
+            else if (--_networkIndicatorCount <= 0)
+            {
+                Device.BeginInvokeOnMainThread(() => Application.Current.MainPage.IsBusy = false);
+                _networkIndicatorCount = 0;
+            }
+        }
+
+        static HttpClient CreateHttpClient(TimeSpan timeout)
 		{
 			HttpClient client;
 			switch (Device.RuntimePlatform)
@@ -121,26 +136,12 @@ namespace TextMood
 				catch (Exception e)
 				{
 					Report(e);
-					throw;
-				}
+                    ExceptionDispatchInfo.Capture(e).Throw();
+                }
 				finally
 				{
 					UpdateActivityIndicatorStatus(false);
 				}
-			}
-		}
-
-		protected static void UpdateActivityIndicatorStatus(bool isActivityIndicatorDisplayed)
-		{
-			if (isActivityIndicatorDisplayed)
-			{
-				Device.BeginInvokeOnMainThread(() => Application.Current.MainPage.IsBusy = true);
-				_networkIndicatorCount++;
-			}
-			else if (--_networkIndicatorCount <= 0)
-			{
-				Device.BeginInvokeOnMainThread(() => Application.Current.MainPage.IsBusy = false);
-				_networkIndicatorCount = 0;
 			}
 		}
 
@@ -186,8 +187,8 @@ namespace TextMood
 			catch (Exception e)
 			{
 				Report(e);
-				throw;
-			}
+                ExceptionDispatchInfo.Capture(e).Throw();
+            }
 		}
 
 		static void Report(Exception e, [CallerMemberName]string callerMemberName = "") => DebugServices.Report(e, callerMemberName);
