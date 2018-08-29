@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 
 using Newtonsoft.Json;
 
@@ -48,7 +47,7 @@ namespace TextMood
 			catch (Exception e)
 			{
 				Report(e);
-                ExceptionDispatchInfo.Capture(e).Throw();
+                throw;
 			}
 			finally
 			{
@@ -136,7 +135,7 @@ namespace TextMood
 				catch (Exception e)
 				{
 					Report(e);
-                    ExceptionDispatchInfo.Capture(e).Throw();
+                    throw;
                 }
 				finally
 				{
@@ -187,7 +186,7 @@ namespace TextMood
 			catch (Exception e)
 			{
 				Report(e);
-                ExceptionDispatchInfo.Capture(e).Throw();
+                throw;
             }
 		}
 
