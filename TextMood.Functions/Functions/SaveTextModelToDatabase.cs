@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 
@@ -9,9 +11,9 @@ namespace TextMood.Functions
 	public static class SaveTextModelToDatabase
 	{
 		[FunctionName(nameof(SaveTextModelToDatabase))]
-		public static void Run(
+        public static async Task Run(
 			[QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextMoodModel textModel,
-			[Queue(QueueNameConstants.SendUpdate)] out TextMoodModel textModelOutput,
+            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> textModelOutputCollection,
 			TraceWriter log)
 		{
 			log.Info("Saving TextModel to Database");
@@ -19,9 +21,9 @@ namespace TextMood.Functions
 			if (textModel.Text.Length > 128)
 				textModel.Text = textModel.Text.Substring(0, 128);
 
-			TextMoodDatabase.InsertTextModel(textModel).GetAwaiter().GetResult();
+            await TextMoodDatabase.InsertTextModel(textModel).ConfigureAwait(false);
 
-			textModelOutput = textModel;
+            textModelOutputCollection.Add(textModel);
 		}
 	}
 }

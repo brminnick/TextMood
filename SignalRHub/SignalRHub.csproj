@@ -116,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj">
-      <Project>{e5bce4c8-74f5-4a4a-93e4-fc4b79961dea}</Project>
+      <Project>{75E970D5-5B79-4F08-8039-40CCD3DE3B44}</Project>
       <Name>TextMood.Backend.Common</Name>
     </ProjectReference>
   </ItemGroup>
