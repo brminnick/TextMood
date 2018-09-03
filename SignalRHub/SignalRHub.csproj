@@ -114,12 +114,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="TextMoodModelHub.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TextMood.Backend.Common\TextMood.Backend.Common.csproj">
-      <Project>{e5bce4c8-74f5-4a4a-93e4-fc4b79961dea}</Project>
-      <Name>TextMood.Backend.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
