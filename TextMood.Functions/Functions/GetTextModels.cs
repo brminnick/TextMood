@@ -18,10 +18,13 @@ namespace TextMood.Functions
             try
             {
                 var textModelList = await TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
+
+                log.Info($"Success");
                 return new OkObjectResult(textModelList);
             }
             catch (System.Exception e)
             {
+                log.Info($"Failed: {e.Message}");
                 return new BadRequestObjectResult(e.Message);
             }
         }

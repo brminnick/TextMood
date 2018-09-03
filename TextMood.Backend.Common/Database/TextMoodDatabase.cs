@@ -124,7 +124,7 @@ namespace TextMood.Backend.Common
                     Debug.WriteLine(e.ToString());
                     Debug.WriteLine("");
 
-                    ExceptionDispatchInfo.Capture(e).Throw();
+                    throw;
                 }
                 finally
                 {
