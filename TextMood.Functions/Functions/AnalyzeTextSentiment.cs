@@ -31,11 +31,10 @@ namespace TextMood.Functions
             log.Info("Text Message Received");
 
             log.Info("Parsing Request Body");
-            //var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
+            var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
             log.Info("Creating New Text Model");
-            //var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
-            var textMoodModel = new TextMoodModel("Hello World");
+            var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
             log.Info("Retrieving Sentiment Score");
             textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
