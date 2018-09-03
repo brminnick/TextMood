@@ -1,38 +1,47 @@
 ﻿using System;
 using System.Linq;
-using System.Data.Linq;
 using System.Diagnostics;
-using System.Configuration;
-using System.Web.Http.OData;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
+
+using NPoco;
+
+using Microsoft.AspNet.OData;
 
 namespace TextMood.Backend.Common
 {
-	public static class TextMoodDatabase
+    public static class TextMoodDatabase
     {
         #region Constant Fields
-        readonly static string _connectionString = ConfigurationManager.ConnectionStrings["TextMoodDatabaseConnectionString"].ConnectionString;
+        readonly static string _connectionString = "Server=tcp:textmooddserver.database.windows.net,1433;Initial Catalog=TextMoodDatabase;Persist Security Info=False;User ID=bminnick;Password=*()_+iomega28;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            //Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString");
         #endregion
 
         #region Methods
-        public static Task<IList<TextMoodModel>> GetAllTextModels()
-		{
-            Func<DataContext, IList<TextMoodModel>> getAllTextModelsFunction = dataContext => dataContext.GetTable<TextMoodModel>().ToList();
+        public static Task<List<TextMoodModel>> GetAllTextModels()
+        {
             return PerformDatabaseFunction(getAllTextModelsFunction);
+
+            Task<List<TextMoodModel>> getAllTextModelsFunction(Database dataContext) => dataContext.FetchAsync<TextMoodModel>();
         }
 
         public static Task<TextMoodModel> GetTextModel(string id)
         {
-            Func<DataContext, TextMoodModel> getTextModelFunction = dataContext => dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
             return PerformDatabaseFunction(getTextModelFunction);
+
+            async Task<TextMoodModel> getTextModelFunction(Database dataContext)
+            {
+                var allTextModels = await GetAllTextModels().ConfigureAwait(false);
+                return allTextModels.Where(x=>x.Id.Equals(id)).FirstOrDefault();
+            }
         }
 
         public static Task<TextMoodModel> InsertTextModel(TextMoodModel text)
         {
-            Func<DataContext, TextMoodModel> insertTextModelFunction = dataContext =>
+            return PerformDatabaseFunction(insertTextModelFunction);
+
+            async Task<TextMoodModel> insertTextModelFunction(Database dataContext)
             {
                 if (string.IsNullOrWhiteSpace(text.Id))
                     text.Id = Guid.NewGuid().ToString();
@@ -40,12 +49,10 @@ namespace TextMood.Backend.Common
                 text.CreatedAt = DateTimeOffset.UtcNow;
                 text.UpdatedAt = DateTimeOffset.UtcNow;
 
-                dataContext.GetTable<TextMoodModel>().InsertOnSubmit(text);
+                await dataContext.InsertAsync(text).ConfigureAwait(false);
 
                 return text;
-            };
-
-            return PerformDatabaseFunction(insertTextModelFunction);
+            }
         }
 
         public static Task<TextMoodModel> PatchTextModel(TextMoodModel text)
@@ -60,62 +67,60 @@ namespace TextMood.Backend.Common
 
         public static Task<TextMoodModel> PatchTextModel(string id, Delta<TextMoodModel> text)
         {
-            Func<DataContext, TextMoodModel> patchTextModelFunction = dataContext =>
+            return PerformDatabaseFunction(patchTextModelFunction);
+
+            async Task<TextMoodModel> patchTextModelFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
 
                 text.Patch(textFromDatabase);
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
 
-                return textFromDatabase;
-            };
+                await dataContext.UpdateAsync(textFromDatabase).ConfigureAwait(false);
 
-            return PerformDatabaseFunction(patchTextModelFunction);
+                return textFromDatabase;
+            }
+
         }
 
         public static Task<TextMoodModel> DeleteTextModel(string id)
         {
-            Func<DataContext, TextMoodModel> deleteTextModelFunction = dataContext =>
+            return PerformDatabaseFunction(deleteTextModelFunction);
+
+            async Task<TextMoodModel> deleteTextModelFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
 
                 textFromDatabase.IsDeleted = true;
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
 
-                return textFromDatabase;
-            };
+                await dataContext.UpdateAsync(textFromDatabase).ConfigureAwait(false);
 
-            return PerformDatabaseFunction(deleteTextModelFunction);
+                return textFromDatabase;
+            }
         }
 
         public static Task<TextMoodModel> RemoveTextModel(string id)
         {
-            Func<DataContext, TextMoodModel> removetextDatabaseFunction = dataContext =>
-            {
-                var textFromDatabase = dataContext.GetTable<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+            return PerformDatabaseFunction(removetextDatabaseFunction);
 
-                dataContext.GetTable<TextMoodModel>().DeleteOnSubmit(textFromDatabase);
+            async Task<TextMoodModel> removetextDatabaseFunction(Database dataContext)
+            {
+                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+
+                await dataContext.DeleteAsync(textFromDatabase).ConfigureAwait(false);
 
                 return textFromDatabase;
-            };
-
-            return PerformDatabaseFunction(removetextDatabaseFunction);
+            }
         }
 
-        static async Task<TResult> PerformDatabaseFunction<TResult>(Func<DataContext, TResult> databaseFunction) where TResult : class
+        static async Task<TResult> PerformDatabaseFunction<TResult>(Func<Database, Task<TResult>> databaseFunction) where TResult : class
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (var connection = new Database(_connectionString, DatabaseType.SqlServer2012, SqlClientFactory.Instance))
             {
-                await connection.OpenAsync().ConfigureAwait(false);
-
-                var dbContext = new DataContext(connection);
-
-                var signUpTransaction = connection.BeginTransaction();
-                dbContext.Transaction = signUpTransaction;
-
                 try
                 {
-                    return databaseFunction?.Invoke(dbContext) ?? default;
+                    return await databaseFunction?.Invoke(connection) ?? default;
                 }
                 catch (Exception e)
                 {
@@ -124,16 +129,10 @@ namespace TextMood.Backend.Common
                     Debug.WriteLine(e.ToString());
                     Debug.WriteLine("");
 
-                    ExceptionDispatchInfo.Capture(e).Throw();
-                }
-                finally
-                {
-                    dbContext.SubmitChanges();
-                    signUpTransaction.Commit();
-                    connection.Close();
+                    throw;
                 }
             }
         }
-        #endregion
     }
+    #endregion
 }
