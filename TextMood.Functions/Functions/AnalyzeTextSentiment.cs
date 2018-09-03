@@ -1,7 +1,10 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
-
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -13,33 +16,37 @@ using TextMood.Shared;
 
 namespace TextMood.Functions
 {
-	[StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-	public static class AnalyzeTextSentiment
-	{
-		readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
+    [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
+    public static class AnalyzeTextSentiment
+    {
+        readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
 
-		static JsonSerializer Serializer => _serializerHolder.Value;
+        static JsonSerializer Serializer => _serializerHolder.Value;
 
-		[FunctionName(nameof(AnalyzeTextSentiment))]
-		public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage httpRequest,
-            [Queue(QueueNameConstants.TextModelForDatabase)] out TextMoodModel textModelForDatabase, TraceWriter log)
-		{
-			log.Info("Text Message Received");
+        [FunctionName(nameof(AnalyzeTextSentiment))]
+        [return: Queue(QueueNameConstants.TextModelForDatabase)]
+        public static async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req,
+             ICollector<TextMoodModel> textModelForDatabaseCollection, TraceWriter log)
+        {
+            log.Info("Text Message Received");
 
-			log.Info("Parsing Request Message");
-            var httpRequestBody = httpRequest.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            log.Info("Parsing Request Body");
+            var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
-			log.Info("Creating New Text Model");
-            textModelForDatabase = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+            log.Info("Creating New Text Model");
+            var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
-			log.Info("Retrieving Sentiment Score");
-            textModelForDatabase.SentimentScore = TextAnalysisServices.GetSentiment(textModelForDatabase.Text).GetAwaiter().GetResult() ?? -1;
+            log.Info("Retrieving Sentiment Score");
+            textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
 
-            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textModelForDatabase.SentimentScore)}";
+            log.Info("Adding TextMoodModel to Storage Queue");
+            textModelForDatabaseCollection.Add(textMoodModel);
 
-			log.Info($"Sending OK Response: {response}");
-			return new HttpResponseMessage { Content = new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml") };
-		}
-	}
+            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
+
+            log.Info($"Sending OK Response: {response}");
+            return new OkObjectResult(new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml"));
+        }
+    }
 }
