@@ -14,7 +14,8 @@ namespace TextMood.Backend.Common
     public static class TextMoodDatabase
     {
         #region Constant Fields
-        readonly static string _connectionString = Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString");
+        readonly static string _connectionString = "Server=tcp:textmooddserver.database.windows.net,1433;Initial Catalog=TextMoodDatabase;Persist Security Info=False;User ID=bminnick;Password=*()_+iomega28;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            //Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString");
         #endregion
 
         #region Methods
@@ -32,7 +33,7 @@ namespace TextMood.Backend.Common
             async Task<TextMoodModel> getTextModelFunction(Database dataContext)
             {
                 var allTextModels = await GetAllTextModels().ConfigureAwait(false);
-                return allTextModels.Where(x => x.Id.Equals(id)).FirstOrDefault();
+                return allTextModels.Where(x=>x.Id.Equals(id)).FirstOrDefault();
             }
         }
 
@@ -113,13 +114,13 @@ namespace TextMood.Backend.Common
             }
         }
 
-        static TResult PerformDatabaseFunction<TResult>(Func<Database, TResult> databaseFunction) where TResult : class
+        static async Task<TResult> PerformDatabaseFunction<TResult>(Func<Database, Task<TResult>> databaseFunction) where TResult : class
         {
             using (var connection = new Database(_connectionString, DatabaseType.SqlServer2012, SqlClientFactory.Instance))
             {
                 try
                 {
-                    return databaseFunction?.Invoke(connection) ?? default;
+                    return await databaseFunction?.Invoke(connection) ?? default;
                 }
                 catch (Exception e)
                 {
