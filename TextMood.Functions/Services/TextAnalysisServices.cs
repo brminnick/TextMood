@@ -14,12 +14,12 @@ namespace TextMood.Functions
     static class TextAnalysisServices
     {
         #region Constant Fields
-        readonly static Lazy<TextAnalyticsAPI> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsAPI>(() =>
-            new TextAnalyticsAPI(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)));
+        readonly static Lazy<TextAnalyticsClient> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsClient>(() =>
+            new TextAnalyticsClient(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)) { Endpoint = CognitiveServicesConstants.TextSentimentApiUrl });
         #endregion
 
         #region Properties
-        static TextAnalyticsAPI TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
+        static TextAnalyticsClient TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
         #endregion
 
         #region Methods
