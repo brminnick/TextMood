@@ -25,7 +25,7 @@ namespace TextMood.Functions
             catch (System.Exception e)
             {
                 log.Info($"Failed: {e.Message}");
-                return new BadRequestObjectResult(e.Message);
+                throw;
             }
         }
     }

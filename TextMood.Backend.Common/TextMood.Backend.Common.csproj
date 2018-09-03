@@ -10,4 +10,6 @@
     <PackageReference Include="NPoco" Version="3.9.4" />
   </ItemGroup>
 
+  <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" />
+
 </Project>
