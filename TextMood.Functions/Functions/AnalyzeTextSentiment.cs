@@ -1,8 +1,7 @@
 using System;
-using System.IO;
-using System.Net.Http;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -45,7 +44,13 @@ namespace TextMood.Functions
             var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
 
             log.Info($"Sending OK Response: {response}");
-            return new OkObjectResult(new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml"));
+
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                Content = TwilioServices.CreateTwilioResponse(response),
+                ContentType = "application/xml"
+            };
         }
     }
 }
