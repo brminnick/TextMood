@@ -7,7 +7,7 @@ using TextMood.Shared;
 namespace TextMood.Backend.Common
 {
     [TableName(nameof(TextMoodModel))]
-    [PrimaryKey(nameof(Id))]
+    [PrimaryKey(nameof(Id), AutoIncrement = false)]
     public class TextMoodModel : ITextMoodModel
     {
         #region Constructrors
@@ -37,7 +37,7 @@ namespace TextMood.Backend.Common
         public double SentimentScore_FromDatabase { get; set; }
 
         public string Id { get; set; }
-        public string Text { get; set; }        
+        public string Text { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
         public bool IsDeleted { get; set; }
