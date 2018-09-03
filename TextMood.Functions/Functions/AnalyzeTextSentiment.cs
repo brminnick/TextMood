@@ -24,18 +24,18 @@ namespace TextMood.Functions
         static JsonSerializer Serializer => _serializerHolder.Value;
 
         [FunctionName(nameof(AnalyzeTextSentiment))]
-        [return: Queue(QueueNameConstants.TextModelForDatabase)]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req,
-             ICollector<TextMoodModel> textModelForDatabaseCollection, TraceWriter log)
+            [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection, TraceWriter log)
         {
             log.Info("Text Message Received");
 
             log.Info("Parsing Request Body");
-            var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
+            //var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
             log.Info("Creating New Text Model");
-            var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+            //var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+            var textMoodModel = new TextMoodModel("Hello World");
 
             log.Info("Retrieving Sentiment Score");
             textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
