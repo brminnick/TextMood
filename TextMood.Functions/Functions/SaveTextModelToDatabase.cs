@@ -11,10 +11,9 @@ namespace TextMood.Functions
 	public static class SaveTextModelToDatabase
 	{
 		[FunctionName(nameof(SaveTextModelToDatabase))]
-        [return: Queue(QueueNameConstants.SendUpdate)]
         public static async Task Run(
 			[QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextMoodModel textModel,
-            ICollector<TextMoodModel> textModelOutputCollection,
+            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> textModelOutputCollection,
 			TraceWriter log)
 		{
 			log.Info("Saving TextModel to Database");
