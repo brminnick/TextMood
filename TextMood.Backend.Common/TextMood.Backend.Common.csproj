@@ -7,7 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.3" />
     <PackageReference Include="NPoco" Version="3.9.4" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
   </ItemGroup>
 
   <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" />

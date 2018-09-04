@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.SignalR.Client;
@@ -8,23 +7,25 @@ using Microsoft.Azure.WebJobs.Host;
 using TextMood.Backend.Common;
 using TextMood.Shared;
 
-namespace TextMood.Functions.Functions
+namespace TextMood.Functions
 {
 	[StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-    public static class SendUpdate : BaseSignalRService
+    public abstract class SendUpdate : BaseSignalRService
 	{
-		#region Constant Fields
-		static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
-        #endregion
-
-        #region Properties
-        static HubConnection Hub => _hubHolder.Value;
-		#endregion
-
 		#region Methods
 		[FunctionName(nameof(SendUpdate))]
-		public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, TraceWriter log) =>
-			await Hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelName, textModel).ConfigureAwait(false);
+		public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, TraceWriter log)
+        {
+            try
+            {
+                var hub = await GetConnection().ConfigureAwait(false);
+                await hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelName, textModel).ConfigureAwait(false);
+            }
+            catch(System.Exception e)
+            {
+                log.Info(e.Message);
+            }
+        }
 		#endregion
 	}
 }
