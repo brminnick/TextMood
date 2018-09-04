@@ -1,10 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.SignalR.Client;
-
-using TextMood.Shared;
-using System.Data;
 
 namespace TextMood.Shared
 {
