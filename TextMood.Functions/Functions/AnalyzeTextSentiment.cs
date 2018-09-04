@@ -1,8 +1,7 @@
 using System;
-using System.IO;
-using System.Net.Http;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -31,11 +30,10 @@ namespace TextMood.Functions
             log.Info("Text Message Received");
 
             log.Info("Parsing Request Body");
-            //var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
+            var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
             log.Info("Creating New Text Model");
-            //var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
-            var textMoodModel = new TextMoodModel("Hello World");
+            var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
             log.Info("Retrieving Sentiment Score");
             textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
@@ -46,7 +44,13 @@ namespace TextMood.Functions
             var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
 
             log.Info($"Sending OK Response: {response}");
-            return new OkObjectResult(new StringContent(TwilioServices.CreateTwilioResponse(response), Encoding.UTF8, "application/xml"));
+
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                Content = TwilioServices.CreateTwilioResponse(response),
+                ContentType = "application/xml"
+            };
         }
     }
 }

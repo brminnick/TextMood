@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\SignalRConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Base\BaseSignalRService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\TextMoodModelServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ITextMoodModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EmojiServices.cs" />
@@ -17,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\PhilipsHueServices.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>
