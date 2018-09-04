@@ -1,57 +1,49 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Microsoft.AspNet.SignalR.Client;
-using Microsoft.AspNet.SignalR.Client.Hubs;
+using Microsoft.AspNetCore.SignalR.Client;
 
 using TextMood.Shared;
+using System.Data;
 
 namespace TextMood
 {
-	public abstract class BaseSignalRService
-	{
-		#region Constant Fields
-		static Lazy<IHubProxy> _proxyHolder = new Lazy<IHubProxy>(() => Hub.CreateHubProxy(SignalRConstants.TextMoodModelHubName));
-		static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnection(SignalRConstants.SignalRHubUrl));
-		#endregion
+    public abstract class BaseSignalRService
+    {
+        #region Constant Fields
+        static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
+        #endregion
 
-		#region Fields
-		static bool _isInitialized;
-		#endregion
+        #region Events
+        public static event EventHandler<string> InitializationFailed;
+        #endregion
 
-		#region Events
-		public static event EventHandler<string> InitializationFailed;
-		#endregion
+        #region Properties
+        public static ConnectionState HubConnectionState { get; private set; } = ConnectionState.Closed;
 
-		#region Properties
-		static HubConnection Hub => _hubHolder.Value;
-		static IHubProxy Proxy => _proxyHolder.Value;
-		#endregion
+        static HubConnection Hub => _hubHolder.Value;
+        #endregion
 
-		#region Methods
-		protected static HubConnection GetHubConnection() => Hub;
+        #region Methods
+        protected static async ValueTask<HubConnection> GetConnection()
+        {
+            if (HubConnectionState.Equals(ConnectionState.Open))
+            {
+                try
+                {
+                    await Hub.StartAsync().ConfigureAwait(false);
+                    HubConnectionState = ConnectionState.Open;
+                }
+                catch (Exception e)
+                {
+                    OnInitializationFailed(e.Message);
+                }
+            }
 
-		protected static async ValueTask<IHubProxy> GetProxy()
-		{
-			Proxy.ToString();
+            return Hub;
+        }
 
-			if (!_isInitialized)
-			{
-				try
-				{
-					await Hub.Start().ConfigureAwait(false);
-					_isInitialized = true;
-				}
-				catch (Exception e)
-				{
-					OnInitializationFailed(e.Message);
-				}
-			}
-
-			return Proxy;
-		}
-
-		static void OnInitializationFailed(string message) => InitializationFailed?.Invoke(null, message);
-		#endregion
-	}
+        static void OnInitializationFailed(string message) => InitializationFailed?.Invoke(null, message);
+        #endregion
+    }
 }
