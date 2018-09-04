@@ -1,8 +1,27 @@
-﻿[assembly: OwinStartup(typeof(TextMood.SignalR.Startup))]
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace TextMood.SignalR
 {
     public class Startup
     {
-        public void Configuration(Microsoft.AspNetCore.SpaServices.ISpaBuilder app) => app.MapSignalR();
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSignalR();
+        }
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseSignalR(route =>
+            {
+                route.MapHub<TextMoodModelHub>($"/{nameof(TextMoodModelHub)}");
+            });
+        }
     }
 }
