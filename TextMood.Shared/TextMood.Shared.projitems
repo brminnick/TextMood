@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\SignalRConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Base\BaseSignalRService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\TextMoodModelServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ITextMoodModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EmojiServices.cs" />
@@ -18,8 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\Base\BaseSignalRService.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Services\Base\" />
   </ItemGroup>
 </Project>
