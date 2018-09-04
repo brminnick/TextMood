@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using TextMood.Shared;
 using System.Data;
 
-namespace TextMood
+namespace TextMood.Shared
 {
     public abstract class BaseSignalRService
     {
