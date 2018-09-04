@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Data;
+using System.Threading.Tasks;
 
-using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 
 using TextMood.Shared;
 
@@ -10,23 +11,14 @@ namespace TextMood
 {
 	public abstract class SignalRService : BaseSignalRService
 	{
-		public static bool IsConnected
-		{
-			get
-			{
-				var hub = GetHubConnection();
-				return hub.State.Equals(ConnectionState.Connected);
-			}
-		}
-
 		public static async Task Subscribe()
 		{
-			if (IsConnected)
+			if (HubConnectionState.Equals(ConnectionState.Open))
 				return;
 
-			var proxy = await GetProxy().ConfigureAwait(false);
+            var connection = await GetConnection().ConfigureAwait(false);
 
-			proxy.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
+			connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
 			{
 				var textResultsListViewModel = GetTextResultsListViewModel();
 				textResultsListViewModel?.AddTextMoodModelCommand?.Execute(textMoodModel);
