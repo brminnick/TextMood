@@ -13,7 +13,6 @@ namespace TextMood.Functions
 		[FunctionName(nameof(SaveTextModelToDatabase))]
         public static async Task Run(
 			[QueueTrigger(QueueNameConstants.TextModelForDatabase)]TextMoodModel textModel,
-            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> textModelOutputCollection,
 			TraceWriter log)
 		{
 			log.Info("Saving TextModel to Database");
@@ -22,8 +21,6 @@ namespace TextMood.Functions
 				textModel.Text = textModel.Text.Substring(0, 128);
 
             await TextMoodDatabase.InsertTextModel(textModel).ConfigureAwait(false);
-
-            textModelOutputCollection.Add(textModel);
 		}
 	}
 }

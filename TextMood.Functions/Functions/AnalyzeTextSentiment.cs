@@ -25,7 +25,8 @@ namespace TextMood.Functions
         [FunctionName(nameof(AnalyzeTextSentiment))]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req,
-            [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection, TraceWriter log)
+            [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection,
+            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> sendUpdateCollection, TraceWriter log)
         {
             log.Info("Text Message Received");
 
@@ -40,6 +41,7 @@ namespace TextMood.Functions
 
             log.Info("Adding TextMoodModel to Storage Queue");
             textModelForDatabaseCollection.Add(textMoodModel);
+            sendUpdateCollection.Add(textMoodModel);
 
             var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
 
