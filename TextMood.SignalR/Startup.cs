@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using TextMood.Shared;
 
 namespace TextMood.SignalR
 {
@@ -20,7 +21,7 @@ namespace TextMood.SignalR
 
             app.UseSignalR(route =>
             {
-                route.MapHub<TextMoodModelHub>($"/{nameof(TextMoodModelHub)}");
+                route.MapHub<TextMoodModelHub>($"/{SignalRConstants.TextMoodModelHubName}");
             });
         }
     }
