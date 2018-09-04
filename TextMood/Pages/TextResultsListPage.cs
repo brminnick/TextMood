@@ -1,5 +1,7 @@
 ﻿using System;
 
+using TextMood.Shared;
+
 using Xamarin.Forms;
 
 namespace TextMood
