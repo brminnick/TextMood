@@ -11,7 +11,7 @@ using TextMood.Shared;
 namespace TextMood.Functions.Functions
 {
 	[StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-	public static class SendUpdate
+    public static class SendUpdate : BaseSignalRService
 	{
 		#region Constant Fields
 		static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
