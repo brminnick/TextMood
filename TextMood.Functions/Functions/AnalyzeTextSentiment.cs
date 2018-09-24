@@ -28,31 +28,39 @@ namespace TextMood.Functions
             [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection,
             [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> sendUpdateCollection, TraceWriter log)
         {
-            log.Info("Text Message Received");
-
-            log.Info("Parsing Request Body");
-            var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
-
-            log.Info("Creating New Text Model");
-            var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
-
-            log.Info("Retrieving Sentiment Score");
-            textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
-
-            log.Info("Adding TextMoodModel to Storage Queue");
-            textModelForDatabaseCollection.Add(textMoodModel);
-            sendUpdateCollection.Add(textMoodModel);
-
-            var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
-
-            log.Info($"Sending OK Response: {response}");
-
-            return new ContentResult
+            try
             {
-                StatusCode = (int)HttpStatusCode.OK,
-                Content = TwilioServices.CreateTwilioResponse(response),
-                ContentType = "application/xml"
-            };
+                log.Info("Text Message Received");
+
+                log.Info("Parsing Request Body");
+                var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
+
+                log.Info("Creating New Text Model");
+                var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+
+                log.Info("Retrieving Sentiment Score");
+                textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
+
+                log.Info("Adding TextMoodModel to Storage Queue");
+                textModelForDatabaseCollection.Add(textMoodModel);
+                sendUpdateCollection.Add(textMoodModel);
+
+                var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
+
+                log.Info($"Sending OK Response: {response}");
+
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Content = TwilioServices.CreateTwilioResponse(response),
+                    ContentType = "application/xml"
+                };
+            }
+            catch(Exception e)
+            {
+                log.Error(e.Message, e);
+                throw;
+            }
         }
     }
 }

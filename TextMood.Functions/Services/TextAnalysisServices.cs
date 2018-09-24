@@ -15,7 +15,7 @@ namespace TextMood.Functions
     {
         #region Constant Fields
         readonly static Lazy<TextAnalyticsClient> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsClient>(() =>
-            new TextAnalyticsClient(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)) { Endpoint = CognitiveServicesConstants.TextSentimentApiUrl });
+            new TextAnalyticsClient(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)) { Endpoint = CognitiveServicesConstants.BaseUrl });
         #endregion
 
         #region Properties
