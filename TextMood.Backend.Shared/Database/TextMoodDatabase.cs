@@ -7,8 +7,6 @@ using System.Collections.Generic;
 
 using NPoco;
 
-using Microsoft.AspNet.OData;
-
 namespace TextMood.Backend.Common
 {
     public static class TextMoodDatabase
@@ -25,14 +23,14 @@ namespace TextMood.Backend.Common
             Task<List<TextMoodModel>> getAllTextModelsFunction(Database dataContext) => dataContext.FetchAsync<TextMoodModel>();
         }
 
-        public static Task<TextMoodModel> GetTextModel(string id)
+        public static TextMoodModel GetTextModel(string id)
         {
-            return PerformDatabaseFunction(getTextModelFunction);
+            return PerformDatabaseFunction(getTextModelFunction).GetAwaiter().GetResult();
 
-            async Task<TextMoodModel> getTextModelFunction(Database dataContext)
+            Task<TextMoodModel> getTextModelFunction(Database dataContext)
             {
-                var allTextModels = await GetAllTextModels().ConfigureAwait(false);
-                return allTextModels.Where(x=>x.Id.Equals(id)).FirstOrDefault();
+                var textModel = dataContext.Fetch<TextMoodModel>().Where(x=>x.Id.Equals(id)).FirstOrDefault();
+                return Task.FromResult(textModel);
             }
         }
 
@@ -56,23 +54,16 @@ namespace TextMood.Backend.Common
 
         public static Task<TextMoodModel> PatchTextModel(TextMoodModel text)
         {
-            var textModelDelta = new Delta<TextMoodModel>();
-
-            textModelDelta.TrySetPropertyValue(nameof(TextMoodModel.Text), text.Text);
-            textModelDelta.TrySetPropertyValue(nameof(TextMoodModel.IsDeleted), text.IsDeleted);
-
-            return PatchTextModel(text.Id, textModelDelta);
-        }
-
-        public static Task<TextMoodModel> PatchTextModel(string id, Delta<TextMoodModel> text)
-        {
             return PerformDatabaseFunction(patchTextModelFunction);
 
             async Task<TextMoodModel> patchTextModelFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(text.Id)).FirstOrDefault();
 
-                text.Patch(textFromDatabase);
+                textFromDatabase.Id = text.Id;
+                textFromDatabase.SentimentScore = text.SentimentScore;
+                textFromDatabase.IsDeleted = text.IsDeleted;
+
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
 
                 await dataContext.UpdateAsync(textFromDatabase).ConfigureAwait(false);

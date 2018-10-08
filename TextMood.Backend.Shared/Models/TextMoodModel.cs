@@ -33,7 +33,7 @@ namespace TextMood.Backend.Common
         }
 
         [Column(nameof(SentimentScore))]
-        [Obsolete("Use Sentiment Instead")]
+        [Obsolete("Use SentimentScore Instead")]
         public double SentimentScore_FromDatabase { get; set; }
 
         public string Id { get; set; }
