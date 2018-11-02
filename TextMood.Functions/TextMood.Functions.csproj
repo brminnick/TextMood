@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,19 +6,67 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.3" />
-        <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics" Version="2.1.0-preview" />
-        <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
+        <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics" Version="2.8.0-preview" />
+        <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.1" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.22" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.1" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.23" />
         <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
-        <PackageReference Include="Twilio" Version="5.17.0" />
+        <PackageReference Include="Twilio" Version="5.21.0" />
         <PackageReference Include="NPoco" Version="3.9.4" />
     </ItemGroup>
     <ItemGroup>
         <None Include="**/*" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="bin\Debug\netstandard2.0\AnalyzeTextSentiment\function.json" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Net.Http.Formatting.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Memory.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Numerics.Vectors.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.ObjectModel.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Private.DataContractSerialization.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Reflection.Emit.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Reflection.Emit.ILGeneration.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Reflection.Emit.Lightweight.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Reflection.Metadata.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Reflection.TypeExtensions.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Resources.Reader.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.CompilerServices.Unsafe.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.InteropServices.RuntimeInformation.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.Loader.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.Numerics.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.Serialization.Primitives.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Runtime.Serialization.Xml.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.AccessControl.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.Claims.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.Cryptography.OpenSsl.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.Cryptography.Primitives.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.Principal.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Security.Principal.Windows.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Text.Encoding.CodePages.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Text.Encodings.Web.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Text.RegularExpressions.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.Channels.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.Tasks.Dataflow.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.Tasks.Extensions.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.Thread.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Threading.ThreadPool.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Xml.ReaderWriter.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Xml.XDocument.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Xml.XmlDocument.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\System.Xml.XmlSerializer.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\Twilio.dll" />
+      <None Remove="bin\Debug\netstandard2.0\host.json" />
+      <None Remove="bin\Debug\netstandard2.0\local.settings.json" />
+      <None Remove="bin\Debug\netstandard2.0\TextMood.Functions.deps.json" />
+      <None Remove="bin\Debug\netstandard2.0\bin\TextMood.Functions.dll" />
+      <None Remove="bin\Debug\netstandard2.0\bin\TextMood.Functions.pdb" />
+      <None Remove="bin\Debug\netstandard2.0\GetTextModels\function.json" />
+      <None Remove="bin\Debug\netstandard2.0\SaveTextModelToDatabase\function.json" />
+      <None Remove="bin\Debug\netstandard2.0\SendUpdate\function.json" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">
