@@ -12,9 +12,9 @@ namespace TextMood
     abstract class PhilipsHueBridgeAPIServices : BaseHttpClientService
     {
         #region Methods
-        public static async ValueTask<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
+        public static async Task<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
         {
-            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
+            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
@@ -23,9 +23,9 @@ namespace TextMood
             return lightsResponseJObject.Count;
         }
 
-        public static async ValueTask<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername(string philipsHueBridgeIPAddress)
+        public static async Task<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername(string philipsHueBridgeIPAddress)
         {
-            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
+            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
@@ -39,7 +39,7 @@ namespace TextMood
 
         public static async Task UpdateLightBulbColor(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername, int hue)
         {
-            var isBridgeReachable = IsBridgeReachable(philipsHueBridgeIPAddress);
+            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
@@ -80,16 +80,20 @@ namespace TextMood
             }
         }
 
-        static bool IsBridgeReachable(string philipsHueBridgeIPAddress)
+        static async ValueTask<bool> IsBridgeReachable(string philipsHueBridgeIPAddress)
         {
-            if (Connectivity.NetworkAccess == NetworkAccess.None)
+            if (Connectivity.NetworkAccess is NetworkAccess.None)
                 return false;
 
-            var ping = new System.Net.NetworkInformation.Ping();
-
-            var result = ping.Send(philipsHueBridgeIPAddress);
-
-            return result.Status == System.Net.NetworkInformation.IPStatus.Success;
+            try
+            {
+                var httpResult = await GetObjectFromAPI($"http://{philipsHueBridgeIPAddress}").ConfigureAwait(false);
+                return httpResult.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
         }
         #endregion
     }

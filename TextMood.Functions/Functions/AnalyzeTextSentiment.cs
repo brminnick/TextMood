@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 
@@ -26,28 +27,28 @@ namespace TextMood.Functions
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req,
             [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection,
-            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> sendUpdateCollection, TraceWriter log)
+            [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> sendUpdateCollection, ILogger log)
         {
             try
             {
-                log.Info("Text Message Received");
+                log.LogInformation("Text Message Received");
 
-                log.Info("Parsing Request Body");
+                log.LogInformation("Parsing Request Body");
                 var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
-                log.Info("Creating New Text Model");
+                log.LogInformation("Creating New Text Model");
                 var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
 
-                log.Info("Retrieving Sentiment Score");
+                log.LogInformation("Retrieving Sentiment Score");
                 textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
 
-                log.Info("Adding TextMoodModel to Storage Queue");
+                log.LogInformation("Adding TextMoodModel to Storage Queue");
                 textModelForDatabaseCollection.Add(textMoodModel);
                 sendUpdateCollection.Add(textMoodModel);
 
                 var response = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
 
-                log.Info($"Sending OK Response: {response}");
+                log.LogInformation($"Sending OK Response: {response}");
 
                 return new ContentResult
                 {
@@ -56,9 +57,9 @@ namespace TextMood.Functions
                     ContentType = "application/xml"
                 };
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                log.Error(e.Message, e);
+                log.LogError(e, e.Message);
                 throw;
             }
         }

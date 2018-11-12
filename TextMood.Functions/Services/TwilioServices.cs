@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 using Twilio.TwiML;
 
@@ -9,7 +10,7 @@ namespace TextMood.Functions
 {
     public static class TwilioServices
     {
-		public static string GetTextMessageBody(string httpRequestBody, TraceWriter log)
+        public static string GetTextMessageBody(string httpRequestBody, ILogger log)
         {
             var formValues = httpRequestBody?.Split('&')
                                 ?.Select(value => value.Split('='))
@@ -17,7 +18,7 @@ namespace TextMood.Functions
                                               pair => Uri.UnescapeDataString(pair[1]).Replace("+", " "));
 
             foreach (var value in formValues)
-                log.Info($"Key: {value.Key}, Value: {value.Value}");
+                log.LogInformation($"Key: {value.Key}, Value: {value.Value}");
 
             var textMessageKeyValuePair = formValues.Where(x => x.Key?.ToUpper()?.Equals("BODY") ?? false)?.FirstOrDefault();
 
