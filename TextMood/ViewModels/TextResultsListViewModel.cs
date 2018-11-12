@@ -28,7 +28,7 @@ namespace TextMood
 
 		#region Properties
 		public Command<ITextMoodModel> AddTextMoodModelCommand => _addTextMoodModelCommand ??
-			(_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel)));
+			(_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel).ConfigureAwait(false)));
 
 
 		public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
@@ -90,7 +90,7 @@ namespace TextMood
 
 				TextList = recentTextMoodList.OrderByDescending(x => x.CreatedAt).ToList();
 			}
-			catch (Exception e) when (!(e?.InnerException?.Message is null))
+			catch (Exception e) when (e?.InnerException?.Message != null)
 			{
 				DebugServices.Report(e);
 				OnErrorTriggered(e.InnerException.Message);
