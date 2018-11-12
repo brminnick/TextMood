@@ -8,10 +8,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
         <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics" Version="2.8.0-preview" />
-        <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.1" />
+        <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.2" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.0" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.1" />
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.23" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
         <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
         <PackageReference Include="Twilio" Version="5.21.0" />

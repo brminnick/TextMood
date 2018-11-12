@@ -1,10 +1,11 @@
 ﻿namespace TextMood.Shared
 {
-	public static class SignalRConstants
-	{
-		public const string TextMoodModelHubName = "TextMoodModelHub";
-		public const string SendNewTextMoodModelName = "SendNewTextMoodModel";
+    public static class SignalRConstants
+    {
+        public const string TextMoodModelHubName = "TextMoodModelHub";
+        public const string SendNewTextMoodModelName = "SendNewTextMoodModel";
+        public const string SignalRHubUrl = _signalRHubBaseUrl + "/" + TextMoodModelHubName;
 
-		public static string SignalRHubUrl => $"https://textmoodsignalrwebapp.azurewebsites.net/{TextMoodModelHubName}";
-	}
+        const string _signalRHubBaseUrl = "https://textmoodsignalrwebapp.azurewebsites.net";
+    }
 }

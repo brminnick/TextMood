@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 using TextMood.Backend.Common;
 
@@ -13,19 +14,20 @@ namespace TextMood.Functions
     public static class GetTextModels
     {
         [FunctionName(nameof(GetTextModels))]
-        public static async Task<ActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest httpRequest, TraceWriter log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest httpRequest, ILogger log)
         {
-            log.Info("Retrieving Text Models from Database");
+            log.LogInformation("Retrieving Text Models from Database");
+
             try
             {
                 var textModelList = await TextMoodDatabase.GetAllTextModels().ConfigureAwait(false);
 
-                log.Info($"Success");
+                log.LogInformation($"Success");
                 return new OkObjectResult(textModelList);
             }
             catch (System.Exception e)
             {
-                log.Info($"Failed: {e.Message}");
+                log.LogError(e, e.Message);
                 throw;
             }
         }
