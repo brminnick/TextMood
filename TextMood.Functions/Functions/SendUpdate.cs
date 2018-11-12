@@ -25,6 +25,7 @@ namespace TextMood.Functions
             catch (System.Exception e)
             {
                 log.LogError(e, e.Message);
+                throw;
             }
         }
         #endregion
