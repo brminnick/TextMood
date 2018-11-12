@@ -6,6 +6,7 @@
         public const string SendNewTextMoodModelName = "SendNewTextMoodModel";
         public const string SignalRHubUrl = _signalRHubBaseUrl + "/" + TextMoodModelHubName;
 
-        const string _signalRHubBaseUrl = "https://textmoodsignalrwebapp.azurewebsites.net";
+#error Missing SignalR Hub Base Url
+        const string _signalRHubBaseUrl = "Enter Base Url";
     }
 }
