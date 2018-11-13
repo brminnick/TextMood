@@ -14,10 +14,10 @@ namespace TextMood
 			backingStore ?? (backingStore = Preferences.Get(propertyName, defaultValue));
 
 		protected static bool GetSetting(ref bool backingStore, bool defaultValue = default, [CallerMemberName]string propertyName = "") =>
-		    backingStore.Equals(default(bool)) ? (backingStore = Preferences.Get(propertyName, defaultValue)) : backingStore;
+		    backingStore is default(bool) ? (backingStore = Preferences.Get(propertyName, defaultValue)) : backingStore;
 
 		protected static int GetSetting(ref int backingStore, int defaultValue = default, [CallerMemberName]string propertyName = "") =>
-			backingStore.Equals(default(int)) ? (backingStore = Preferences.Get(propertyName, defaultValue)) : backingStore;
+			backingStore is default(int) ? (backingStore = Preferences.Get(propertyName, defaultValue)) : backingStore;
 
 		protected static DateTimeOffset GetSetting(ref DateTimeOffset backingStore, DateTimeOffset defaultValue = default, [CallerMemberName]string propertyName = "") =>
 			backingStore.Equals(default(DateTimeOffset)) ? (backingStore = new DateTimeOffset(Preferences.Get(propertyName, defaultValue.UtcDateTime))) : backingStore;
