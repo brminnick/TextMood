@@ -7,8 +7,8 @@
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.0" />
-        <PackageReference Include="Xamarin.Forms" Version="3.3.0.967583" />
-        <PackageReference Include="Xamarin.Essentials" Version="0.10.0-preview" />
+        <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+        <PackageReference Include="Xamarin.Essentials" Version="0.11.0-preview" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
     </ItemGroup>
     <ItemGroup>
