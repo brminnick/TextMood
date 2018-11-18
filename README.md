@@ -53,8 +53,8 @@ An IoT + Azure sample that detects the sentiment of incoming text messages, perf
 
 To use the Sentiment Analysis API, we'll need to first create an API Key using the Azure Portal.
 
-1. Navigate to the [Azure Portal](https://portal.azure.com/?WT.mc_id=none-TwilioBlog-bramin)
-    - If you are new to Azure, use [this sign-up link](https://azure.microsoft.com/free/ai/?WT.mc_id=none-TwilioBlog-bramin) to receive a free $200 credit
+1. Navigate to the [Azure Portal](https://portal.azure.com/?WT.mc_id=none-GitHub-bramin)
+    - If you are new to Azure, use [this sign-up link](https://azure.microsoft.com/free/ai/?WT.mc_id=none-GitHub-bramin) to receive a free $200 credit
 
 2. On the Azure Portal, select **+ Create a Resource**
 3. In the **New** window, select **AI + Machine Learning**
@@ -78,22 +78,19 @@ To use the Sentiment Analysis API, we'll need to first create an API Key using t
 
 ### 2. Create an Azure Function
 
-[Azure Functions](https://azure.microsoft.com/services/functions/?WT.mc_id=none-TwilioBlog-bramin) are a serverless offering in Azure. In these steps, we will use Azure Functions to create a POST API.
+[Azure Functions](https://azure.microsoft.com/services/functions/?WT.mc_id=none-GitHub-bramin) are a serverless offering in Azure. In these steps, we will use Azure Functions to create a POST API.
 
-1. Clone or download the [TextMood_TwilioBlog](https://github.com/brminnick/TextMood_TwilioBlog/tree/master)
+1. Clone or download this repo
     - To clone the repo using git, open a cmd prompt and enter the following command:
-        - `git clone https://github.com/brminnick/TextMood_TwilioBlog.git`
+        - `git clone https://github.com/brminnick/TextMood.git`
     - To download the repo use the following steps:
-        - Click the link above to navigate to the GitHub repo in your browser
         - Click Clone or Download
         - Click Download Zip
-
-![Download Zip](https://user-images.githubusercontent.com/13558917/43021037-13dfed6e-8c17-11e8-946e-baf30502104b.png)
 
 2. After downloading/cloning the repo, locate `TextMood.sln`
 3. Launch `TextMood.sln` in Visual Studio 
 4. In **CognitiveServicesConstants.cs**, for `TextSentimentAPIKey`, replace `Your API Key` with the Key from the TextAnalytics Cognitive Service resource created earlier
-5. In **CognitiveServicesConstants.cs**, for `_cognitiveServicesEndpoint`, replace `Your Cognitive Services Endpoint` with the Endpoint from the TextAnalytics Cognitive Service resource created earlier
+5. In **CognitiveServicesConstants.cs**, for `BaseUrl`, replace `Your Cognitive Services Base Url` with the Base Url from the TextAnalytics Cognitive Service resource created earlier
 
 6. In the Visual Studio Solution Explorer, right-click the TextMood project
 7. In the right-click menu, select **Publish**
@@ -168,7 +165,7 @@ To use the Sentiment Analysis API, we'll need to first create an API Key using t
 
 ### 4. Copy Azure Functions Url
 
-1. Navigate to the [Azure Portal](https://portal.azure.com/?WT.mc_id=none-TwilioBlog-bramin)
+1. Navigate to the [Azure Portal](https://portal.azure.com/?WT.mc_id=none-GitHub-bramin)
 2. On the Azure Portal, select **Resource Groups**
 3. In the **Resource Group** window, select **TextMood**
 
@@ -235,7 +232,7 @@ To use the Sentiment Analysis API, we'll need to first create an API Key using t
 
 # Resources
 
-- [Azure Sentiment Analysis](https://azure.microsoft.com/services/cognitive-services/text-analytics/?WT.mc_id=none-TwilioBlog-bramin)
-- [Azure Functions](https://azure.microsoft.com/services/functions/?WT.mc_id=none-TwilioBlog-bramin)
+- [Azure Sentiment Analysis](https://azure.microsoft.com/services/cognitive-services/text-analytics/?WT.mc_id=none-GitHub-bramin)
+- [Azure Functions](https://azure.microsoft.com/services/functions/?WT.mc_id=none-GitHub-bramin)
 - [Twilio Webhooks](https://www.twilio.com/docs/glossary/what-is-a-webhook)
-- [Cognitive Services](https://azure.microsoft.com/services/cognitive-services/?WT.mc_id=none-TwilioBlog-bramin)
+- [Cognitive Services](https://azure.microsoft.com/services/cognitive-services/?WT.mc_id=none-GitHub-bramin)
