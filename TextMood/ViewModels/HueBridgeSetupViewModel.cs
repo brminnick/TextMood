@@ -78,7 +78,7 @@ namespace TextMood
                     {
                         BridgeIDEntryText = bridge.Id;
                         BridgeIPEntryText = bridge.InternalIPAddress;
-                        OnAutoDiscoveryCompleted($"Bridge Detected");
+                        OnAutoDiscoveryCompleted("Bridge Detected");
                         return;
                     }
                 }
