@@ -15,12 +15,8 @@ namespace TextMood
 		#region Properties
 		public static IPAddress IPAddress
 		{
-			get => _ipAddress ?? (_ipAddress = IPAddress.Parse(Preferences.Get(nameof(IPAddress), "0.0.0.0")));
-			set
-			{
-				_ipAddress = value;
-				Preferences.Set(nameof(IPAddress), value.ToString());
-			}
+            get => GetSetting(ref _ipAddress);
+            set => SetSetting(ref _ipAddress, value);
 		}
 
         public static bool IsEnabled
