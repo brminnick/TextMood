@@ -68,6 +68,9 @@ namespace TextMood
 
         Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
         {
+            if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
+                return Task.CompletedTask;
+
             TextList.Insert(0, textMoodModel);
 
             var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
