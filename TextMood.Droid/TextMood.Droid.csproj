@@ -204,6 +204,12 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\packages\Xamarin.Forms.3.4.0.1008975\lib\MonoAndroid10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
+    <Reference Include="AsyncAwaitBestPractices">
+      <HintPath>..\packages\AsyncAwaitBestPractices.0.9.0\lib\netstandard\AsyncAwaitBestPractices.dll</HintPath>
+    </Reference>
+    <Reference Include="AsyncAwaitBestPractices.MVVM">
+      <HintPath>..\packages\AsyncAwaitBestPractices.MVVM.0.9.0\lib\netstandard\AsyncAwaitBestPractices.MVVM.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
