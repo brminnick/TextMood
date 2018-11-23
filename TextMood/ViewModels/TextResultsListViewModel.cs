@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
+using AsyncAwaitBestPractices.MVVM;
 using TextMood.Shared;
 
 using Xamarin.Forms;
@@ -18,8 +17,7 @@ namespace TextMood
         bool _isRefreshing;
         Color _backgroundColor;
         ObservableCollection<ITextMoodModel> _textList;
-        ICommand _pullToRefreshCommand;
-        Command<ITextMoodModel> _addTextMoodModelCommand;
+        ICommand _pullToRefreshCommand, _addTextMoodModelCommand;
         #endregion
 
         #region Events
@@ -28,12 +26,12 @@ namespace TextMood
         #endregion
 
         #region Properties
-        public Command<ITextMoodModel> AddTextMoodModelCommand => _addTextMoodModelCommand ??
-            (_addTextMoodModelCommand = new Command<ITextMoodModel>(async textMoodModel => await ExecuteAddTextMoodModelCommand(textMoodModel).ConfigureAwait(false)));
+        public ICommand AddTextMoodModelCommand => _addTextMoodModelCommand ??
+            (_addTextMoodModelCommand = new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand, false));
 
 
         public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
-            (_pullToRefreshCommand = new Command(async () => await ExecutePullToRefreshCommand().ConfigureAwait(false)));
+            (_pullToRefreshCommand = new AsyncCommand(ExecutePullToRefreshCommand, false));
 
         public ObservableCollection<ITextMoodModel> TextList
         {

@@ -4,8 +4,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using Xamarin.Forms;
+using AsyncAwaitBestPractices.MVVM;
 
 namespace TextMood
 {
@@ -29,10 +28,10 @@ namespace TextMood
 
         #region Properties
         public ICommand SaveButtonCommand => _saveButtonCommand ??
-            (_saveButtonCommand = new Command(async () => await ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText).ConfigureAwait(false)));
+            (_saveButtonCommand = new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText), false));
 
         public ICommand AutoDetectButtonCommand => _autoDetectButtonCommand ??
-            (_autoDetectButtonCommand = new Command(async () => await ExecuteAutoDetectButtonCommand().ConfigureAwait(false)));
+            (_autoDetectButtonCommand = new AsyncCommand(ExecuteAutoDetectButtonCommand, false));
 
         public bool IsSaveButtonEnabled => !IsBridgeConnectedSwitchToggled || (IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText) && !IsActivityIndicatorVisible);
 
