@@ -27,11 +27,11 @@ namespace TextMood
 
         #region Properties
         public ICommand AddTextMoodModelCommand => _addTextMoodModelCommand ??
-            (_addTextMoodModelCommand = new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand, continueOnCapturedContext: false));
+            (_addTextMoodModelCommand = new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand, false));
 
 
         public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
-            (_pullToRefreshCommand = new AsyncCommand(ExecutePullToRefreshCommand, continueOnCapturedContext: false));
+            (_pullToRefreshCommand = new AsyncCommand(ExecutePullToRefreshCommand, false));
 
         public ObservableCollection<ITextMoodModel> TextList
         {
