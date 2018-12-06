@@ -17,11 +17,6 @@ namespace TextMood.Backend.Common
             Text = text;
             UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
-
-        [Obsolete("Use Overloaded Constructor")]
-        public TextMoodModel()
-        {
-        }
         #endregion
 
         #region Properties

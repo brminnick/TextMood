@@ -5,12 +5,12 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.0" />
         <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
-        <PackageReference Include="Xamarin.Essentials" Version="0.11.0-preview" />
+        <PackageReference Include="Xamarin.Essentials" Version="1.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
-        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="0.9.0" />
+        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Pages\" />
