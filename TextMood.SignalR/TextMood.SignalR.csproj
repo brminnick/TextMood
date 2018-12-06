@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
         <UserSecretsId>8fd7d6a4-9bfc-42ac-840b-dc145be7f1cc</UserSecretsId>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
@@ -11,7 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="NPoco" Version="3.9.4" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.4" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
     <Import Project="..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems')" />

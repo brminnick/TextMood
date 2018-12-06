@@ -28,10 +28,10 @@ namespace TextMood
 
         #region Properties
         public ICommand SaveButtonCommand => _saveButtonCommand ??
-            (_saveButtonCommand = new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText), continueOnCapturedContext: false));
+            (_saveButtonCommand = new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText), false));
 
         public ICommand AutoDetectButtonCommand => _autoDetectButtonCommand ??
-            (_autoDetectButtonCommand = new AsyncCommand(ExecuteAutoDetectButtonCommand, continueOnCapturedContext: false));
+            (_autoDetectButtonCommand = new AsyncCommand(ExecuteAutoDetectButtonCommand, false));
 
         public bool IsSaveButtonEnabled => !IsBridgeConnectedSwitchToggled || (IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText) && !IsActivityIndicatorVisible);
 
