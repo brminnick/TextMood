@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json.Linq;
-
+using Refit;
 using Xamarin.Forms;
 using Xamarin.Essentials;
 
 namespace TextMood
 {
-    abstract class PhilipsHueBridgeAPIServices : BaseHttpClientService
+    abstract class PhilipsHueBridgeAPIServices : BaseApiService
     {
+        #region Constant Fields
+        readonly static Lazy<IPhilipsHueApi> _philipsHueApiClientHolder = new Lazy<IPhilipsHueApi>(() => RestService.For<IPhilipsHueApi>(""));
+        #endregion
+
+        #region Properties
+        static IPhilipsHueApi PhilipsHueApiClient => _philipsHueApiClientHolder.Value;
+        #endregion
+
         #region Methods
         public static async Task<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
         {
@@ -19,7 +26,7 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var lightsResponseJObject = await GetObjectFromAPI<JObject>($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights").ConfigureAwait(false);
+            var lightsResponseJObject = await ExecutePollyHttpFunction(() => PhilipsHueApiClient.GetNumberOfLights(philipsHueBridgeIPAddress, philipsHueBridgeUsername)).ConfigureAwait(false);
             return lightsResponseJObject.Count;
         }
 
@@ -30,12 +37,11 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var deviceType = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
-            return await PostObjectToAPI<List<PhilipsHueUsernameDiscoveryModel>, PhilipsHueDeviceTypeModel>($"http://{philipsHueBridgeIPAddress}/api", deviceType).ConfigureAwait(false);
+            var device = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
+            return await ExecutePollyHttpFunction(() => PhilipsHueApiClient.AutoDetectUsername(device, philipsHueBridgeIPAddress)).ConfigureAwait(false);
         }
 
-        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() =>
-            GetObjectFromAPI<List<PhilipsHueBridgeDiscoveryModel>>("https://www.meethue.com/api/nupnp");
+        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(AutoDetectBridges);
 
         public static async Task UpdateLightBulbColor(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername, int hue)
         {
@@ -56,7 +62,7 @@ namespace TextMood
 
             var lightAPIPutList = new List<Task>();
             for (int lightNumber = 1; lightNumber <= numberOfLights; lightNumber++)
-                lightAPIPutList.Add(PutObjectToAPI($"http://{philipsHueBridgeIPAddress}/api/{philipsHueBridgeUsername}/lights/{lightNumber}/state", hueRequest));
+                lightAPIPutList.Add(PhilipsHueApiClient.UpdateLightBulbColor(hueRequest, philipsHueBridgeIPAddress, philipsHueBridgeUsername, lightNumber));
 
             await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
         }
@@ -87,7 +93,7 @@ namespace TextMood
 
             try
             {
-                var httpResult = await GetObjectFromAPI($"http://{philipsHueBridgeIPAddress}").ConfigureAwait(false);
+                var httpResult = await ExecutePollyHttpFunction(PhilipsHueApiClient.GetPhilipsHueBridge).ConfigureAwait(false);
                 return httpResult.IsSuccessStatusCode;
             }
             catch
