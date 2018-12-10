@@ -186,6 +186,12 @@
     <Reference Include="AsyncAwaitBestPractices.MVVM">
       <HintPath>..\packages\AsyncAwaitBestPractices.MVVM.1.0.0\lib\netstandard\AsyncAwaitBestPractices.MVVM.dll</HintPath>
     </Reference>
+    <Reference Include="Polly">
+      <HintPath>..\packages\Polly.6.1.2\lib\netstandard2.0\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Refit">
+      <HintPath>..\packages\Refit.4.6.58\lib\netstandard2.0\Refit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
@@ -219,4 +225,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.3.4.0.1008975\build\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.3.4.0.1008975\build\Xamarin.Forms.targets')" />
+  <Import Project="..\packages\Refit.4.6.58\build\netstandard1.4\refit.targets" Condition="Exists('..\packages\Refit.4.6.58\build\netstandard1.4\refit.targets')" />
 </Project>

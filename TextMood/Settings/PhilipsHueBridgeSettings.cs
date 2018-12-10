@@ -1,6 +1,5 @@
-﻿using System.Net;
-
-using Xamarin.Essentials;
+﻿using System;
+using System.Net;
 
 namespace TextMood
 {
@@ -10,13 +9,17 @@ namespace TextMood
 		static bool _isEnabled;
 		static string _id, _username;
 		static IPAddress _ipAddress;
-		#endregion
+        #endregion
 
-		#region Properties
-		public static IPAddress IPAddress
+        #region Events
+        public static event EventHandler<IPAddress> IPAddressChanged;
+        #endregion
+
+        #region Properties
+        public static IPAddress IPAddress
 		{
             get => GetSetting(ref _ipAddress);
-            set => SetSetting(ref _ipAddress, value);
+            set => SetSetting(ref _ipAddress, value, OnIPAddressChanged);
 		}
 
         public static bool IsEnabled
@@ -36,6 +39,8 @@ namespace TextMood
 			get => GetSetting(ref _username);
 			set => SetSetting(ref _username, value);         
 		}
-		#endregion
-	}
+
+        static void OnIPAddressChanged() => IPAddressChanged?.Invoke(null, IPAddress);
+        #endregion
+    }
 }
