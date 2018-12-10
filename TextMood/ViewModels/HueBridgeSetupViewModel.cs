@@ -69,7 +69,7 @@ namespace TextMood
 
             try
             {
-                var autoDetectedBridgeList = await PhilipsHueBridgeAPIServices.AutoDetectBridges().ConfigureAwait(false);
+                var autoDetectedBridgeList = await PhilipsHueServices.AutoDetectBridges().ConfigureAwait(false);
 
                 foreach (var bridge in autoDetectedBridgeList)
                 {
@@ -107,7 +107,9 @@ namespace TextMood
 
                 if (IsBridgeConnectedSwitchToggled)
                 {
-                    var usernameResponseList = await PhilipsHueBridgeAPIServices.AutoDetectUsername(philipsHueBridgeIPAddress).ConfigureAwait(false);
+                    PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
+
+                    var usernameResponseList = await PhilipsHueServices.AutoDetectUsername().ConfigureAwait(false);
                     if (usernameResponseList is null)
                     {
                         OnSaveFailed(_bridgeNotFoundErrorMessage);
@@ -127,7 +129,6 @@ namespace TextMood
                         {
                             PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
                             PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
-                            PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
                             OnSaveCompleted();
                             return;
                         }

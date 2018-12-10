@@ -1,17 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 using Refit;
-using Xamarin.Forms;
+
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace TextMood
 {
-    abstract class PhilipsHueBridgeAPIServices : BaseApiService
+    abstract class PhilipsHueServices : BaseApiService
     {
         #region Constant Fields
-        readonly static Lazy<IPhilipsHueApi> _philipsHueApiClientHolder = new Lazy<IPhilipsHueApi>(() => RestService.For<IPhilipsHueApi>(""));
+        static readonly Lazy<IPhilipsHueApi> _philipsHueApiClientHolder = new Lazy<IPhilipsHueApi>(() => RestService.For<IPhilipsHueApi>("https://www.meethue.com/api"));
+        #endregion
+
+        #region Fields
+        static IPhilipsHueBridgeApi _philipsHueBridgeApiClient;
+        #endregion
+
+        #region Constructors
+        static PhilipsHueServices()
+        {
+            InitializePhilipsHueBridgeApiClient(PhilipsHueBridgeSettings.IPAddress);
+            PhilipsHueBridgeSettings.IPAddressChanged += HandleIPAddressChanged;
+        }
         #endregion
 
         #region Properties
@@ -19,33 +33,33 @@ namespace TextMood
         #endregion
 
         #region Methods
-        public static async Task<int> GetNumberOfLights(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername)
+        public static async Task<int> GetNumberOfLights(string philipsHueBridgeUsername)
         {
-            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
+            var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var lightsResponseJObject = await ExecutePollyHttpFunction(() => PhilipsHueApiClient.GetNumberOfLights(philipsHueBridgeIPAddress, philipsHueBridgeUsername)).ConfigureAwait(false);
+            var lightsResponseJObject = await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.GetNumberOfLights(philipsHueBridgeUsername)).ConfigureAwait(false);
             return lightsResponseJObject.Count;
         }
 
-        public static async Task<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername(string philipsHueBridgeIPAddress)
+        public static async Task<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername()
         {
-            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
+            var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
             var device = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
-            return await ExecutePollyHttpFunction(() => PhilipsHueApiClient.AutoDetectUsername(device, philipsHueBridgeIPAddress)).ConfigureAwait(false);
+            return await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.AutoDetectUsername(device)).ConfigureAwait(false);
         }
 
-        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(AutoDetectBridges);
+        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(PhilipsHueApiClient.AutoDetectBridges);
 
-        public static async Task UpdateLightBulbColor(string philipsHueBridgeIPAddress, string philipsHueBridgeUsername, int hue)
+        public static async Task UpdateLightBulbColor(string philipsHueBridgeUsername, int hue)
         {
-            var isBridgeReachable = await IsBridgeReachable(philipsHueBridgeIPAddress).ConfigureAwait(false);
+            var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
@@ -58,11 +72,11 @@ namespace TextMood
                 Brightness = 255
             };
 
-            var numberOfLights = await GetNumberOfLights(philipsHueBridgeIPAddress, philipsHueBridgeUsername).ConfigureAwait(false);
+            var numberOfLights = await GetNumberOfLights(philipsHueBridgeUsername).ConfigureAwait(false);
 
             var lightAPIPutList = new List<Task>();
             for (int lightNumber = 1; lightNumber <= numberOfLights; lightNumber++)
-                lightAPIPutList.Add(PhilipsHueApiClient.UpdateLightBulbColor(hueRequest, philipsHueBridgeIPAddress, philipsHueBridgeUsername, lightNumber));
+                lightAPIPutList.Add(_philipsHueBridgeApiClient.UpdateLightBulbColor(hueRequest, philipsHueBridgeUsername, lightNumber));
 
             await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
         }
@@ -86,14 +100,14 @@ namespace TextMood
             }
         }
 
-        static async ValueTask<bool> IsBridgeReachable(string philipsHueBridgeIPAddress)
+        static async ValueTask<bool> IsBridgeReachable()
         {
             if (Connectivity.NetworkAccess is NetworkAccess.None)
                 return false;
 
             try
             {
-                var httpResult = await ExecutePollyHttpFunction(PhilipsHueApiClient.GetPhilipsHueBridge).ConfigureAwait(false);
+                var httpResult = await ExecutePollyHttpFunction(_philipsHueBridgeApiClient.GetPhilipsHueBridgeResponse, 1).ConfigureAwait(false);
                 return httpResult.IsSuccessStatusCode;
             }
             catch
@@ -101,6 +115,12 @@ namespace TextMood
                 return false;
             }
         }
+
+        static void HandleIPAddressChanged(object sender, IPAddress ipAddress) => InitializePhilipsHueBridgeApiClient(ipAddress);
+
+        static void InitializePhilipsHueBridgeApiClient(string bridgeUrl) => _philipsHueBridgeApiClient = RestService.For<IPhilipsHueBridgeApi>(bridgeUrl);
+
+        static void InitializePhilipsHueBridgeApiClient(IPAddress bridgeIPAddress) => InitializePhilipsHueBridgeApiClient($"http://{bridgeIPAddress.ToString()}");
         #endregion
     }
 }

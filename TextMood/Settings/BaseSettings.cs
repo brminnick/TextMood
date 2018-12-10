@@ -25,17 +25,19 @@ namespace TextMood
 		protected static IPAddress GetSetting(ref IPAddress backingStore, [CallerMemberName]string propertyName = "") =>
 			backingStore ?? (backingStore = IPAddress.Parse(Preferences.Get(propertyName, "0.0.0.0")));
 
-		protected static void SetSetting(ref string backingStore, string value, [CallerMemberName]string propertyName = "")
-		{
+		protected static void SetSetting(ref string backingStore, string value, Action onSettingChanged = null, [CallerMemberName]string propertyName = "")
+        {
 			if (EqualityComparer<string>.Default.Equals(backingStore, value))
 				return;
 
 			backingStore = value;
 
 			Preferences.Set(propertyName, value);
-		}
 
-		protected static void SetSetting(ref bool backingStore, bool value, [CallerMemberName]string propertyName = "")
+            onSettingChanged?.Invoke();
+        }
+
+		protected static void SetSetting(ref bool backingStore, bool value, Action onSettingChanged = null, [CallerMemberName]string propertyName = "")
         {
 			if (EqualityComparer<bool>.Default.Equals(backingStore, value))
                 return;
@@ -43,9 +45,11 @@ namespace TextMood
             backingStore = value;
 
             Preferences.Set(propertyName, value);
+
+            onSettingChanged?.Invoke();
         }
 
-		protected static void SetSetting(ref int backingStore, int value, [CallerMemberName]string propertyName = "")
+		protected static void SetSetting(ref int backingStore, int value, Action onSettingChanged = null, [CallerMemberName]string propertyName = "")
         {
 			if (EqualityComparer<int>.Default.Equals(backingStore, value))
                 return;
@@ -53,27 +57,33 @@ namespace TextMood
             backingStore = value;
 
             Preferences.Set(propertyName, value);
+
+            onSettingChanged?.Invoke();
         }
 
-		protected static void SetSetting(ref DateTimeOffset backingStore, DateTimeOffset value, [CallerMemberName]string propertyName = "")
-		{
+		protected static void SetSetting(ref DateTimeOffset backingStore, DateTimeOffset value, Action onSettingChanged = null, [CallerMemberName]string propertyName = "")
+        {
 			if (EqualityComparer<DateTimeOffset>.Default.Equals(backingStore, value))
 				return;
 
 			backingStore = value;
 
 			Preferences.Set(propertyName, value.UtcDateTime);
-		}
 
-		protected static void SetSetting(ref IPAddress backingStore, IPAddress value, [CallerMemberName]string propertyName = "")
-		{
+            onSettingChanged?.Invoke();
+        }
+
+		protected static void SetSetting(ref IPAddress backingStore, IPAddress value, Action onSettingChanged = null, [CallerMemberName]string propertyName = "")
+        {
 			if (EqualityComparer<IPAddress>.Default.Equals(backingStore, value))
 				return;
 
 			backingStore = value;
 
 			Preferences.Set(propertyName, value.ToString());
-		}
+
+            onSettingChanged?.Invoke();
+        }
 		#endregion
 	}
 }
