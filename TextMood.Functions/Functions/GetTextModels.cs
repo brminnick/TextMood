@@ -14,7 +14,7 @@ namespace TextMood.Functions
     public static class GetTextModels
     {
         [FunctionName(nameof(GetTextModels))]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest httpRequest, ILogger log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest httpRequest, ILogger log)
         {
             log.LogInformation("Retrieving Text Models from Database");
 

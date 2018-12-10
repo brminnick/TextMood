@@ -55,13 +55,22 @@ namespace TextMood
         #region Methods
         async Task ExecutePullToRefreshCommand()
         {
-            await UpdateTextResultsListFromRemoteDatabase().ConfigureAwait(false);
+            IsRefreshing = true;
 
-            var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+            try
+            {
+                await UpdateTextResultsListFromRemoteDatabase().ConfigureAwait(false);
 
-            SetTextResultsListBackgroundColor(averageSentiment);
+                var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
-            await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
+                SetTextResultsListBackgroundColor(averageSentiment);
+
+                await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
+            }
+            finally
+            {
+                IsRefreshing = false;
+            }
         }
 
         Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
@@ -82,8 +91,6 @@ namespace TextMood
         {
             try
             {
-                IsRefreshing = true;
-
                 var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
@@ -98,10 +105,6 @@ namespace TextMood
             {
                 DebugServices.Report(e);
                 OnErrorTriggered(e.Message);
-            }
-            finally
-            {
-                IsRefreshing = false;
             }
         }
 
@@ -119,11 +122,9 @@ namespace TextMood
             try
             {
                 var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
-                var hue = PhilipsHueServices.ConvertToHue(red, green, blue);
+                var hue = Shared.PhilipsHueServices.ConvertToHue(red, green, blue);
 
-                await PhilipsHueBridgeAPIServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.IPAddress.ToString(),
-                                                                        PhilipsHueBridgeSettings.Username,
-                                                                        hue).ConfigureAwait(false);
+                await PhilipsHueServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.Username, hue).ConfigureAwait(false);
             }
             catch (Exception e)
             {
