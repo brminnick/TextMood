@@ -1,46 +1,56 @@
 ﻿using System;
 using System.Net;
 
+using AsyncAwaitBestPractices;
+
 namespace TextMood
 {
     abstract class PhilipsHueBridgeSettings : BaseSettings
-	{
-		#region Fields
-		static bool _isEnabled;
-		static string _id, _username;
-		static IPAddress _ipAddress;
+    {
+        #region Constant Fields
+        readonly static WeakEventManager<IPAddress> _ipAddressChangedEventManager = new WeakEventManager<IPAddress>();
+        #endregion
+
+        #region Fields
+        static bool _isEnabled;
+        static string _id, _username;
+        static IPAddress _ipAddress;
         #endregion
 
         #region Events
-        public static event EventHandler<IPAddress> IPAddressChanged;
+        public static event EventHandler<IPAddress> IPAddressChanged
+        {
+            add => _ipAddressChangedEventManager.AddEventHandler(value);
+            remove => _ipAddressChangedEventManager.RemoveEventHandler(value);
+        }
         #endregion
 
         #region Properties
         public static IPAddress IPAddress
-		{
+        {
             get => GetSetting(ref _ipAddress);
             set => SetSetting(ref _ipAddress, value, OnIPAddressChanged);
-		}
+        }
 
         public static bool IsEnabled
-		{
-			get => GetSetting(ref _isEnabled, true);
-			set => SetSetting(ref _isEnabled, value);
-		}
+        {
+            get => GetSetting(ref _isEnabled, true);
+            set => SetSetting(ref _isEnabled, value);
+        }
 
-		public static string Id
-		{
-			get => GetSetting(ref _id);
-			set => SetSetting(ref _id, value);
-		}
+        public static string Id
+        {
+            get => GetSetting(ref _id);
+            set => SetSetting(ref _id, value);
+        }
 
-		public static string Username
-		{
-			get => GetSetting(ref _username);
-			set => SetSetting(ref _username, value);         
-		}
+        public static string Username
+        {
+            get => GetSetting(ref _username);
+            set => SetSetting(ref _username, value);
+        }
 
-        static void OnIPAddressChanged() => IPAddressChanged?.Invoke(null, IPAddress);
+        static void OnIPAddressChanged() => _ipAddressChangedEventManager?.HandleEvent(null, IPAddress, nameof(IPAddressChanged));
         #endregion
     }
 }

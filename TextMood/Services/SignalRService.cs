@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace TextMood
 {
-	public abstract class SignalRService : BaseSignalRService
+	abstract class SignalRService : BaseSignalRService
 	{
 		public static async Task Subscribe()
 		{

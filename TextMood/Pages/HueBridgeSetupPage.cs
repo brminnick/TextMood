@@ -7,11 +7,14 @@ namespace TextMood
 	{
 		readonly Switch _isBridgeConnectedSwitch;
 		readonly Entry _bridgeIPEntry, _bridgeIDEntry;
-		readonly Button _saveButton, _cancelButton, _autoDetectButton;
 
 		public HueBridgeSetupPage()
 		{
-			var bridgeIDLabel = new Label { Text = "Philips Hue Bridge ID" };
+            ViewModel.SaveFailed += HandleSaveFailed;
+            ViewModel.SaveCompleted += HandleSaveCompleted;
+            ViewModel.AutoDiscoveryCompleted += HandleAutoDiscoveryCompleted;
+
+            var bridgeIDLabel = new Label { Text = "Philips Hue Bridge ID" };
 
 			_bridgeIDEntry = new Entry { Placeholder = "Eg: 001788fffe75a1d2" };
 			_bridgeIDEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.BridgeIDEntryText));
@@ -46,21 +49,22 @@ namespace TextMood
 				Children = { isBridgeConnectedLabel, _isBridgeConnectedSwitch }
 			};
 
-			_autoDetectButton = new Button
+			var autoDetectButton = new Button
 			{
 				Text = "Auto Detect",
 				Margin = new Thickness(0, 10)
 			};
-			_autoDetectButton.SetBinding(Button.CommandProperty, nameof(ViewModel.AutoDetectButtonCommand));
-			_autoDetectButton.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
+			autoDetectButton.SetBinding(Button.CommandProperty, nameof(ViewModel.AutoDetectButtonCommand));
+			autoDetectButton.SetBinding(IsEnabledProperty, nameof(ViewModel.AreEntriesEnabled));
 
-			_saveButton = new Button { Text = "Save" };
-			_saveButton.SetBinding(IsEnabledProperty, nameof(ViewModel.IsSaveButtonEnabled));
-			_saveButton.SetBinding(Button.CommandProperty, nameof(ViewModel.SaveButtonCommand));
+			var saveButton = new Button { Text = "Save" };
+			saveButton.SetBinding(IsEnabledProperty, nameof(ViewModel.IsSaveButtonEnabled));
+			saveButton.SetBinding(Button.CommandProperty, nameof(ViewModel.SaveButtonCommand));
 
-			_cancelButton = new Button { Text = "Cancel" };
+			var cancelButton = new Button { Text = "Cancel" };
+            cancelButton.Clicked += HandleCancelButtonClicked;
 
-			var activityIndicator = new ActivityIndicator { InputTransparent = true };
+            var activityIndicator = new ActivityIndicator { InputTransparent = true };
 			activityIndicator.SetBinding(IsVisibleProperty, nameof(ViewModel.IsActivityIndicatorVisible));
 			activityIndicator.SetBinding(ActivityIndicator.IsRunningProperty, nameof(ViewModel.IsActivityIndicatorVisible));
 
@@ -76,9 +80,9 @@ namespace TextMood
 					bridgeIPLabel,
 					_bridgeIPEntry,
 					switchStackLayout,
-					_autoDetectButton,
-					_saveButton,
-					_cancelButton
+					autoDetectButton,
+					saveButton,
+					cancelButton
 				}
 			};
 
@@ -96,22 +100,6 @@ namespace TextMood
 			_bridgeIDEntry.Text = PhilipsHueBridgeSettings.Id;
 			_bridgeIPEntry.Text = PhilipsHueBridgeSettings.IPAddress.ToString();
 			_isBridgeConnectedSwitch.IsToggled = PhilipsHueBridgeSettings.IsEnabled;
-		}
-
-		protected override void SubscribeEventHandlers()
-		{
-			ViewModel.SaveFailed += HandleSaveFailed;
-			ViewModel.SaveCompleted += HandleSaveCompleted;
-			_cancelButton.Clicked += HandleCancelButtonClicked;
-			ViewModel.AutoDiscoveryCompleted += HandleAutoDiscoveryCompleted;
-		}
-
-		protected override void UnsubscribeEventHandlers()
-		{
-			ViewModel.SaveFailed -= HandleSaveFailed;
-			ViewModel.SaveCompleted -= HandleSaveCompleted;
-			_cancelButton.Clicked -= HandleCancelButtonClicked;
-			ViewModel.AutoDiscoveryCompleted -= HandleAutoDiscoveryCompleted;
 		}
 
 		void HandleSaveFailed(object sender, string message) =>

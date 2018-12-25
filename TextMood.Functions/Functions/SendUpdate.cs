@@ -11,7 +11,7 @@ using TextMood.Shared;
 namespace TextMood.Functions
 {
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-    public abstract class SendUpdate : BaseSignalRService
+    abstract class SendUpdate : BaseSignalRService
     {
         #region Methods
         [FunctionName(nameof(SendUpdate))]

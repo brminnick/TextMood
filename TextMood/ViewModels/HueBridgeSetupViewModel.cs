@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AsyncAwaitBestPractices;
 using AsyncAwaitBestPractices.MVVM;
 
 namespace TextMood
@@ -12,6 +13,9 @@ namespace TextMood
     {
         #region Constant Fields
         const string _bridgeNotFoundErrorMessage = "Bridge Not Found";
+        readonly WeakEventManager _saveCompletedEventManager = new WeakEventManager();
+        readonly WeakEventManager<string> _saveFailedEventManager = new WeakEventManager<string>();
+        readonly WeakEventManager<string> _autoDiscoveryCompletedEventManager = new WeakEventManager<string>();
         #endregion
 
         #region Fields
@@ -21,9 +25,23 @@ namespace TextMood
         #endregion
 
         #region Events
-        public event EventHandler SaveCompleted;
-        public event EventHandler<string> SaveFailed;
-        public event EventHandler<string> AutoDiscoveryCompleted;
+        public event EventHandler SaveCompleted
+        {
+            add => _saveCompletedEventManager.AddEventHandler(value);
+            remove => _saveCompletedEventManager.RemoveEventHandler(value);
+        }
+
+        public event EventHandler<string> SaveFailed
+        {
+            add => _saveFailedEventManager.AddEventHandler(value);
+            remove => _saveFailedEventManager.RemoveEventHandler(value);
+        }
+
+        public event EventHandler<string> AutoDiscoveryCompleted
+        {
+            add => _autoDiscoveryCompletedEventManager.AddEventHandler(value);
+            remove => _autoDiscoveryCompletedEventManager.RemoveEventHandler(value);
+        }
         #endregion
 
         #region Properties
@@ -176,9 +194,9 @@ namespace TextMood
         }
 
         bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);
-        void OnSaveFailed(string message) => SaveFailed?.Invoke(this, message);
-        void OnSaveCompleted() => SaveCompleted?.Invoke(this, EventArgs.Empty);
-        void OnAutoDiscoveryCompleted(string message) => AutoDiscoveryCompleted?.Invoke(this, message);
+        void OnSaveFailed(string message) => _saveFailedEventManager?.HandleEvent(this, message, nameof(SaveFailed));
+        void OnSaveCompleted() => _saveCompletedEventManager?.HandleEvent(this, EventArgs.Empty, nameof(SaveCompleted));
+        void OnAutoDiscoveryCompleted(string message) => _autoDiscoveryCompletedEventManager?.HandleEvent(this, message, nameof(AutoDiscoveryCompleted));
         #endregion
     }
 }
