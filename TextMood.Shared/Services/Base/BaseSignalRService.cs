@@ -2,18 +2,25 @@
 using System.Data;
 using System.Threading.Tasks;
 
+using AsyncAwaitBestPractices;
+
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace TextMood.Shared
 {
-    public abstract class BaseSignalRService
+    abstract class BaseSignalRService
     {
         #region Constant Fields
-        static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
+        readonly static WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
+        readonly static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
         #endregion
 
         #region Events
-        public static event EventHandler<string> InitializationFailed;
+        public static event EventHandler<string> InitializationFailed
+        {
+            add => _initializationFailedEventManager.AddEventHandler(value);
+            remove => _initializationFailedEventManager.RemoveEventHandler(value);
+        }
         #endregion
 
         #region Properties
@@ -41,7 +48,7 @@ namespace TextMood.Shared
             return Hub;
         }
 
-        static void OnInitializationFailed(string message) => InitializationFailed?.Invoke(null, message);
+        static void OnInitializationFailed(string message) => _initializationFailedEventManager?.HandleEvent(null, message, nameof(InitializationFailed));
         #endregion
     }
 }

@@ -4,15 +4,20 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AsyncAwaitBestPractices;
 using AsyncAwaitBestPractices.MVVM;
 using TextMood.Shared;
-
 using Xamarin.Forms;
 
 namespace TextMood
 {
     public class TextResultsListViewModel : BaseViewModel
     {
+        #region Constant Fields
+        readonly WeakEventManager<string> _errorTriggeredEventManager = new WeakEventManager<string>();
+        readonly WeakEventManager _philipsHueBridgeConnectionFailedEventManager = new WeakEventManager();
+        #endregion
+
         #region Fields
         bool _isRefreshing;
         Color _backgroundColor;
@@ -21,8 +26,17 @@ namespace TextMood
         #endregion
 
         #region Events
-        public event EventHandler<string> ErrorTriggered;
-        public event EventHandler PhilipsHueBridgeConnectionFailed;
+        public event EventHandler<string> ErrorTriggered
+        {
+            add => _errorTriggeredEventManager.AddEventHandler(value);
+            remove => _errorTriggeredEventManager.RemoveEventHandler(value);
+        }
+
+        public event EventHandler PhilipsHueBridgeConnectionFailed
+        {
+            add => _philipsHueBridgeConnectionFailedEventManager.AddEventHandler(value);
+            remove => _philipsHueBridgeConnectionFailedEventManager.RemoveEventHandler(value);
+        }
         #endregion
 
         #region Properties
@@ -133,8 +147,8 @@ namespace TextMood
             }
         }
 
-        void OnErrorTriggered(string message) => ErrorTriggered?.Invoke(this, message);
-        void OnPhilipsHueBridgeConnectionFailed() => PhilipsHueBridgeConnectionFailed?.Invoke(this, EventArgs.Empty);
+        void OnErrorTriggered(string message) => _errorTriggeredEventManager?.HandleEvent(this, message, nameof(ErrorTriggered));
+        void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager?.HandleEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
         #endregion
     }
 }
