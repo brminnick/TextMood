@@ -6,12 +6,12 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-        <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
-        <PackageReference Include="Xamarin.Essentials" Version="1.0.0" />
+        <PackageReference Include="Xamarin.Forms" Version="3.6.0.264807" />
+        <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.1.0" />
-        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="2.0.0" />
-        <PackageReference Include="Refit" Version="4.6.58" />
-        <PackageReference Include="Polly" Version="6.1.2" />
+        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="2.1.0" />
+        <PackageReference Include="Refit" Version="4.6.99" />
+        <PackageReference Include="Polly" Version="7.1.0" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Pages\" />
