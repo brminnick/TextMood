@@ -43,6 +43,9 @@
         <AndroidTlsProvider>btls</AndroidTlsProvider>
         <AotAssemblies>true</AotAssemblies>
         <EnableLLVM>true</EnableLLVM>
+        <BundleAssemblies>true</BundleAssemblies>
+        <EnableProguard>true</EnableProguard>
+        <AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />

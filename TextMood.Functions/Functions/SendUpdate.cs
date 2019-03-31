@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.SignalR.Client;
@@ -11,12 +12,19 @@ using TextMood.Shared;
 namespace TextMood.Functions
 {
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-    abstract class SendUpdate : BaseSignalRService
+    public class SendUpdate : BaseSignalRService
     {
+        static ILogger _log;
+
+        public SendUpdate() => InitializationFailed += HandleInitializationFailed;
+
         #region Methods
         [FunctionName(nameof(SendUpdate))]
         public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, ILogger log)
         {
+            if (_log is null)
+                _log = log;
+
             try
             {
                 var hub = await GetConnection().ConfigureAwait(false);
@@ -28,6 +36,8 @@ namespace TextMood.Functions
                 throw;
             }
         }
+
+        void HandleInitializationFailed(object sender, string e) => _log?.LogInformation($"Initialization Failed: {e}");
         #endregion
     }
 }
