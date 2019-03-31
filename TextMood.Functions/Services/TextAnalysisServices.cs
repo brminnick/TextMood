@@ -27,7 +27,7 @@ namespace TextMood.Functions
         {
             var sentimentDocument = new MultiLanguageBatchInput(new List<MultiLanguageInput> { { new MultiLanguageInput(id: "1", text: text) } });
 
-            var sentimentResults = await TextAnalyticsApiClient.SentimentAsync(sentimentDocument).ConfigureAwait(false);
+            var sentimentResults = await TextAnalyticsApiClient.SentimentAsync(multiLanguageBatchInput: sentimentDocument).ConfigureAwait(false);
 
             if (sentimentResults?.Errors?.Any() ?? false)
             {

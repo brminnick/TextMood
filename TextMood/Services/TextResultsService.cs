@@ -8,7 +8,7 @@ namespace TextMood
     abstract class TextResultsService : BaseApiService
     {
         #region Constant Fields
-        static Lazy<ITextModelApi> _textModelApiClientHolder => new Lazy<ITextModelApi>(() => RestService.For<ITextModelApi>(BackendConstants.GetEmotionResultsAPIUrl));
+        readonly static Lazy<ITextModelApi> _textModelApiClientHolder = new Lazy<ITextModelApi>(() => RestService.For<ITextModelApi>(BackendConstants.GetEmotionResultsAPIUrl));
         #endregion
 
         #region Properties
