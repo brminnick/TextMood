@@ -31,7 +31,7 @@ namespace TextMood.Shared
         #region Methods
         protected static async ValueTask<HubConnection> GetConnection()
         {
-            if (HubConnectionState.Equals(HubConnectionState.Disconnected))
+            if (HubConnectionState is HubConnectionState.Disconnected)
             {
                 try
                 {
