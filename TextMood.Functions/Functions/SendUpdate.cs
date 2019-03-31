@@ -10,7 +10,7 @@ using TextMood.Shared;
 namespace TextMood.Functions
 {
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-    abstract class SendUpdate : BaseSignalRService
+    public class SendUpdate : BaseSignalRService
     {
         [FunctionName(nameof(SendUpdate))]
         public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, ILogger log)
