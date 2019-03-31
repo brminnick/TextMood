@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace TextMood.Shared
 {
-    abstract class BaseSignalRService
+    public abstract class BaseSignalRService
     {
         #region Constant Fields
         readonly static WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
