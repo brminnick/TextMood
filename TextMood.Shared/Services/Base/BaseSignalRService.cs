@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Threading.Tasks;
 
 using AsyncAwaitBestPractices;
@@ -24,7 +23,7 @@ namespace TextMood.Shared
         #endregion
 
         #region Properties
-        public static ConnectionState HubConnectionState { get; private set; } = ConnectionState.Closed;
+        public static HubConnectionState HubConnectionState => Hub.State;
 
         static HubConnection Hub => _hubHolder.Value;
         #endregion
@@ -32,12 +31,11 @@ namespace TextMood.Shared
         #region Methods
         protected static async ValueTask<HubConnection> GetConnection()
         {
-            if (HubConnectionState.Equals(ConnectionState.Closed))
+            if (HubConnectionState.Equals(HubConnectionState.Disconnected))
             {
                 try
                 {
                     await Hub.StartAsync().ConfigureAwait(false);
-                    HubConnectionState = ConnectionState.Open;
                 }
                 catch (Exception e)
                 {
