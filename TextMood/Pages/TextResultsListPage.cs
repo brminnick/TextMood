@@ -28,14 +28,16 @@ namespace TextMood
                 ItemTemplate = new DataTemplate(typeof(TextMoodViewCell)),
                 IsPullToRefreshEnabled = true,
                 HasUnevenRows = true,
+                BackgroundColor = Color.Transparent
             };
             _textModelList.ItemTapped += HandleItemTapped;
             _textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(ViewModel.IsRefreshing));
             _textModelList.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.TextList));
             _textModelList.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.PullToRefreshCommand));
-            _textModelList.SetBinding(ListView.BackgroundColorProperty, nameof(ViewModel.BackgroundColor));
 
             Title = PageTitles.TextResultsPage;
+
+            this.SetBinding(BackgroundColorProperty, nameof(ViewModel.BackgroundColor));
 
             Content = _textModelList;
         }
@@ -81,8 +83,8 @@ namespace TextMood
 
         void HandleItemTapped(object sender, ItemTappedEventArgs e)
         {
-            var listView = sender as ListView;
-            listView.SelectedItem = null;
+            if (sender is ListView listView)
+                listView.SelectedItem = null;
         }
         #endregion
     }
