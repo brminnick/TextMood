@@ -40,7 +40,7 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var lightsResponseJObject = await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.GetNumberOfLights(philipsHueBridgeUsername)).ConfigureAwait(false);
+            var lightsResponseJObject = await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.GetNumberOfLights(philipsHueBridgeUsername), 1).ConfigureAwait(false);
             return lightsResponseJObject.Count;
         }
 
@@ -52,10 +52,10 @@ namespace TextMood
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
             var device = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
-            return await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.AutoDetectUsername(device)).ConfigureAwait(false);
+            return await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.AutoDetectUsername(device), 1).ConfigureAwait(false);
         }
 
-        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(PhilipsHueApiClient.AutoDetectBridges);
+        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(PhilipsHueApiClient.AutoDetectBridges, 1);
 
         public static async Task UpdateLightBulbColor(string philipsHueBridgeUsername, int hue)
         {
