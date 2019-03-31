@@ -69,8 +69,6 @@ namespace TextMood
         #region Methods
         async Task ExecutePullToRefreshCommand()
         {
-            IsRefreshing = true;
-
             try
             {
                 await UpdateTextResultsListFromRemoteDatabase().ConfigureAwait(false);

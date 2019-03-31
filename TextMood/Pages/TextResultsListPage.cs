@@ -28,7 +28,8 @@ namespace TextMood
                 ItemTemplate = new DataTemplate(typeof(TextMoodViewCell)),
                 IsPullToRefreshEnabled = true,
                 HasUnevenRows = true,
-                BackgroundColor = Color.Transparent
+                BackgroundColor = Color.Transparent,
+                RefreshControlColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor
             };
             _textModelList.ItemTapped += HandleItemTapped;
             _textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(ViewModel.IsRefreshing));
