@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28714.193
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TextMood.Shared", "TextMood.Shared\TextMood.Shared.shproj", "{DAA78ECE-0390-4E5A-A392-3130F55E43EC}"
 EndProject
@@ -13,16 +13,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.iOS", "TextMood.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Droid", "TextMood.Droid\TextMood.Droid.csproj", "{693FDC28-39BB-4EA3-8E6E-DD2476F38CA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood", "TextMood\TextMood.csproj", "{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood", "TextMood\TextMood.csproj", "{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{E951BA08-2202-406E-9A31-3D08BCF53160}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{E951BA08-2202-406E-9A31-3D08BCF53160}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.SignalR", "TextMood.SignalR\TextMood.SignalR.csproj", "{D67A8B95-7CD9-4162-BB55-882F39BB22BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood.SignalR", "TextMood.SignalR\TextMood.SignalR.csproj", "{D67A8B95-7CD9-4162-BB55-882F39BB22BC}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TextMood.Backend.Shared", "TextMood.Backend.Shared\TextMood.Backend.Shared.shproj", "{CBBC7617-BD41-47C7-92E1-66530E944C89}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TextMood.Backend.Shared\TextMood.Backend.Shared.projitems*{cbbc7617-bd41-47c7-92e1-66530e944c89}*SharedItemsImports = 13
 		TextMood.Shared\TextMood.Shared.projitems*{daa78ece-0390-4e5a-a392-3130f55e43ec}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
