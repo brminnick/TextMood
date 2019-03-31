@@ -23,15 +23,11 @@ namespace TextMood.Backend.Common
             Task<List<TextMoodModel>> getAllTextModelsFunction(Database dataContext) => dataContext.FetchAsync<TextMoodModel>();
         }
 
-        public static TextMoodModel GetTextModel(string id)
+        public static Task<TextMoodModel> GetTextModel(string id)
         {
-            return PerformDatabaseFunction(getTextModelFunction).GetAwaiter().GetResult();
+            return PerformDatabaseFunction(getTextModelFunction);
 
-            Task<TextMoodModel> getTextModelFunction(Database dataContext)
-            {
-                var textModel = dataContext.Fetch<TextMoodModel>().Where(x=>x.Id.Equals(id)).FirstOrDefault();
-                return Task.FromResult(textModel);
-            }
+            Task<TextMoodModel> getTextModelFunction(Database dataContext) => dataContext.SingleByIdAsync<TextMoodModel>(id);
         }
 
         public static Task<TextMoodModel> InsertTextModel(TextMoodModel text)
@@ -58,7 +54,7 @@ namespace TextMood.Backend.Common
 
             async Task<TextMoodModel> patchTextModelFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(text.Id)).FirstOrDefault();
+                var textFromDatabase = await GetTextModel(text.Id).ConfigureAwait(false);
 
                 textFromDatabase.Id = text.Id;
                 textFromDatabase.SentimentScore = text.SentimentScore;
@@ -79,7 +75,7 @@ namespace TextMood.Backend.Common
 
             async Task<TextMoodModel> deleteTextModelFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = await GetTextModel(id).ConfigureAwait(false);
 
                 textFromDatabase.IsDeleted = true;
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
@@ -96,7 +92,7 @@ namespace TextMood.Backend.Common
 
             async Task<TextMoodModel> removetextDatabaseFunction(Database dataContext)
             {
-                var textFromDatabase = dataContext.Fetch<TextMoodModel>().Where(x => x.Id.Equals(id)).FirstOrDefault();
+                var textFromDatabase = await GetTextModel(id).ConfigureAwait(false);
 
                 await dataContext.DeleteAsync(textFromDatabase).ConfigureAwait(false);
 
@@ -110,7 +106,7 @@ namespace TextMood.Backend.Common
             {
                 try
                 {
-                    return await databaseFunction?.Invoke(connection) ?? default;
+                    return await (databaseFunction?.Invoke(connection)).ConfigureAwait(false) ?? default;
                 }
                 catch (Exception e)
                 {
