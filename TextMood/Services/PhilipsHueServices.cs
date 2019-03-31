@@ -100,7 +100,7 @@ namespace TextMood
             }
         }
 
-        static async ValueTask<bool> IsBridgeReachable()
+        static async Task<bool> IsBridgeReachable()
         {
             if (Connectivity.NetworkAccess is NetworkAccess.None)
                 return false;
