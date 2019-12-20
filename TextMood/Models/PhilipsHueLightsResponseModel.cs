@@ -1,169 +1,195 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace TextMood
 {
-	public class PhilipsHueLightsResponseModel
-	{
-		[JsonProperty("state")]
-		public State State { get; set; }
+    public class PhilipsHueLightsResponseModel
+    {
+        public PhilipsHueLightsResponseModel(State state, Swupdate swupdate, string type, string name, string modelid, string manufacturername, string productname, Capabilities capabilities, Config config, string uniqueid, string swversion, string swconfigid, string productid) =>
+            (State, Swupdate, Type, Name, Modelid, Manufacturername, Productname, Capabilities, Config, Uniqueid, Swversion, Swconfigid, Productid) = (state, swupdate, type, name, modelid, manufacturername, productname, capabilities, config, uniqueid, swversion, swconfigid, productid);
 
-		[JsonProperty("swupdate")]
-		public Swupdate Swupdate { get; set; }
+        [JsonProperty("state")]
+        public State State { get; }
 
-		[JsonProperty("type")]
-		public string Type { get; set; }
+        [JsonProperty("swupdate")]
+        public Swupdate Swupdate { get; }
 
-		[JsonProperty("name")]
-		public string Name { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; }
 
-		[JsonProperty("modelid")]
-		public string Modelid { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; }
 
-		[JsonProperty("manufacturername")]
-		public string Manufacturername { get; set; }
+        [JsonProperty("modelid")]
+        public string Modelid { get; }
 
-		[JsonProperty("productname")]
-		public string Productname { get; set; }
+        [JsonProperty("manufacturername")]
+        public string Manufacturername { get; }
 
-		[JsonProperty("capabilities")]
-		public Capabilities Capabilities { get; set; }
+        [JsonProperty("productname")]
+        public string Productname { get; }
 
-		[JsonProperty("config")]
-		public Config Config { get; set; }
+        [JsonProperty("capabilities")]
+        public Capabilities Capabilities { get; }
 
-		[JsonProperty("uniqueid")]
-		public string Uniqueid { get; set; }
+        [JsonProperty("config")]
+        public Config Config { get; }
 
-		[JsonProperty("swversion")]
-		public string Swversion { get; set; }
+        [JsonProperty("uniqueid")]
+        public string Uniqueid { get; }
 
-		[JsonProperty("swconfigid")]
-		public string Swconfigid { get; set; }
+        [JsonProperty("swversion")]
+        public string Swversion { get; }
 
-		[JsonProperty("productid")]
-		public string Productid { get; set; }
-	}
+        [JsonProperty("swconfigid")]
+        public string Swconfigid { get; }
 
-	public class Capabilities
-	{
-		[JsonProperty("certified")]
-		public bool Certified { get; set; }
+        [JsonProperty("productid")]
+        public string Productid { get; }
+    }
 
-		[JsonProperty("control")]
-		public Control Control { get; set; }
+    public class Capabilities
+    {
+        public Capabilities(bool certified, Control control, Streaming streaming) =>
+            (Certified, Control, Streaming) = (certified, control, streaming);
 
-		[JsonProperty("streaming")]
-		public Streaming Streaming { get; set; }
-	}
+        [JsonProperty("certified")]
+        public bool Certified { get; }
 
-	public class Control
-	{
-		[JsonProperty("mindimlevel")]
-		public long Mindimlevel { get; set; }
+        [JsonProperty("control")]
+        public Control Control { get; }
 
-		[JsonProperty("maxlumen")]
-		public long Maxlumen { get; set; }
+        [JsonProperty("streaming")]
+        public Streaming Streaming { get; }
+    }
 
-		[JsonProperty("colorgamuttype")]
-		public string Colorgamuttype { get; set; }
+    public class Control
+    {
+        public Control(long mindimlevel, long maxlumen, string colorgamuttype, List<List<double>> colorgamut, Ct ct) =>
+            (Mindimlevel, Maxlumen, Colorgamuttype, Colorgamut, Ct) = (mindimlevel, maxlumen, colorgamuttype, colorgamut, ct);
 
-		[JsonProperty("colorgamut")]
-		public List<List<double>> Colorgamut { get; set; }
+        [JsonProperty("mindimlevel")]
+        public long Mindimlevel { get; }
 
-		[JsonProperty("ct")]
-		public Ct Ct { get; set; }
-	}
+        [JsonProperty("maxlumen")]
+        public long Maxlumen { get; }
 
-	public class Ct
-	{
-		[JsonProperty("min")]
-		public long Min { get; set; }
+        [JsonProperty("colorgamuttype")]
+        public string Colorgamuttype { get; }
 
-		[JsonProperty("max")]
-		public long Max { get; set; }
-	}
+        [JsonProperty("colorgamut")]
+        public List<List<double>> Colorgamut { get; }
 
-	public class Streaming
-	{
-		[JsonProperty("renderer")]
-		public bool Renderer { get; set; }
+        [JsonProperty("ct")]
+        public Ct Ct { get; }
+    }
 
-		[JsonProperty("proxy")]
-		public bool Proxy { get; set; }
-	}
+    public class Ct
+    {
+        public Ct(long min, long max) => (Min, Max) = (min, max);
 
-	public class Config
-	{
-		[JsonProperty("archetype")]
-		public string Archetype { get; set; }
+        [JsonProperty("min")]
+        public long Min { get; }
 
-		[JsonProperty("function")]
-		public string Function { get; set; }
+        [JsonProperty("max")]
+        public long Max { get; }
+    }
 
-		[JsonProperty("direction")]
-		public string Direction { get; set; }
-	}
+    public class Streaming
+    {
+        public Streaming(bool renderer, bool proxy) => (Renderer, Proxy) = (renderer, proxy);
 
-	public class State
-	{
-		[JsonProperty("on")]
-		public bool On { get; set; }
+        [JsonProperty("renderer")]
+        public bool Renderer { get; }
 
-		[JsonProperty("bri")]
-		public long Brightness { get; set; }
+        [JsonProperty("proxy")]
+        public bool Proxy { get; }
+    }
 
-		[JsonProperty("hue")]
-		public long Hue { get; set; }
+    public class Config
+    {
+        public Config(string archetype, string function, string direction) =>
+            (Archetype, Function, Direction) = (archetype, function, direction);
 
-		[JsonProperty("sat")]
-		public long Saturation { get; set; }
+        [JsonProperty("archetype")]
+        public string Archetype { get; }
 
-		[JsonProperty("effect")]
-		public string Effect { get; set; }
+        [JsonProperty("function")]
+        public string Function { get; }
 
-		[JsonProperty("xy")]
-		public List<double> CIEColorCordinates { get; set; }
+        [JsonProperty("direction")]
+        public string Direction { get; }
+    }
 
-		[JsonProperty("ct")]
-		public long ColorTemperature { get; set; }
+    public class State
+    {
+        public State(bool on, long bri, long hue, long sat, string effect, IEnumerable<double> xy, long ct, string alert, string colormode, string mode, bool reachable) =>
+            (On, Brightness, Hue, Saturation, Effect, CIEColorCordinates, ColorTemperature, Alert, ColorMode, Mode, IsReachable) = (on, bri, hue, sat, effect, xy.ToList(), ct, alert, colormode, mode, reachable);
 
-		[JsonProperty("alert")]
-		public string Alert { get; set; } = "none";
 
-		[JsonProperty("colormode")]
-		public string ColorMode { get; set; }
+        [JsonProperty("on")]
+        public bool On { get; }
 
-		[JsonProperty("mode")]
-		public string Mode { get; set; }
+        [JsonProperty("bri")]
+        public long Brightness { get; }
 
-		[JsonProperty("reachable")]
-		public bool IsReachable { get; set; }
-	}
+        [JsonProperty("hue")]
+        public long Hue { get; }
 
-	public class LightModel
-	{
-		[JsonProperty("on")]
-		public bool On { get; set; }
+        [JsonProperty("sat")]
+        public long Saturation { get; }
 
-		[JsonProperty("bri")]
-		public long Brightness { get; set; }
+        [JsonProperty("effect")]
+        public string Effect { get; }
 
-		[JsonProperty("hue")]
-		public long Hue { get; set; }
+        [JsonProperty("xy")]
+        public List<double> CIEColorCordinates { get; }
 
-		[JsonProperty("sat")]
-		public long Saturation { get; set; }
-	}
+        [JsonProperty("ct")]
+        public long ColorTemperature { get; }
 
-	public class Swupdate
-	{
-		[JsonProperty("state")]
-		public string State { get; set; }
+        [JsonProperty("alert")]
+        public string Alert { get; } = "none";
 
-		[JsonProperty("lastinstall")]
-		public DateTimeOffset Lastinstall { get; set; }
-	}
+        [JsonProperty("colormode")]
+        public string ColorMode { get; }
+
+        [JsonProperty("mode")]
+        public string Mode { get; }
+
+        [JsonProperty("reachable")]
+        public bool IsReachable { get; }
+    }
+
+    public class LightModel
+    {
+        public LightModel(bool on, long bri, long hue, long sat) =>
+            (On, Brightness, Hue, Saturation) = (on, bri, hue, sat);
+
+        [JsonProperty("on")]
+        public bool On { get; }
+
+        [JsonProperty("bri")]
+        public long Brightness { get; }
+
+        [JsonProperty("hue")]
+        public long Hue { get; }
+
+        [JsonProperty("sat")]
+        public long Saturation { get; }
+    }
+
+    public class Swupdate
+    {
+        public Swupdate(string state, DateTimeOffset lastinstall) =>
+            (State, Lastinstall) = (state, lastinstall);
+
+        [JsonProperty("state")]
+        public string State { get; }
+
+        [JsonProperty("lastinstall")]
+        public DateTimeOffset Lastinstall { get; }
+    }
 }

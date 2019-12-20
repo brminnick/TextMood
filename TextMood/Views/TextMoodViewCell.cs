@@ -6,11 +6,8 @@ namespace TextMood
 {
     public class TextMoodViewCell : ViewCell
     {
-        #region Constant Fields
         readonly Label _titleLabel, _descriptionLabel;
-        #endregion
 
-        #region Constructors
         public TextMoodViewCell()
         {
             _titleLabel = new Label { FontAttributes = FontAttributes.Bold };
@@ -38,20 +35,17 @@ namespace TextMood
 
             View = gridLayout;
         }
-        #endregion
 
-        #region Methods
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
 
-            var textModel = BindingContext as TextMoodModel;
+            var textModel = (TextMoodModel)BindingContext;
 
             var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
 
             _titleLabel.Text = textModel.Text;
             _descriptionLabel.Text = $"{emoji} {textModel.CreatedAt.ToLocalTime().ToString("g")}";
         }
-        #endregion
     }
 }

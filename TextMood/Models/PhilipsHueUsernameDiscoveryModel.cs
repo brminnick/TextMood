@@ -4,28 +4,36 @@ namespace TextMood
 {
     public class PhilipsHueUsernameDiscoveryModel
     {
-		[JsonProperty("error")]
-		public Error Error { get; set; }
+        public PhilipsHueUsernameDiscoveryModel(Error error, Success success) =>
+            (Error, Success) = (error, success);
 
-		[JsonProperty("success")]
-        public Success Success { get; set; }
+        [JsonProperty("error")]
+        public Error Error { get; }
+
+        [JsonProperty("success")]
+        public Success Success { get; }
     }
 
-	public class Error
+    public class Error
     {
+        public Error(long type, string address, string description) =>
+            (Type, Address, Description) = (type, address, description);
+
         [JsonProperty("type")]
-        public long Type { get; set; }
+        public long Type { get; }
 
         [JsonProperty("address")]
-        public string Address { get; set; }
+        public string Address { get; }
 
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string Description { get; }
     }
 
-	public class Success
+    public class Success
     {
+        public Success(string username) => Username = username;
+
         [JsonProperty("username")]
-		public string Username { get; set; }
+        public string Username { get; }
     }
 }

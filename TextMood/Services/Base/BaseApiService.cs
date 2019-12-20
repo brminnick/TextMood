@@ -8,7 +8,7 @@ namespace TextMood
 {
     abstract class BaseApiService
     {
-        protected static Task<T> ExecutePollyHttpFunction<T>(Func<Task<T>> action, int numRetries = 2)
+        protected static Task<T> AttemptAndRetry<T>(Func<Task<T>> action, int numRetries = 2)
         {
             return Policy
                     .Handle<WebException>()

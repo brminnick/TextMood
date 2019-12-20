@@ -4,10 +4,13 @@ namespace TextMood
 {
     public class PhilipsHueBridgeDiscoveryModel
     {
-		[JsonProperty("id")]
-        public string Id { get; set; }
+        public PhilipsHueBridgeDiscoveryModel(string id, string internalipaddress) =>
+            (Id, InternalIPAddress) = (id, internalipaddress);
+
+        [JsonProperty("id")]
+        public string Id { get; }
 
         [JsonProperty("internalipaddress")]
-		public string InternalIPAddress { get; set; }
+        public string InternalIPAddress { get; }
     }
 }

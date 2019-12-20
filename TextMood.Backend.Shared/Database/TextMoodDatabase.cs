@@ -1,40 +1,31 @@
 ﻿using System;
-using System.Linq;
-using System.Diagnostics;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-
-using NPoco;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace TextMood.Backend.Common
 {
     public static class TextMoodDatabase
     {
-        #region Constant Fields
-        readonly static string _connectionString = Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString");
-        #endregion
+        readonly static string _connectionString = Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString") ?? string.Empty;
 
-        #region Methods
-        public static Task<List<TextMoodModel>> GetAllTextModels()
+        public static async Task<List<TextMoodModel>> GetAllTextModels()
         {
-            return PerformDatabaseFunction(getAllTextModelsFunction);
-
-            Task<List<TextMoodModel>> getAllTextModelsFunction(Database dataContext) => dataContext.FetchAsync<TextMoodModel>();
+            using var context = new DatabaseContext();
+            return await context.TextMoodModels.ToListAsync().ConfigureAwait(false);
         }
 
-        public static Task<TextMoodModel> GetTextModel(string id)
+        public static async Task<TextMoodModel> GetTextModel(string id)
         {
-            return PerformDatabaseFunction(getTextModelFunction);
-
-            Task<TextMoodModel> getTextModelFunction(Database dataContext) => dataContext.SingleByIdAsync<TextMoodModel>(id);
+            using var context = new DatabaseContext();
+            return await context.TextMoodModels.SingleAsync(x => x.Id.Equals(id)).ConfigureAwait(false);
         }
 
         public static Task<TextMoodModel> InsertTextModel(TextMoodModel text)
         {
-            return PerformDatabaseFunction(insertTextModelFunction);
+            return PerformDatabaseWrite(insertTextModelFunction);
 
-            async Task<TextMoodModel> insertTextModelFunction(Database dataContext)
+            async Task<TextMoodModel> insertTextModelFunction(DatabaseContext context)
             {
                 if (string.IsNullOrWhiteSpace(text.Id))
                     text.Id = Guid.NewGuid().ToString();
@@ -42,7 +33,7 @@ namespace TextMood.Backend.Common
                 text.CreatedAt = DateTimeOffset.UtcNow;
                 text.UpdatedAt = DateTimeOffset.UtcNow;
 
-                await dataContext.InsertAsync(text).ConfigureAwait(false);
+                await context.AddAsync(text).ConfigureAwait(false);
 
                 return text;
             }
@@ -50,9 +41,9 @@ namespace TextMood.Backend.Common
 
         public static Task<TextMoodModel> PatchTextModel(TextMoodModel text)
         {
-            return PerformDatabaseFunction(patchTextModelFunction);
+            return PerformDatabaseWrite(patchTextModelFunction);
 
-            async Task<TextMoodModel> patchTextModelFunction(Database dataContext)
+            async Task<TextMoodModel> patchTextModelFunction(DatabaseContext context)
             {
                 var textFromDatabase = await GetTextModel(text.Id).ConfigureAwait(false);
 
@@ -62,25 +53,24 @@ namespace TextMood.Backend.Common
 
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
 
-                await dataContext.UpdateAsync(textFromDatabase).ConfigureAwait(false);
+                context.Update(textFromDatabase);
 
                 return textFromDatabase;
             }
-
         }
 
         public static Task<TextMoodModel> DeleteTextModel(string id)
         {
-            return PerformDatabaseFunction(deleteTextModelFunction);
+            return PerformDatabaseWrite(deleteTextModelFunction);
 
-            async Task<TextMoodModel> deleteTextModelFunction(Database dataContext)
+            async Task<TextMoodModel> deleteTextModelFunction(DatabaseContext context)
             {
                 var textFromDatabase = await GetTextModel(id).ConfigureAwait(false);
 
                 textFromDatabase.IsDeleted = true;
                 textFromDatabase.UpdatedAt = DateTimeOffset.UtcNow;
 
-                await dataContext.UpdateAsync(textFromDatabase).ConfigureAwait(false);
+                context.Update(textFromDatabase);
 
                 return textFromDatabase;
             }
@@ -88,37 +78,33 @@ namespace TextMood.Backend.Common
 
         public static Task<TextMoodModel> RemoveTextModel(string id)
         {
-            return PerformDatabaseFunction(removetextDatabaseFunction);
+            return PerformDatabaseWrite(removetextDatabaseFunction);
 
-            async Task<TextMoodModel> removetextDatabaseFunction(Database dataContext)
+            async Task<TextMoodModel> removetextDatabaseFunction(DatabaseContext context)
             {
                 var textFromDatabase = await GetTextModel(id).ConfigureAwait(false);
 
-                await dataContext.DeleteAsync(textFromDatabase).ConfigureAwait(false);
+                context.Remove(textFromDatabase);
 
                 return textFromDatabase;
             }
         }
 
-        static async Task<TResult> PerformDatabaseFunction<TResult>(Func<Database, Task<TResult>> databaseFunction) where TResult : class
+        static async Task<TResult> PerformDatabaseWrite<TResult>(Func<DatabaseContext, Task<TResult>> databaseFunction) where TResult : class?
         {
-            using (var connection = new Database(_connectionString, DatabaseType.SqlServer2012, SqlClientFactory.Instance))
-            {
-                try
-                {
-                    return await (databaseFunction?.Invoke(connection)).ConfigureAwait(false) ?? default;
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("");
-                    Debug.WriteLine(e.Message);
-                    Debug.WriteLine(e.ToString());
-                    Debug.WriteLine("");
+            using var connection = new DatabaseContext();
 
-                    throw;
-                }
-            }
+            var result = await databaseFunction(connection).ConfigureAwait(false);
+            await connection.SaveChangesAsync().ConfigureAwait(false);
+
+            return result;
+        }
+
+        class DatabaseContext : DbContext
+        {
+            public DbSet<TextMoodModel>? TextMoodModels { get; set; }
+
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(_connectionString);
         }
     }
-    #endregion
 }

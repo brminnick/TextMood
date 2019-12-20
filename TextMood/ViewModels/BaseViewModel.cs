@@ -2,29 +2,33 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using AsyncAwaitBestPractices;
 
 namespace TextMood
 {
-	public class BaseViewModel : INotifyPropertyChanged
-	{
-		#region Events
-		public event PropertyChangedEventHandler PropertyChanged;
-		#endregion
+    public class BaseViewModel : INotifyPropertyChanged
+    {
+        readonly WeakEventManager _propertyChangedEventManager = new WeakEventManager();
 
-		#region Methods
-		protected void SetProperty<T>(ref T backingStore, T value, Action onChanged = null, [CallerMemberName] string propertyname = "")
-		{
-			if (EqualityComparer<T>.Default.Equals(backingStore, value))
-				return;
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add => _propertyChangedEventManager.AddEventHandler(value);
+            remove => _propertyChangedEventManager.RemoveEventHandler(value);
+        }
 
-			backingStore = value;
+        protected void SetProperty<T>(ref T backingStore, in T value, in Action? onChanged = null, [CallerMemberName] in string propertyname = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+                return;
 
-			onChanged?.Invoke();
+            backingStore = value;
 
-			OnPropertyChanged(propertyname);
-		}
+            onChanged?.Invoke();
 
-		protected void OnPropertyChanged([CallerMemberName]string name = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-		#endregion
-	}
+            OnPropertyChanged(propertyname);
+        }
+
+        protected void OnPropertyChanged([CallerMemberName]in string name = "") =>
+            _propertyChangedEventManager.HandleEvent(this, new PropertyChangedEventArgs(name), nameof(INotifyPropertyChanged.PropertyChanged));
+    }
 }
