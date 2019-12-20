@@ -32,7 +32,7 @@ namespace TextMood.Functions
                 InitializationFailed -= HandleInitializationFailed;
             }
 
-            void HandleInitializationFailed(object sender, string e) => log.LogInformation($"Initialization Failed: {e}");
+            void HandleInitializationFailed(object? sender, string message) => log.LogInformation($"Initialization Failed: {message}");
         }
     }
 }

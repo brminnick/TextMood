@@ -12,27 +12,17 @@ namespace TextMood
 {
     abstract class PhilipsHueServices : BaseApiService
     {
-        #region Constant Fields
         static readonly Lazy<IPhilipsHueApi> _philipsHueApiClientHolder = new Lazy<IPhilipsHueApi>(() => RestService.For<IPhilipsHueApi>("https://www.meethue.com/api"));
-        #endregion
 
-        #region Fields
-        static IPhilipsHueBridgeApi _philipsHueBridgeApiClient;
-        #endregion
+        static IPhilipsHueBridgeApi _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(PhilipsHueBridgeSettings.IPAddress);
 
-        #region Constructors
         static PhilipsHueServices()
-        {
-            InitializePhilipsHueBridgeApiClient(PhilipsHueBridgeSettings.IPAddress);
+        {            
             PhilipsHueBridgeSettings.IPAddressChanged += HandleIPAddressChanged;
         }
-        #endregion
 
-        #region Properties
         static IPhilipsHueApi PhilipsHueApiClient => _philipsHueApiClientHolder.Value;
-        #endregion
 
-        #region Methods
         public static async Task<int> GetNumberOfLights(string philipsHueBridgeUsername)
         {
             var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
@@ -40,7 +30,7 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var lightsResponseJObject = await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.GetNumberOfLights(philipsHueBridgeUsername), 1).ConfigureAwait(false);
+            var lightsResponseJObject = await AttemptAndRetry(() => _philipsHueBridgeApiClient.GetNumberOfLights(philipsHueBridgeUsername), 1).ConfigureAwait(false);
             return lightsResponseJObject.Count;
         }
 
@@ -51,11 +41,11 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var device = new PhilipsHueDeviceTypeModel { DeviceType = string.Empty };
-            return await ExecutePollyHttpFunction(() => _philipsHueBridgeApiClient.AutoDetectUsername(device), 1).ConfigureAwait(false);
+            var device = new PhilipsHueDeviceTypeModel(string.Empty);
+            return await AttemptAndRetry(() => _philipsHueBridgeApiClient.AutoDetectUsername(device), 1).ConfigureAwait(false);
         }
 
-        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => ExecutePollyHttpFunction(PhilipsHueApiClient.AutoDetectBridges, 1);
+        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => AttemptAndRetry(PhilipsHueApiClient.AutoDetectBridges, 1);
 
         public static async Task UpdateLightBulbColor(string philipsHueBridgeUsername, int hue)
         {
@@ -64,13 +54,7 @@ namespace TextMood
             if (!isBridgeReachable)
                 throw new Exception(GetBridgeNotFoundErrorMessage());
 
-            var hueRequest = new LightModel
-            {
-                On = true,
-                Hue = hue,
-                Saturation = hue >= 0 ? 255 : 0,
-                Brightness = 255
-            };
+            var hueRequest = new LightModel(true, 255, hue, hue >= 0 ? 255 : 0);
 
             var numberOfLights = await GetNumberOfLights(philipsHueBridgeUsername).ConfigureAwait(false);
 
@@ -85,19 +69,14 @@ namespace TextMood
         {
             const string bridgeNotFoundError = "Bridge Not Found.";
 
-            switch (Device.Idiom)
+            return Device.Idiom switch
             {
-                case TargetIdiom.Desktop:
-                    return $"{bridgeNotFoundError} Ensure this computer and the Philips Bridge are connected to the same local network.";
-                case TargetIdiom.Phone:
-                    return $"{bridgeNotFoundError} Ensure this phone and the Philips Bridge are connected to the same local network.";
-                case TargetIdiom.Tablet:
-                    return $"{bridgeNotFoundError} Ensure this tablet and the Philips Bridge are connected to the same local network.";
-                case TargetIdiom.TV:
-                    return $"{bridgeNotFoundError} Ensure this TV and the Philips Bridge are connected to the same local network.";
-                default:
-                    return $"{bridgeNotFoundError} Ensure this app and the Philips Bridge are connected to the same local network.";
-            }
+                TargetIdiom.Desktop => $"{bridgeNotFoundError} Ensure this computer and the Philips Bridge are connected to the same local network.",
+                TargetIdiom.Phone => $"{bridgeNotFoundError} Ensure this phone and the Philips Bridge are connected to the same local network.",
+                TargetIdiom.Tablet => $"{bridgeNotFoundError} Ensure this tablet and the Philips Bridge are connected to the same local network.",
+                TargetIdiom.TV => $"{bridgeNotFoundError} Ensure this TV and the Philips Bridge are connected to the same local network.",
+                _ => $"{bridgeNotFoundError} Ensure this app and the Philips Bridge are connected to the same local network.",
+            };
         }
 
         static async Task<bool> IsBridgeReachable()
@@ -107,7 +86,7 @@ namespace TextMood
 
             try
             {
-                var httpResult = await ExecutePollyHttpFunction(_philipsHueBridgeApiClient.GetPhilipsHueBridgeResponse, 1).ConfigureAwait(false);
+                var httpResult = await AttemptAndRetry(_philipsHueBridgeApiClient.GetPhilipsHueBridgeResponse, 1).ConfigureAwait(false);
                 return httpResult.IsSuccessStatusCode;
             }
             catch
@@ -116,11 +95,10 @@ namespace TextMood
             }
         }
 
-        static void HandleIPAddressChanged(object sender, IPAddress ipAddress) => InitializePhilipsHueBridgeApiClient(ipAddress);
+        static void HandleIPAddressChanged(object sender, IPAddress ipAddress) => _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(ipAddress);
 
-        static void InitializePhilipsHueBridgeApiClient(string bridgeUrl) => _philipsHueBridgeApiClient = RestService.For<IPhilipsHueBridgeApi>(bridgeUrl);
+        static IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(string bridgeUrl) => RestService.For<IPhilipsHueBridgeApi>(bridgeUrl);
 
-        static void InitializePhilipsHueBridgeApiClient(IPAddress bridgeIPAddress) => InitializePhilipsHueBridgeApiClient($"http://{bridgeIPAddress.ToString()}");
-        #endregion
+        static IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(IPAddress bridgeIPAddress) => InitializePhilipsHueBridgeApiClient($"http://{bridgeIPAddress.ToString()}");
     }
 }

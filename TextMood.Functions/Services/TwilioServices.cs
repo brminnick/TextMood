@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Linq;
-
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-
 using Twilio.TwiML;
 
 namespace TextMood.Functions
 {
     public static class TwilioServices
     {
-        public static string GetTextMessageBody(string httpRequestBody, ILogger log)
+        public static string? GetTextMessageBody(string httpRequestBody, ILogger log)
         {
-            var formValues = httpRequestBody?.Split('&')
-                                ?.Select(value => value.Split('='))
-                                ?.ToDictionary(pair => Uri.UnescapeDataString(pair[0]).Replace("+", " "),
+            var formValues = httpRequestBody.Split('&')
+                                .Select(value => value.Split('='))
+                                .ToDictionary(pair => Uri.UnescapeDataString(pair[0]).Replace("+", " "),
                                               pair => Uri.UnescapeDataString(pair[1]).Replace("+", " "));
 
             foreach (var value in formValues)

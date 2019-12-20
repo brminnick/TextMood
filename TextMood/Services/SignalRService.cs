@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace TextMood
 {
-	public abstract class SignalRService : BaseSignalRService
+    public abstract class SignalRService : BaseSignalRService
 	{
 		public static async Task Subscribe()
 		{
@@ -27,8 +27,8 @@ namespace TextMood
 
 		static TextResultsListViewModel GetTextResultsListViewModel()
 		{
-			var navigationPage = Application.Current.MainPage as NavigationPage;
-			return navigationPage.RootPage.BindingContext as TextResultsListViewModel;
+			var navigationPage = (NavigationPage)Application.Current.MainPage;
+			return (TextResultsListViewModel)navigationPage.RootPage.BindingContext;
 		}
 	}
 }

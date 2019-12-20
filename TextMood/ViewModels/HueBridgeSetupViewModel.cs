@@ -11,20 +11,15 @@ namespace TextMood
 {
     public class HueBridgeSetupViewModel : BaseViewModel
     {
-        #region Constant Fields
         const string _bridgeNotFoundErrorMessage = "Bridge Not Found";
         readonly WeakEventManager _saveCompletedEventManager = new WeakEventManager();
         readonly WeakEventManager<string> _saveFailedEventManager = new WeakEventManager<string>();
         readonly WeakEventManager<string> _autoDiscoveryCompletedEventManager = new WeakEventManager<string>();
-        #endregion
 
-        #region Fields
         bool _isBridgeConnectedSwitchToggled, _isActivityIndicatorVisible;
-        string _bridgeIDEntryText, _bridgeIPEntryText;
-        ICommand _autoDetectButtonCommand, _saveButtonCommand;
-        #endregion
+        string _bridgeIDEntryText = string.Empty, _bridgeIPEntryText = string.Empty;
+        ICommand? _autoDetectButtonCommand, _saveButtonCommand;
 
-        #region Events
         public event EventHandler SaveCompleted
         {
             add => _saveCompletedEventManager.AddEventHandler(value);
@@ -42,14 +37,12 @@ namespace TextMood
             add => _autoDiscoveryCompletedEventManager.AddEventHandler(value);
             remove => _autoDiscoveryCompletedEventManager.RemoveEventHandler(value);
         }
-        #endregion
 
-        #region Properties
-        public ICommand SaveButtonCommand => _saveButtonCommand ??
-            (_saveButtonCommand = new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText), continueOnCapturedContext: false));
+        public ICommand SaveButtonCommand =>
+            _saveButtonCommand ??= new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText));
 
-        public ICommand AutoDetectButtonCommand => _autoDetectButtonCommand ??
-            (_autoDetectButtonCommand = new AsyncCommand(ExecuteAutoDetectButtonCommand, continueOnCapturedContext: false));
+        public ICommand AutoDetectButtonCommand =>
+            _autoDetectButtonCommand ??= new AsyncCommand(ExecuteAutoDetectButtonCommand);
 
         public bool IsSaveButtonEnabled => !IsBridgeConnectedSwitchToggled || (IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText) && !IsActivityIndicatorVisible);
 
@@ -78,9 +71,7 @@ namespace TextMood
             get => _isBridgeConnectedSwitchToggled;
             set => SetProperty(ref _isBridgeConnectedSwitchToggled, value, NotifyIsBridgeConnectedSwitchToggledProperties);
         }
-        #endregion
 
-        #region Methods
         async Task ExecuteAutoDetectButtonCommand()
         {
             IsActivityIndicatorVisible = true;
@@ -194,9 +185,8 @@ namespace TextMood
         }
 
         bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);
-        void OnSaveFailed(string message) => _saveFailedEventManager?.HandleEvent(this, message, nameof(SaveFailed));
-        void OnSaveCompleted() => _saveCompletedEventManager?.HandleEvent(this, EventArgs.Empty, nameof(SaveCompleted));
-        void OnAutoDiscoveryCompleted(string message) => _autoDiscoveryCompletedEventManager?.HandleEvent(this, message, nameof(AutoDiscoveryCompleted));
-        #endregion
+        void OnSaveFailed(string message) => _saveFailedEventManager.HandleEvent(this, message, nameof(SaveFailed));
+        void OnSaveCompleted() => _saveCompletedEventManager.HandleEvent(this, EventArgs.Empty, nameof(SaveCompleted));
+        void OnAutoDiscoveryCompleted(string message) => _autoDiscoveryCompletedEventManager.HandleEvent(this, message, nameof(AutoDiscoveryCompleted));
     }
 }
