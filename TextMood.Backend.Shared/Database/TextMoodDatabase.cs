@@ -102,6 +102,8 @@ namespace TextMood.Backend.Common
 
         class DatabaseContext : DbContext
         {
+            public DatabaseContext() => Database.EnsureCreated();
+
             public DbSet<TextMoodModel>? TextMoodModels { get; set; }
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(_connectionString);
