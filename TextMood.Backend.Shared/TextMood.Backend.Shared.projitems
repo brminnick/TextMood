@@ -9,8 +9,8 @@
     <Import_RootNamespace>TextMood.Backend.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Database\TextMoodDatabase.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\TextMoodModel.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+    <Compile Include="$(MSBuildThisFileDirectory)Database\TextMoodDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TextMoodModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Database\" />
