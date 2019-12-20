@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
-
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using TextMood.Backend.Common;
+using TextMood.Shared;
 
 namespace TextMood.SignalR
 {
     public class TextMoodModelHub : Hub
     {
-        public void SendNewTextMoodModel(TextMoodModel textMoodModel) => Clients.All.SendAsync(nameof(SendNewTextMoodModel), textMoodModel);
+        public Task SendNewTextMoodModel(TextMoodModel textMoodModel) =>
+            Clients.All.SendAsync(SignalRConstants.SendNewTextMoodModelName, textMoodModel);
     }
 }

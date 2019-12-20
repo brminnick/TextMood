@@ -15,15 +15,6 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.0" />
     </ItemGroup>
-    <ItemGroup>
-      <Content Remove="local.settings.json" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="local.settings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-      </None>
-    </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
     <Import Project="..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems')" />
 </Project>
