@@ -15,7 +15,8 @@ namespace TextMood.SignalR
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.UseSignalR(route => route.MapHub<TextMoodModelHub>($"/{SignalRConstants.TextMoodModelHubName}"));
+            app.UseRouting();
+            app.UseEndpoints(route => route.MapHub<TextMoodModelHub>($"/{SignalRConstants.TextMoodModelHubName}"));
         }
     }
 }

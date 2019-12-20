@@ -39,6 +39,6 @@ namespace TextMood.Shared
             return Hub;
         }
 
-        static void OnInitializationFailed(string message) => _initializationFailedEventManager?.HandleEvent(null, message, nameof(InitializationFailed));
+        static void OnInitializationFailed(string message) => _initializationFailedEventManager.HandleEvent(null, message, nameof(InitializationFailed));
     }
 }

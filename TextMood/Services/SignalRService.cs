@@ -21,7 +21,7 @@ namespace TextMood
 			connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
 			{
 				var textResultsListViewModel = GetTextResultsListViewModel();
-				textResultsListViewModel?.AddTextMoodModelCommand?.Execute(textMoodModel);
+				textResultsListViewModel.AddTextMoodModelCommand.Execute(textMoodModel);
 			});
 		}
 
