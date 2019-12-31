@@ -35,9 +35,8 @@ namespace TextMood
         public ICommand AddTextMoodModelCommand =>
             _addTextMoodModelCommand ??= new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand);
 
-
         public ICommand PullToRefreshCommand =>
-            _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
+                    _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
 
         public ObservableCollection<ITextMoodModel> TextList { get; } = new ObservableCollection<ITextMoodModel>();
 

@@ -46,6 +46,6 @@ namespace TextMood
             set => Preferences.Set(nameof(Username), value);
         }
 
-        static void OnIPAddressChanged() => _ipAddressChangedEventManager?.HandleEvent(null, IPAddress, nameof(IPAddressChanged));
+        static void OnIPAddressChanged() => _ipAddressChangedEventManager.HandleEvent(null, IPAddress, nameof(IPAddressChanged));
     }
 }
