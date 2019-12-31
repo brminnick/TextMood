@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using TextMood.Shared;
 
 using Xamarin.Forms;
@@ -8,11 +8,6 @@ namespace TextMood
 {
     public class TextResultsListPage : BaseContentPage<TextResultsListViewModel>
     {
-        #region Constant Fields
-        readonly ListView _textModelList;
-        #endregion
-
-        #region Constructors
         public TextResultsListPage()
         {
             ViewModel.ErrorTriggered += HandleErrorTriggered;
@@ -23,7 +18,7 @@ namespace TextMood
             setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
             ToolbarItems.Add(setupPageToolbarItem);
 
-            _textModelList = new ListView(ListViewCachingStrategy.RecycleElement)
+            var textModelList = new ListView(ListViewCachingStrategy.RecycleElement)
             {
                 ItemTemplate = new DataTemplate(typeof(TextMoodViewCell)),
                 IsPullToRefreshEnabled = true,
@@ -31,25 +26,24 @@ namespace TextMood
                 BackgroundColor = Color.Transparent,
                 RefreshControlColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor
             };
-            _textModelList.ItemTapped += HandleItemTapped;
-            _textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(ViewModel.IsRefreshing));
-            _textModelList.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.TextList));
-            _textModelList.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.PullToRefreshCommand));
+            textModelList.ItemTapped += HandleItemTapped;
+            textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(TextResultsListViewModel.IsRefreshing));
+            textModelList.SetBinding(ListView.ItemsSourceProperty, nameof(TextResultsListViewModel.TextList));
+            textModelList.SetBinding(ListView.RefreshCommandProperty, nameof(TextResultsListViewModel.PullToRefreshCommand));
 
             Title = PageTitles.TextResultsPage;
 
-            this.SetBinding(BackgroundColorProperty, nameof(ViewModel.BackgroundColor));
+            this.SetBinding(BackgroundColorProperty, nameof(TextResultsListViewModel.BackgroundColor));
 
-            Content = _textModelList;
+            Content = textModelList;
         }
-        #endregion
 
-        #region Methods
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            Device.BeginInvokeOnMainThread(_textModelList.BeginRefresh);
+            if(Content is ListView listView)
+                Device.BeginInvokeOnMainThread(listView.BeginRefresh);
 
             await SignalRService.Subscribe().ConfigureAwait(false);
         }
@@ -62,7 +56,7 @@ namespace TextMood
 
                 if (selectionResult)
                 {
-                    NavigateToSetupPage();
+                    await NavigateToSetupPage();
                 }
                 else
                 {
@@ -72,21 +66,20 @@ namespace TextMood
             });
         }
 
-        void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) => NavigateToSetupPage();
+        async void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) => await NavigateToSetupPage();
 
-        void NavigateToSetupPage() => Device.BeginInvokeOnMainThread(async () => await Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
+        async void HandleErrorTriggered(object sender, string message) => await DisplayErrorMessage(message);
 
-        void HandleErrorTriggered(object sender, string message) => DisplayErrorMessage(message);
+        async void HandleInitializationFailed(object sender, string message) => await DisplayErrorMessage(message);
 
-        void HandleInitializationFailed(object sender, string message) => DisplayErrorMessage(message);
+        Task NavigateToSetupPage() => Device.InvokeOnMainThreadAsync(() => Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
 
-        void DisplayErrorMessage(string message) => Device.BeginInvokeOnMainThread(async () => await DisplayAlert("Error", message, "OK "));
+        Task DisplayErrorMessage(string message) => Device.InvokeOnMainThreadAsync(() => DisplayAlert("Error", message, "OK "));
 
         void HandleItemTapped(object sender, ItemTappedEventArgs e)
         {
             if (sender is ListView listView)
                 listView.SelectedItem = null;
         }
-        #endregion
     }
 }
