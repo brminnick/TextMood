@@ -12,5 +12,12 @@ namespace TextMood
 
             MainPage = navigationPage;
         }
+
+        protected override async void OnStart()
+        {
+            base.OnStart();
+
+            await SignalRService.Subscribe().ConfigureAwait(false);
+        }
     }
 }

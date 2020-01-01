@@ -12,9 +12,6 @@ namespace TextMood
     {
         public static async Task Subscribe()
         {
-            if (HubConnectionState is HubConnectionState.Connected)
-                return;
-
             var connection = await GetConnection().ConfigureAwait(false);
 
             connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
