@@ -1,9 +1,6 @@
 ﻿using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.SignalR.Client;
-
 using TextMood.Shared;
-
 using Xamarin.Forms;
 
 namespace TextMood

@@ -1,16 +1,26 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 using AsyncAwaitBestPractices;
-
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 
 namespace TextMood.Shared
 {
     public abstract class BaseSignalRService
     {
         readonly static WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
-        readonly static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() => new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).Build());
+        readonly static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() =>
+        {
+            return new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).ConfigureLogging(logging =>
+            {
+                logging.AddProvider(new DebugLoggerProvider());
+                logging.SetMinimumLevel(LogLevel.Debug);
+            }).Build();
+        });
 
         public static event EventHandler<string> InitializationFailed
         {
@@ -39,7 +49,6 @@ namespace TextMood.Shared
                 catch (Exception e)
                 {
                     OnInitializationFailed(e.Message);
-                    throw;
                 }
             }
 
@@ -47,5 +56,36 @@ namespace TextMood.Shared
         }
 
         static void OnInitializationFailed(string message) => _initializationFailedEventManager.HandleEvent(null, message, nameof(InitializationFailed));
+
+        class DebugLoggerProvider : ILoggerProvider
+        {
+            private readonly ConcurrentDictionary<string, ILogger> _loggers;
+
+            public DebugLoggerProvider() => _loggers = new ConcurrentDictionary<string, ILogger>();
+
+            public void Dispose()
+            {
+            }
+
+            public ILogger CreateLogger(string categoryName) => _loggers.GetOrAdd(categoryName, new DebugLogger());
+
+            class DebugLogger : ILogger
+            {
+                public void Log<TState>(
+                   LogLevel logLevel, EventId eventId,
+                   TState state, Exception exception,
+                   Func<TState, Exception, string> formatter)
+                {
+                    if (formatter != null)
+                    {
+                        Debug.WriteLine(formatter(state, exception));
+                    }
+                }
+
+                public bool IsEnabled(LogLevel logLevel) => true;
+
+                public IDisposable? BeginScope<TState>(TState state) => null;
+            }
+        }
     }
 }

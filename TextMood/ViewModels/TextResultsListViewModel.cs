@@ -33,10 +33,10 @@ namespace TextMood
         }
 
         public ICommand AddTextMoodModelCommand =>
-            _addTextMoodModelCommand ??= new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand);
+            _addTextMoodModelCommand ??= new AsyncCommand<TextMoodModel>(ExecuteAddTextMoodModelCommand);
 
         public ICommand PullToRefreshCommand =>
-                    _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
+            _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
 
         public ObservableCollection<ITextMoodModel> TextList { get; } = new ObservableCollection<ITextMoodModel>();
 
@@ -70,7 +70,7 @@ namespace TextMood
             }
         }
 
-        Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
+        Task ExecuteAddTextMoodModelCommand(TextMoodModel textMoodModel)
         {
             if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
                 return Task.CompletedTask;
