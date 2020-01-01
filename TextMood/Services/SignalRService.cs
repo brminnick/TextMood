@@ -15,11 +15,10 @@ namespace TextMood
             {
                 await GetTextResultsListViewModel().AddTextMoodModel(textMoodModel).ConfigureAwait(false);
 
-                if (GetTextResultsListPage().Content is RefreshView refreshView
-                    && refreshView.Content is CollectionView collectionView)
-                {
-                    await Device.InvokeOnMainThreadAsync(() => collectionView.ScrollTo(0)).ConfigureAwait(false);
-                }
+                var refreshView = (RefreshView)GetTextResultsListPage().Content;
+                var collectionView = (CollectionView)refreshView.Content;
+
+                await Device.InvokeOnMainThreadAsync(() => collectionView.ScrollTo(0)).ConfigureAwait(false);
             });
         }
 
