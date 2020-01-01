@@ -6,23 +6,24 @@ namespace TextMood
 {
     public class TextMoodModel : ITextMoodModel
     {
-        public TextMoodModel(string text) : this()
+        public TextMoodModel(string text)
         {
             Text = text;
+            Id = Guid.NewGuid().ToString();
+            UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Overloaded Constructor")]
         public TextMoodModel()
         {
-            Id = Guid.NewGuid().ToString();
-            UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
+
         }
 
-        public string Id { get; }
-        public string Text { get; } = string.Empty;
-        public double? SentimentScore { get; }
-        public DateTimeOffset CreatedAt { get; }
-        public DateTimeOffset UpdatedAt { get; }
-        public bool IsDeleted { get; }
+        public string Id { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public double? SentimentScore { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
