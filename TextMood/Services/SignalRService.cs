@@ -11,17 +11,24 @@ namespace TextMood
         {
             var connection = await GetConnection().ConfigureAwait(false);
 
-            connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, textMoodModel =>
+            connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, async textMoodModel =>
             {
-                var textResultsListViewModel = GetTextResultsListViewModel();
-                textResultsListViewModel.AddTextMoodModelCommand.Execute(textMoodModel);
+                await GetTextResultsListViewModel().AddTextMoodModel(textMoodModel).ConfigureAwait(false);
+
+                if (GetTextResultsListPage().Content is RefreshView refreshView
+                    && refreshView.Content is CollectionView collectionView)
+                {
+                    await Device.InvokeOnMainThreadAsync(() => collectionView.ScrollTo(0)).ConfigureAwait(false);
+                }
             });
         }
 
-        static TextResultsListViewModel GetTextResultsListViewModel()
+        static TextResultsListPage GetTextResultsListPage()
         {
             var navigationPage = (NavigationPage)Application.Current.MainPage;
-            return (TextResultsListViewModel)navigationPage.RootPage.BindingContext;
+            return (TextResultsListPage)navigationPage.RootPage;
         }
+
+        static TextResultsListViewModel GetTextResultsListViewModel() => (TextResultsListViewModel)GetTextResultsListPage().BindingContext;
     }
 }

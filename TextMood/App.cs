@@ -1,17 +1,8 @@
-﻿using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-
-namespace TextMood
+﻿namespace TextMood
 {
     public class App : Xamarin.Forms.Application
     {
-        public App()
-        {
-            var navigationPage = new BaseNavigationPage(new TextResultsListPage());
-            navigationPage.On<iOS>().SetPrefersLargeTitles(true);
-
-            MainPage = navigationPage;
-        }
+        public App() => MainPage = new BaseNavigationPage(new TextResultsListPage());
 
         protected override async void OnStart()
         {

@@ -1,51 +1,53 @@
 ﻿using Xamarin.Forms;
-
 using TextMood.Shared;
 
 namespace TextMood
 {
-    public class TextMoodViewCell : ViewCell
+    public class TextMoodDataTemplateSelector : DataTemplateSelector
     {
-        readonly Label _titleLabel, _descriptionLabel;
+        protected override DataTemplate OnSelectTemplate(object item, BindableObject container) => new TextMoodDataTemplate((ITextMoodModel)item);
 
-        public TextMoodViewCell()
+        class TextMoodDataTemplate : DataTemplate
         {
-            _titleLabel = new Label { FontAttributes = FontAttributes.Bold };
-
-            _descriptionLabel = new Label();
-
-            var gridLayout = new Grid
+            public TextMoodDataTemplate(ITextMoodModel textMoodModel) : base(() => CreateDataTemplate(textMoodModel))
             {
-                Padding = new Thickness(20, 5),
-                RowSpacing = 2,
-                ColumnSpacing = 10,
 
-                RowDefinitions = {
+            }
+            static Grid CreateDataTemplate(ITextMoodModel textModel)
+            {
+                var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
+
+                var titleLabel = new Label
+                {
+                    FontAttributes = FontAttributes.Bold,
+                    Text = textModel.Text
+                };
+                var descriptionLabel = new Label
+                {
+                    Text = $"{emoji} {textModel.CreatedAt.ToLocalTime().ToString("g")}"
+                };
+
+                var gridLayout = new Grid
+                {
+                    Padding = new Thickness(20, 5),
+                    RowSpacing = 2,
+                    ColumnSpacing = 10,
+
+                    RowDefinitions = {
                     new RowDefinition{ Height = new GridLength(0, GridUnitType.Auto) },
                     new RowDefinition{ Height = new GridLength(0, GridUnitType.Auto) }
 
                 },
-                ColumnDefinitions = {
+                    ColumnDefinitions = {
                     new ColumnDefinition{ Width = new GridLength(0, GridUnitType.Auto) }
                 }
-            };
+                };
 
-            gridLayout.Children.Add(_titleLabel, 0, 0);
-            gridLayout.Children.Add(_descriptionLabel, 0, 1);
+                gridLayout.Children.Add(titleLabel, 0, 0);
+                gridLayout.Children.Add(descriptionLabel, 0, 1);
 
-            View = gridLayout;
-        }
-
-        protected override void OnBindingContextChanged()
-        {
-            base.OnBindingContextChanged();
-
-            var textModel = (TextMoodModel)BindingContext;
-
-            var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
-
-            _titleLabel.Text = textModel.Text;
-            _descriptionLabel.Text = $"{emoji} {textModel.CreatedAt.ToLocalTime().ToString("g")}";
+                return gridLayout;
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TextMood
 
         bool _isRefreshing;
         Color _backgroundColor;
-        ICommand? _pullToRefreshCommand, _addTextMoodModelCommand;
+        ICommand? _pullToRefreshCommand;
 
         public event EventHandler<string> ErrorTriggered
         {
@@ -31,9 +31,6 @@ namespace TextMood
             add => _philipsHueBridgeConnectionFailedEventManager.AddEventHandler(value);
             remove => _philipsHueBridgeConnectionFailedEventManager.RemoveEventHandler(value);
         }
-
-        public ICommand AddTextMoodModelCommand =>
-            _addTextMoodModelCommand ??= new AsyncCommand<TextMoodModel>(ExecuteAddTextMoodModelCommand);
 
         public ICommand PullToRefreshCommand =>
             _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
@@ -50,6 +47,20 @@ namespace TextMood
         {
             get => _isRefreshing;
             set => SetProperty(ref _isRefreshing, value);
+        }
+
+        public async Task AddTextMoodModel(TextMoodModel textMoodModel)
+        {
+            if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
+                return;
+
+            await Device.InvokeOnMainThreadAsync(() => TextList.Insert(0, textMoodModel)).ConfigureAwait(false);
+
+            var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+
+            SetTextResultsListBackgroundColor(averageSentiment);
+
+            await UpdatePhilipsHueLight(averageSentiment).ConfigureAwait(false);
         }
 
         async Task ExecutePullToRefreshCommand()
@@ -70,25 +81,11 @@ namespace TextMood
             }
         }
 
-        Task ExecuteAddTextMoodModelCommand(TextMoodModel textMoodModel)
-        {
-            if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
-                return Task.CompletedTask;
-
-            TextList.Insert(0, textMoodModel);
-
-            var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
-
-            SetTextResultsListBackgroundColor(averageSentiment);
-
-            return UpdatePhilipsHueLight(averageSentiment);
-        }
-
         async Task UpdateTextResultsListFromRemoteDatabase()
         {
             try
             {
-                var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
+                var textMoodList = await TextResultsService.GetTextModels();
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
                 TextList.Clear();
@@ -96,15 +93,10 @@ namespace TextMood
                 foreach (var textMoodModel in recentTextMoodList.OrderByDescending(x => x.CreatedAt))
                     TextList.Add(textMoodModel);
             }
-            catch (Exception e) when (e.InnerException?.Message != null)
-            {
-                DebugServices.Report(e);
-                OnErrorTriggered(e.InnerException.Message);
-            }
             catch (Exception e)
             {
                 DebugServices.Report(e);
-                OnErrorTriggered(e.Message);
+                OnErrorTriggered(e.InnerException?.Message ?? e.Message);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using TextMood.Shared;
-
 using Xamarin.Forms;
 
 namespace TextMood
@@ -18,32 +18,40 @@ namespace TextMood
             setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
             ToolbarItems.Add(setupPageToolbarItem);
 
-            var textModelList = new ListView(ListViewCachingStrategy.RecycleElement)
+            var textModelList = new CollectionView
             {
-                ItemTemplate = new DataTemplate(typeof(TextMoodViewCell)),
-                IsPullToRefreshEnabled = true,
-                HasUnevenRows = true,
-                BackgroundColor = Color.Transparent,
-                RefreshControlColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor
+                ItemTemplate = new TextMoodDataTemplateSelector(),
+                BackgroundColor = Color.Transparent
             };
-            textModelList.ItemTapped += HandleItemTapped;
-            textModelList.SetBinding(ListView.IsRefreshingProperty, nameof(TextResultsListViewModel.IsRefreshing));
-            textModelList.SetBinding(ListView.ItemsSourceProperty, nameof(TextResultsListViewModel.TextList));
-            textModelList.SetBinding(ListView.RefreshCommandProperty, nameof(TextResultsListViewModel.PullToRefreshCommand));
+            textModelList.SetBinding(CollectionView.ItemsSourceProperty, nameof(TextResultsListViewModel.TextList));
+
+            var refreshView = new RefreshView
+            {
+                RefreshColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor,
+                Content = textModelList
+            };
+            refreshView.SetBinding(RefreshView.IsRefreshingProperty, nameof(TextResultsListViewModel.IsRefreshing));
+            refreshView.SetBinding(RefreshView.CommandProperty, nameof(TextResultsListViewModel.PullToRefreshCommand));
 
             Title = PageTitles.TextResultsPage;
 
             this.SetBinding(BackgroundColorProperty, nameof(TextResultsListViewModel.BackgroundColor));
 
-            Content = textModelList;
+            Content = refreshView;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            if (Content is ListView listView)
-                Device.BeginInvokeOnMainThread(listView.BeginRefresh);
+            if (Content is RefreshView refreshView
+                && refreshView.Content is CollectionView collectionView
+                && IsNullOrEmpty(collectionView.ItemsSource))
+            {
+                refreshView.IsRefreshing = true;
+            }
+
+            static bool IsNullOrEmpty(in IEnumerable? enumerable) => !enumerable?.GetEnumerator().MoveNext() ?? true;
         }
 
         void HandlePhilipsHueBridgeConnectionFailed(object sender, EventArgs e)
@@ -73,11 +81,5 @@ namespace TextMood
         Task NavigateToSetupPage() => Device.InvokeOnMainThreadAsync(() => Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
 
         Task DisplayErrorMessage(string message) => Device.InvokeOnMainThreadAsync(() => DisplayAlert("Error", message, "OK "));
-
-        void HandleItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            if (sender is ListView listView)
-                listView.SelectedItem = null;
-        }
     }
 }
