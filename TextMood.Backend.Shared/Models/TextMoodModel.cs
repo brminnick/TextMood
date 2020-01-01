@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TextMood.Shared;
@@ -13,7 +14,7 @@ namespace TextMood.Backend.Common
             Text = text;
         }
 
-        [Obsolete("Use Overloaded Constructor")]
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Overloaded Constructor")]
         public TextMoodModel()
         {
             Id = Guid.NewGuid().ToString();

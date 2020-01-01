@@ -29,10 +29,11 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <AndroidLinkMode>None</AndroidLinkMode>
-        <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
         <AndroidTlsProvider>btls</AndroidTlsProvider>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <AndroidSupportedAbis>armeabi-v7a;x86;arm64-v8a;x86_64</AndroidSupportedAbis>
+        <AndroidDexTool>d8</AndroidDexTool>
+        <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugSymbols>true</DebugSymbols>
@@ -49,6 +50,8 @@
         <BundleAssemblies>true</BundleAssemblies>
         <EnableProguard>true</EnableProguard>
         <AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
+        <AndroidDexTool>d8</AndroidDexTool>
+        <AndroidLinkTool>r8</AndroidLinkTool>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="System" />
@@ -92,6 +95,12 @@
             <Project>{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}</Project>
             <Name>TextMood</Name>
         </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <LinkDescription Include="linker.xml" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProguardConfiguration Include="proguard.cfg" />
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
