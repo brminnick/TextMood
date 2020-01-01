@@ -9,7 +9,6 @@ namespace TextMood
         public TextMoodModel(string text)
         {
             Text = text;
-            Id = Guid.NewGuid().ToString();
             UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
 
@@ -19,7 +18,7 @@ namespace TextMood
 
         }
 
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Text { get; set; } = string.Empty;
         public double? SentimentScore { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
