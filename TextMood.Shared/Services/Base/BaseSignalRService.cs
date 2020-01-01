@@ -29,10 +29,17 @@ namespace TextMood.Shared
                 try
                 {
                     await Hub.StartAsync().ConfigureAwait(false);
+
+                    while (HubConnectionState is HubConnectionState.Connecting)
+                        await Task.Delay(100).ConfigureAwait(false);
+
+                    if (HubConnectionState != HubConnectionState.Connected)
+                        throw new HubException($"{nameof(HubConnectionState)} not connected\n{nameof(HubConnectionState)}:{HubConnectionState}");
                 }
                 catch (Exception e)
                 {
                     OnInitializationFailed(e.Message);
+                    throw;
                 }
             }
 
