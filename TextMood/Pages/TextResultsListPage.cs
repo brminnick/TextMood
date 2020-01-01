@@ -38,7 +38,7 @@ namespace TextMood
             Content = textModelList;
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
