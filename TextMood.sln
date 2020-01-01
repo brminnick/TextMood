@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Droid", "TextMood.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood", "TextMood\TextMood.csproj", "{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{E951BA08-2202-406E-9A31-3D08BCF53160}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.Functions", "TextMood.Functions\TextMood.Functions.csproj", "{E951BA08-2202-406E-9A31-3D08BCF53160}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMood.SignalR", "TextMood.SignalR\TextMood.SignalR.csproj", "{D67A8B95-7CD9-4162-BB55-882F39BB22BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.SignalR", "TextMood.SignalR\TextMood.SignalR.csproj", "{D67A8B95-7CD9-4162-BB55-882F39BB22BC}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TextMood.Backend.Shared", "TextMood.Backend.Shared\TextMood.Backend.Shared.shproj", "{CBBC7617-BD41-47C7-92E1-66530E944C89}"
 EndProject

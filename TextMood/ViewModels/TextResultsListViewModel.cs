@@ -13,19 +13,13 @@ namespace TextMood
 {
     public class TextResultsListViewModel : BaseViewModel
     {
-        #region Constant Fields
         readonly WeakEventManager<string> _errorTriggeredEventManager = new WeakEventManager<string>();
         readonly WeakEventManager _philipsHueBridgeConnectionFailedEventManager = new WeakEventManager();
-        #endregion
 
-        #region Fields
         bool _isRefreshing;
         Color _backgroundColor;
-        ObservableCollection<ITextMoodModel> _textList;
-        ICommand _pullToRefreshCommand, _addTextMoodModelCommand;
-        #endregion
+        ICommand? _pullToRefreshCommand, _addTextMoodModelCommand;
 
-        #region Events
         public event EventHandler<string> ErrorTriggered
         {
             add => _errorTriggeredEventManager.AddEventHandler(value);
@@ -37,21 +31,14 @@ namespace TextMood
             add => _philipsHueBridgeConnectionFailedEventManager.AddEventHandler(value);
             remove => _philipsHueBridgeConnectionFailedEventManager.RemoveEventHandler(value);
         }
-        #endregion
 
-        #region Properties
-        public ICommand AddTextMoodModelCommand => _addTextMoodModelCommand ??
-            (_addTextMoodModelCommand = new AsyncCommand<ITextMoodModel>(ExecuteAddTextMoodModelCommand, continueOnCapturedContext: false));
+        public ICommand AddTextMoodModelCommand =>
+            _addTextMoodModelCommand ??= new AsyncCommand<TextMoodModel>(ExecuteAddTextMoodModelCommand);
 
+        public ICommand PullToRefreshCommand =>
+            _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
 
-        public ICommand PullToRefreshCommand => _pullToRefreshCommand ??
-            (_pullToRefreshCommand = new AsyncCommand(ExecutePullToRefreshCommand, continueOnCapturedContext: false));
-
-        public ObservableCollection<ITextMoodModel> TextList
-        {
-            get => _textList;
-            set => SetProperty(ref _textList, value);
-        }
+        public ObservableCollection<ITextMoodModel> TextList { get; } = new ObservableCollection<ITextMoodModel>();
 
         public Color BackgroundColor
         {
@@ -64,9 +51,7 @@ namespace TextMood
             get => _isRefreshing;
             set => SetProperty(ref _isRefreshing, value);
         }
-        #endregion
 
-        #region Methods
         async Task ExecutePullToRefreshCommand()
         {
             try
@@ -85,7 +70,7 @@ namespace TextMood
             }
         }
 
-        Task ExecuteAddTextMoodModelCommand(ITextMoodModel textMoodModel)
+        Task ExecuteAddTextMoodModelCommand(TextMoodModel textMoodModel)
         {
             if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
                 return Task.CompletedTask;
@@ -106,9 +91,12 @@ namespace TextMood
                 var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
-                TextList = new ObservableCollection<ITextMoodModel>(recentTextMoodList.OrderByDescending(x => x.CreatedAt));
+                TextList.Clear();
+
+                foreach (var textMoodModel in recentTextMoodList.OrderByDescending(x => x.CreatedAt))
+                    TextList.Add(textMoodModel);
             }
-            catch (Exception e) when (e?.InnerException?.Message != null)
+            catch (Exception e) when (e.InnerException?.Message != null)
             {
                 DebugServices.Report(e);
                 OnErrorTriggered(e.InnerException.Message);
@@ -147,6 +135,5 @@ namespace TextMood
 
         void OnErrorTriggered(string message) => _errorTriggeredEventManager?.HandleEvent(this, message, nameof(ErrorTriggered));
         void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager?.HandleEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
-        #endregion
     }
 }

@@ -20,7 +20,7 @@ namespace TextMood.Functions
             try
             {
                 var hub = await GetConnection().ConfigureAwait(false);
-                await hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelName, textModel).ConfigureAwait(false);
+                await hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelMethodName, textModel).ConfigureAwait(false);
             }
             catch (System.Exception e)
             {
@@ -32,7 +32,7 @@ namespace TextMood.Functions
                 InitializationFailed -= HandleInitializationFailed;
             }
 
-            void HandleInitializationFailed(object sender, string e) => log.LogInformation($"Initialization Failed: {e}");
+            void HandleInitializationFailed(object? sender, string message) => log.LogInformation($"Initialization Failed: {message}");
         }
     }
 }

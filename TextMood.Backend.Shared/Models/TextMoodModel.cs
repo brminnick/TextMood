@@ -1,31 +1,26 @@
 ﻿using System;
-
-using NPoco;
-
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using TextMood.Shared;
 
 namespace TextMood.Backend.Common
 {
-    [TableName(nameof(TextMoodModel))]
-    [PrimaryKey(nameof(Id), AutoIncrement = false)]
+    [Table(nameof(TextMoodModel))]
     public class TextMoodModel : ITextMoodModel
     {
-        #region Constructrors
-        public TextMoodModel(string text)
+        public TextMoodModel(string text) : this()
+        {
+            Text = text;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Overloaded Constructor")]
+        public TextMoodModel()
         {
             Id = Guid.NewGuid().ToString();
-            Text = text;
             UpdatedAt = CreatedAt = DateTimeOffset.UtcNow;
         }
 
-        [Obsolete("Use Overloaded Constructor")]
-        public TextMoodModel()
-        {
-        }
-        #endregion
-
-        #region Properties
-        [Ignore]
         public double? SentimentScore
         {
             get => SentimentScore_FromDatabase;
@@ -33,14 +28,14 @@ namespace TextMood.Backend.Common
         }
 
         [Column(nameof(SentimentScore))]
-        [Obsolete("Use SentimentScore Instead")]
+        [Obsolete("Use SentimentScore")]
         public double SentimentScore_FromDatabase { get; set; }
 
+        [Key]
         public string Id { get; set; }
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
         public bool IsDeleted { get; set; }
-        #endregion
     }
 }

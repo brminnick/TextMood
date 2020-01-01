@@ -13,23 +13,18 @@ namespace TextMood.Functions
 {
     static class TextAnalysisServices
     {
-        #region Constant Fields
         readonly static Lazy<TextAnalyticsClient> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsClient>(() =>
             new TextAnalyticsClient(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)) { Endpoint = CognitiveServicesConstants.BaseUrl });
-        #endregion
 
-        #region Properties
         static TextAnalyticsClient TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
-        #endregion
 
-        #region Methods
         public static async Task<double?> GetSentiment(string text)
         {
             var sentimentDocument = new MultiLanguageBatchInput(new List<MultiLanguageInput> { { new MultiLanguageInput(id: "1", text: text) } });
 
-            var sentimentResults = await TextAnalyticsApiClient.SentimentAsync(multiLanguageBatchInput: sentimentDocument).ConfigureAwait(false);
+            var sentimentResults = await TextAnalyticsApiClient.SentimentBatchAsync(sentimentDocument).ConfigureAwait(false);
 
-            if (sentimentResults?.Errors?.Any() ?? false)
+            if (sentimentResults?.Errors?.Any() is true)
             {
                 var exceptionList = sentimentResults.Errors.Select(x => new Exception($"Id: {x.Id}, Message: {x.Message}"));
                 throw new AggregateException(exceptionList);
@@ -39,9 +34,7 @@ namespace TextMood.Functions
 
             return documentResult?.Score;
         }
-        #endregion
 
-        #region Classes
         class ApiKeyServiceClientCredentials : ServiceClientCredentials
         {
             readonly string _subscriptionKey;
@@ -55,9 +48,8 @@ namespace TextMood.Functions
 
                 request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
 
-                return Task.FromResult<object>(null);
+                return Task.CompletedTask;
             }
         }
-        #endregion
     }
 }

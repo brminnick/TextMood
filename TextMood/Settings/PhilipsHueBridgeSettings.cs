@@ -1,56 +1,51 @@
 ﻿using System;
 using System.Net;
-
 using AsyncAwaitBestPractices;
+using Xamarin.Essentials;
 
 namespace TextMood
 {
-    abstract class PhilipsHueBridgeSettings : BaseSettings
+    static class PhilipsHueBridgeSettings
     {
-        #region Constant Fields
         readonly static WeakEventManager<IPAddress> _ipAddressChangedEventManager = new WeakEventManager<IPAddress>();
-        #endregion
 
-        #region Fields
-        static bool _isEnabled;
-        static string _id, _username;
-        static IPAddress _ipAddress;
-        #endregion
-
-        #region Events
         public static event EventHandler<IPAddress> IPAddressChanged
         {
             add => _ipAddressChangedEventManager.AddEventHandler(value);
             remove => _ipAddressChangedEventManager.RemoveEventHandler(value);
         }
-        #endregion
 
-        #region Properties
         public static IPAddress IPAddress
         {
-            get => GetSetting(ref _ipAddress);
-            set => SetSetting(ref _ipAddress, value, OnIPAddressChanged);
+            get => IPAddress.Parse(Preferences.Get(nameof(IPAddress), "0.0.0.0"));
+            set
+            {
+                if (value != IPAddress)
+                {
+                    Preferences.Set(nameof(IPAddress), value.ToString());
+                    OnIPAddressChanged();
+                }
+            }
         }
 
         public static bool IsEnabled
         {
-            get => GetSetting(ref _isEnabled, true);
-            set => SetSetting(ref _isEnabled, value);
+            get => Preferences.Get(nameof(IsEnabled), true);
+            set => Preferences.Set(nameof(IsEnabled), value);
         }
 
         public static string Id
         {
-            get => GetSetting(ref _id);
-            set => SetSetting(ref _id, value);
+            get => Preferences.Get(nameof(Id), string.Empty);
+            set => Preferences.Set(nameof(Id), value);
         }
 
         public static string Username
         {
-            get => GetSetting(ref _username);
-            set => SetSetting(ref _username, value);
+            get => Preferences.Get(nameof(Username), string.Empty);
+            set => Preferences.Set(nameof(Username), value);
         }
 
-        static void OnIPAddressChanged() => _ipAddressChangedEventManager?.HandleEvent(null, IPAddress, nameof(IPAddressChanged));
-        #endregion
+        static void OnIPAddressChanged() => _ipAddressChangedEventManager.HandleEvent(null, IPAddress, nameof(IPAddressChanged));
     }
 }

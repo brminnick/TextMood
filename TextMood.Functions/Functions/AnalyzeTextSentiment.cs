@@ -19,10 +19,6 @@ namespace TextMood.Functions
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
     public static class AnalyzeTextSentiment
     {
-        readonly static Lazy<JsonSerializer> _serializerHolder = new Lazy<JsonSerializer>();
-
-        static JsonSerializer Serializer => _serializerHolder.Value;
-
         [FunctionName(nameof(AnalyzeTextSentiment))]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post")]HttpRequest req,
@@ -37,7 +33,8 @@ namespace TextMood.Functions
                 var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
                 log.LogInformation("Creating New Text Model");
-                var textMoodModel = new TextMoodModel(TwilioServices.GetTextMessageBody(httpRequestBody, log));
+                var textMessageBody = TwilioServices.GetTextMessageBody(httpRequestBody, log) ?? throw new NullReferenceException("Text Message Body Null");
+                var textMoodModel = new TextMoodModel(textMessageBody);
 
                 log.LogInformation("Retrieving Sentiment Score");
                 textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
