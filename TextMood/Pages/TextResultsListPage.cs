@@ -42,10 +42,8 @@ namespace TextMood
         {
             base.OnAppearing();
 
-            if(Content is ListView listView)
+            if (Content is ListView listView)
                 Device.BeginInvokeOnMainThread(listView.BeginRefresh);
-
-            await SignalRService.Subscribe().ConfigureAwait(false);
         }
 
         void HandlePhilipsHueBridgeConnectionFailed(object sender, EventArgs e)
