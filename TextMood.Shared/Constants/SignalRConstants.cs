@@ -3,7 +3,8 @@
     public static class SignalRConstants
     {
         public const string TextMoodModelHubName = "TextMoodModelHub";
-        public const string SendNewTextMoodModelName = "SendNewTextMoodModel";
+        public const string SendNewTextMoodModelCommand = "SendNewTextMoodModel";
+        public const string SendNewTextMoodModelMethod = "SendNewTextMoodModelMethod";
         public const string SignalRHubUrl = _signalRHubBaseUrl + "/" + TextMoodModelHubName;
 
 #error Missing SignalR Hub Base Url
