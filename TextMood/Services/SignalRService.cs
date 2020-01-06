@@ -11,7 +11,7 @@ namespace TextMood
         {
             var connection = await GetConnection().ConfigureAwait(false);
 
-            connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelName, async textMoodModel =>
+            connection.On<TextMoodModel>(SignalRConstants.SendNewTextMoodModelCommand, async textMoodModel =>
             {
                 await GetTextResultsListViewModel().AddTextMoodModel(textMoodModel).ConfigureAwait(false);
 

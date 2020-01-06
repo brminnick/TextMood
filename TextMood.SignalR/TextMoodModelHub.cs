@@ -7,7 +7,7 @@ namespace TextMood.SignalR
 {
     public class TextMoodModelHub : Hub
     {
-        [HubMethodName(SignalRConstants.SendNewTextMoodModelMethodName)]
-        public Task SendNewTextMoodModel(TextMoodModel textMoodModel) => Clients.All.SendAsync(SignalRConstants.SendNewTextMoodModelName, textMoodModel);
+        [HubMethodName(SignalRConstants.SendNewTextMoodModelMethod)]
+        public Task SendNewTextMoodModel(TextMoodModel textMoodModel) => Clients.All.SendAsync(SignalRConstants.SendNewTextMoodModelCommand, textMoodModel);
     }
 }

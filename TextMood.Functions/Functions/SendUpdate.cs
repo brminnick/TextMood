@@ -20,7 +20,7 @@ namespace TextMood.Functions
             try
             {
                 var hub = await GetConnection().ConfigureAwait(false);
-                await hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelMethodName, textModel).ConfigureAwait(false);
+                await hub.InvokeAsync(SignalRConstants.SendNewTextMoodModelMethod, textModel).ConfigureAwait(false);
             }
             catch (System.Exception e)
             {
