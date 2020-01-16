@@ -11,9 +11,9 @@
         <Folder Include="wwwroot\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AsyncAwaitBestPractices" Version="4.1.0-pre1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.0" />
+        <PackageReference Include="AsyncAwaitBestPractices" Version="4.1.0-pre2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
     <Import Project="..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems')" />

@@ -54,7 +54,7 @@ namespace TextMood
             if (TextList.Any(x => x.Id.Equals(textMoodModel.Id)))
                 return;
 
-            await Device.InvokeOnMainThreadAsync(() => TextList.Insert(0, textMoodModel)).ConfigureAwait(false);
+            TextList.Insert(0, textMoodModel);
 
             var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
 
@@ -85,7 +85,7 @@ namespace TextMood
         {
             try
             {
-                var textMoodList = await TextResultsService.GetTextModels();
+                var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
                 TextList.Clear();
@@ -125,7 +125,7 @@ namespace TextMood
             }
         }
 
-        void OnErrorTriggered(string message) => _errorTriggeredEventManager?.HandleEvent(this, message, nameof(ErrorTriggered));
-        void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager?.HandleEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
+        void OnErrorTriggered(string message) => _errorTriggeredEventManager.HandleEvent(this, message, nameof(ErrorTriggered));
+        void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager.HandleEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
     }
 }
