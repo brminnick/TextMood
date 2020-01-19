@@ -85,7 +85,7 @@ namespace TextMood
         {
             try
             {
-                var textMoodList = await TextResultsService.GetTextModels().ConfigureAwait(false);
+                var textMoodList = await TextResultsService.GetTextModels();
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
                 TextList.Clear();
