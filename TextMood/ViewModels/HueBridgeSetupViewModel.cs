@@ -12,13 +12,26 @@ namespace TextMood
     public class HueBridgeSetupViewModel : BaseViewModel
     {
         const string _bridgeNotFoundErrorMessage = "Bridge Not Found";
+
         readonly WeakEventManager _saveCompletedEventManager = new WeakEventManager();
         readonly WeakEventManager<string> _saveFailedEventManager = new WeakEventManager<string>();
         readonly WeakEventManager<string> _autoDiscoveryCompletedEventManager = new WeakEventManager<string>();
 
+        readonly PhilipsHueServices _philipsHueServices;
+        readonly PhilipsHueBridgeSettingsService _philipsHueBridgeSettingsService;
+
         bool _isBridgeConnectedSwitchToggled, _isActivityIndicatorVisible;
         string _bridgeIDEntryText = string.Empty, _bridgeIPEntryText = string.Empty;
-        ICommand? _autoDetectButtonCommand, _saveButtonCommand;
+
+        public HueBridgeSetupViewModel(PhilipsHueServices philipsHueServices,
+                                        PhilipsHueBridgeSettingsService philipsHueBridgeSettingsService)
+        {
+            _philipsHueServices = philipsHueServices;
+            _philipsHueBridgeSettingsService = philipsHueBridgeSettingsService;
+
+            SaveButtonCommand = new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText));
+            AutoDetectButtonCommand = new AsyncCommand(ExecuteAutoDetectButtonCommand);
+        }
 
         public event EventHandler SaveCompleted
         {
@@ -38,11 +51,8 @@ namespace TextMood
             remove => _autoDiscoveryCompletedEventManager.RemoveEventHandler(value);
         }
 
-        public ICommand SaveButtonCommand =>
-            _saveButtonCommand ??= new AsyncCommand(() => ExecuteSaveButtonCommand(BridgeIPEntryText, BridgeIDEntryText));
-
-        public ICommand AutoDetectButtonCommand =>
-            _autoDetectButtonCommand ??= new AsyncCommand(ExecuteAutoDetectButtonCommand);
+        public IAsyncCommand SaveButtonCommand { get; }
+        public IAsyncCommand AutoDetectButtonCommand { get; }
 
         public bool IsSaveButtonEnabled => !IsBridgeConnectedSwitchToggled || (IsValidID(BridgeIDEntryText) && IsValidIPAddress(BridgeIPEntryText) && !IsActivityIndicatorVisible);
 
@@ -78,7 +88,7 @@ namespace TextMood
 
             try
             {
-                var autoDetectedBridgeList = await PhilipsHueServices.AutoDetectBridges().ConfigureAwait(false);
+                var autoDetectedBridgeList = await _philipsHueServices.AutoDetectBridges().ConfigureAwait(false);
 
                 foreach (var bridge in autoDetectedBridgeList)
                 {
@@ -112,13 +122,13 @@ namespace TextMood
 
             try
             {
-                PhilipsHueBridgeSettings.IsEnabled = IsBridgeConnectedSwitchToggled;
+                _philipsHueBridgeSettingsService.IsEnabled = IsBridgeConnectedSwitchToggled;
 
                 if (IsBridgeConnectedSwitchToggled)
                 {
-                    PhilipsHueBridgeSettings.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
+                    _philipsHueBridgeSettingsService.IPAddress = IPAddress.Parse(philipsHueBridgeIPAddress);
 
-                    var usernameResponseList = await PhilipsHueServices.AutoDetectUsername().ConfigureAwait(false);
+                    var usernameResponseList = await _philipsHueServices.AutoDetectUsername().ConfigureAwait(false);
                     if (usernameResponseList is null)
                     {
                         OnSaveFailed(_bridgeNotFoundErrorMessage);
@@ -136,8 +146,9 @@ namespace TextMood
 
                         if (usernameResponse.Success != null)
                         {
-                            PhilipsHueBridgeSettings.Username = usernameResponse.Success.Username;
-                            PhilipsHueBridgeSettings.Id = philipsHueBridgeID;
+                            _philipsHueBridgeSettingsService.Username = usernameResponse.Success.Username;
+                            _philipsHueBridgeSettingsService.Id = philipsHueBridgeID;
+
                             OnSaveCompleted();
                             return;
                         }
@@ -185,8 +196,8 @@ namespace TextMood
         }
 
         bool IsValidIPAddress(string text) => IPAddress.TryParse(text, out _);
-        void OnSaveFailed(string message) => _saveFailedEventManager.HandleEvent(this, message, nameof(SaveFailed));
-        void OnSaveCompleted() => _saveCompletedEventManager.HandleEvent(this, EventArgs.Empty, nameof(SaveCompleted));
-        void OnAutoDiscoveryCompleted(string message) => _autoDiscoveryCompletedEventManager.HandleEvent(this, message, nameof(AutoDiscoveryCompleted));
+        void OnSaveFailed(string message) => _saveFailedEventManager.RaiseEvent(this, message, nameof(SaveFailed));
+        void OnSaveCompleted() => _saveCompletedEventManager.RaiseEvent(this, EventArgs.Empty, nameof(SaveCompleted));
+        void OnAutoDiscoveryCompleted(string message) => _autoDiscoveryCompletedEventManager.RaiseEvent(this, message, nameof(AutoDiscoveryCompleted));
     }
 }

@@ -3,15 +3,12 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <UserSecretsId>8fd7d6a4-9bfc-42ac-840b-dc145be7f1cc</UserSecretsId>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="wwwroot\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AsyncAwaitBestPractices" Version="4.1.0-pre2" />
+        <PackageReference Include="AsyncAwaitBestPractices" Version="6.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
     </ItemGroup>

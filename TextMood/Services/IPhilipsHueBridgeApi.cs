@@ -12,7 +12,7 @@ namespace TextMood
         Task<JObject> GetNumberOfLights(string philipsHueBridgeUsername);
 
         [Post("/api")]
-        Task<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername([Body]PhilipsHueDeviceTypeModel device);
+        Task<IReadOnlyList<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername([Body]PhilipsHueDeviceTypeModel device);
 
         [Put("/api/{philipsHueBridgeUsername}/lights/{lightNumber}/state")]
         Task UpdateLightBulbColor([Body]LightModel light, string philipsHueBridgeUsername, int lightNumber);

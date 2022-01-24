@@ -4,9 +4,9 @@
     {
         public static string GetEmoji(double? sentimentScore) => sentimentScore switch
         {
-            double number when number >= 0 && number < 0.4 => EmojiConstants.SadFaceEmoji,
-            double number when number >= 0.4 && number <= 0.6 => EmojiConstants.NeutralFaceEmoji,
-            double number when number > 0.6 => EmojiConstants.HappyFaceEmoji,
+            >= 0 and < 0.4 => EmojiConstants.SadFaceEmoji,
+            >= 0.4 and 0.6 => EmojiConstants.NeutralFaceEmoji,
+            > 0.6 => EmojiConstants.HappyFaceEmoji,
             null => EmojiConstants.BlankFaceEmoji,
             _ => string.Empty,
         };

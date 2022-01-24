@@ -21,6 +21,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMood.SignalR", "TextMoo
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TextMood.Backend.Shared", "TextMood.Backend.Shared\TextMood.Backend.Shared.shproj", "{CBBC7617-BD41-47C7-92E1-66530E944C89}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{52F88DAA-4D99-4ADC-B070-35F87497CACD}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TextMood.Backend.Shared\TextMood.Backend.Shared.projitems*{cbbc7617-bd41-47c7-92e1-66530e944c89}*SharedItemsImports = 13

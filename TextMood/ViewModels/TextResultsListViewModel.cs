@@ -7,7 +7,6 @@ using System.Windows.Input;
 using AsyncAwaitBestPractices;
 using AsyncAwaitBestPractices.MVVM;
 using TextMood.Shared;
-using Xamarin.Forms;
 
 namespace TextMood
 {
@@ -16,9 +15,23 @@ namespace TextMood
         readonly WeakEventManager<string> _errorTriggeredEventManager = new WeakEventManager<string>();
         readonly WeakEventManager _philipsHueBridgeConnectionFailedEventManager = new WeakEventManager();
 
+        readonly TextResultsService _textResultsService;
+        readonly PhilipsHueServices _philipsHueServices;
+        readonly PhilipsHueBridgeSettingsService _philipsHueBridgeSettingsService;
+
         bool _isRefreshing;
-        Color _backgroundColor;
-        ICommand? _pullToRefreshCommand;
+        Xamarin.Forms.Color _backgroundColor;
+
+        public TextResultsListViewModel(TextResultsService textResultsService,
+                                            PhilipsHueServices philipsHueServices,
+                                            PhilipsHueBridgeSettingsService philipsHueBridgeSettingsService)
+        {
+            _textResultsService = textResultsService;
+            _philipsHueServices = philipsHueServices;
+            _philipsHueBridgeSettingsService = philipsHueBridgeSettingsService;
+
+            PullToRefreshCommand = new AsyncCommand(ExecutePullToRefreshCommand);
+        }
 
         public event EventHandler<string> ErrorTriggered
         {
@@ -32,12 +45,11 @@ namespace TextMood
             remove => _philipsHueBridgeConnectionFailedEventManager.RemoveEventHandler(value);
         }
 
-        public ICommand PullToRefreshCommand =>
-            _pullToRefreshCommand ??= new AsyncCommand(ExecutePullToRefreshCommand);
+        public IAsyncCommand PullToRefreshCommand { get; }
 
         public ObservableCollection<ITextMoodModel> TextList { get; } = new ObservableCollection<ITextMoodModel>();
 
-        public Color BackgroundColor
+        public Xamarin.Forms.Color BackgroundColor
         {
             get => _backgroundColor;
             set => SetProperty(ref _backgroundColor, value);
@@ -85,7 +97,7 @@ namespace TextMood
         {
             try
             {
-                var textMoodList = await TextResultsService.GetTextModels();
+                var textMoodList = await _textResultsService.GetTextModels();
                 var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
 
                 TextList.Clear();
@@ -103,12 +115,12 @@ namespace TextMood
         void SetTextResultsListBackgroundColor(double averageSentiment)
         {
             var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
-            BackgroundColor = Color.FromRgba(red, green, blue, 0.5);
+            BackgroundColor = Xamarin.Forms.Color.FromRgba(red, green, blue, 0.5);
         }
 
         async Task UpdatePhilipsHueLight(double averageSentiment)
         {
-            if (!PhilipsHueBridgeSettings.IsEnabled)
+            if (!_philipsHueBridgeSettingsService.IsEnabled)
                 return;
 
             try
@@ -116,7 +128,7 @@ namespace TextMood
                 var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
                 var hue = Shared.PhilipsHueServices.ConvertToHue(red, green, blue);
 
-                await PhilipsHueServices.UpdateLightBulbColor(PhilipsHueBridgeSettings.Username, hue).ConfigureAwait(false);
+                await _philipsHueServices.UpdateLightBulbColor(_philipsHueBridgeSettingsService.Username, hue).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -125,7 +137,7 @@ namespace TextMood
             }
         }
 
-        void OnErrorTriggered(string message) => _errorTriggeredEventManager.HandleEvent(this, message, nameof(ErrorTriggered));
-        void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager.HandleEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
+        void OnErrorTriggered(string message) => _errorTriggeredEventManager.RaiseEvent(this, message, nameof(ErrorTriggered));
+        void OnPhilipsHueBridgeConnectionFailed() => _philipsHueBridgeConnectionFailedEventManager.RaiseEvent(this, EventArgs.Empty, nameof(PhilipsHueBridgeConnectionFailed));
     }
 }

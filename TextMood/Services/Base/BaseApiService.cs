@@ -6,7 +6,7 @@ using Polly;
 
 namespace TextMood
 {
-    abstract class BaseApiService
+    public abstract class BaseApiService
     {
         protected static Task<T> AttemptAndRetry<T>(Func<Task<T>> action, int numRetries = 2)
         {

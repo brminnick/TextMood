@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-
-using Refit;
-
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace TextMood
 {
-    abstract class PhilipsHueServices : BaseApiService
+    public class PhilipsHueServices : BaseApiService
     {
-        static readonly Lazy<IPhilipsHueApi> _philipsHueApiClientHolder = new Lazy<IPhilipsHueApi>(() => RestService.For<IPhilipsHueApi>("https://www.meethue.com/api"));
+        readonly IPhilipsHueApi _philipsHueApiClient;
+        readonly PhilipsHueBridgeSettingsService _philipsHueBridgeSettingsService;
 
-        static IPhilipsHueBridgeApi _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(PhilipsHueBridgeSettings.IPAddress);
+        IPhilipsHueBridgeApi _philipsHueBridgeApiClient;
 
-        static PhilipsHueServices()
-        {            
-            PhilipsHueBridgeSettings.IPAddressChanged += HandleIPAddressChanged;
+        public PhilipsHueServices(IPhilipsHueApi philipsHueApi, PhilipsHueBridgeSettingsService philipsHueBridgeSettingsService)
+        {
+            _philipsHueApiClient = philipsHueApi;
+            _philipsHueBridgeSettingsService = philipsHueBridgeSettingsService;
+
+            _philipsHueBridgeSettingsService.IPAddressChanged += HandleIPAddressChanged;
+            _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(philipsHueBridgeSettingsService.IPAddress);
         }
 
-        static IPhilipsHueApi PhilipsHueApiClient => _philipsHueApiClientHolder.Value;
-
-        public static async Task<int> GetNumberOfLights(string philipsHueBridgeUsername)
+        public async Task<int> GetNumberOfLights(string philipsHueBridgeUsername)
         {
             var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
@@ -34,7 +34,7 @@ namespace TextMood
             return lightsResponseJObject.Count;
         }
 
-        public static async Task<List<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername()
+        public async Task<IReadOnlyList<PhilipsHueUsernameDiscoveryModel>> AutoDetectUsername()
         {
             var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
@@ -45,9 +45,9 @@ namespace TextMood
             return await AttemptAndRetry(() => _philipsHueBridgeApiClient.AutoDetectUsername(device), 1).ConfigureAwait(false);
         }
 
-        public static Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => AttemptAndRetry(PhilipsHueApiClient.AutoDetectBridges, 1);
+        public Task<IReadOnlyList<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges() => AttemptAndRetry(_philipsHueApiClient.AutoDetectBridges, 1);
 
-        public static async Task UpdateLightBulbColor(string philipsHueBridgeUsername, int hue)
+        public async Task UpdateLightBulbColor(string philipsHueBridgeUsername, int hue)
         {
             var isBridgeReachable = await IsBridgeReachable().ConfigureAwait(false);
 
@@ -65,7 +65,7 @@ namespace TextMood
             await Task.WhenAll(lightAPIPutList).ConfigureAwait(false);
         }
 
-        static string GetBridgeNotFoundErrorMessage()
+        string GetBridgeNotFoundErrorMessage()
         {
             const string bridgeNotFoundError = "Bridge Not Found.";
 
@@ -79,7 +79,7 @@ namespace TextMood
             };
         }
 
-        static async Task<bool> IsBridgeReachable()
+        async Task<bool> IsBridgeReachable()
         {
             if (Connectivity.NetworkAccess is NetworkAccess.None)
                 return false;
@@ -95,10 +95,10 @@ namespace TextMood
             }
         }
 
-        static void HandleIPAddressChanged(object sender, IPAddress ipAddress) => _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(ipAddress);
+        void HandleIPAddressChanged(object sender, IPAddress ipAddress) => _philipsHueBridgeApiClient = InitializePhilipsHueBridgeApiClient(ipAddress);
 
-        static IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(string bridgeUrl) => RestService.For<IPhilipsHueBridgeApi>(bridgeUrl);
+        IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(string bridgeUrl) => RefitExtensions.For<IPhilipsHueBridgeApi>(bridgeUrl);
 
-        static IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(IPAddress bridgeIPAddress) => InitializePhilipsHueBridgeApiClient($"http://{bridgeIPAddress.ToString()}");
+        IPhilipsHueBridgeApi InitializePhilipsHueBridgeApiClient(IPAddress bridgeIPAddress) => InitializePhilipsHueBridgeApiClient($"http://{bridgeIPAddress.ToString()}");
     }
 }

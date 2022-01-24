@@ -2,17 +2,30 @@
 using System.Collections;
 using System.Threading.Tasks;
 using TextMood.Shared;
+using Xamarin.Essentials.Interfaces;
 using Xamarin.Forms;
 
 namespace TextMood
 {
     public class TextResultsListPage : BaseContentPage<TextResultsListViewModel>
     {
-        public TextResultsListPage()
+        readonly IMainThread _mainThread;
+        readonly HueBridgeSetupPage _hueBridgeSetupPage;
+        readonly PhilipsHueBridgeSettingsService _philipsHueBridgeSettingsService;
+
+        public TextResultsListPage(IMainThread mainThread,
+                                    SignalRService signalRService,
+                                    HueBridgeSetupPage hueBridgeSetupPage,
+                                    TextResultsListViewModel textResultsListViewModel,
+                                    PhilipsHueBridgeSettingsService philipsHueBridgeSettingsService) : base(textResultsListViewModel)
         {
-            ViewModel.ErrorTriggered += HandleErrorTriggered;
-            ViewModel.PhilipsHueBridgeConnectionFailed += HandlePhilipsHueBridgeConnectionFailed;
-            BaseSignalRService.InitializationFailed += HandleInitializationFailed;
+            _mainThread = mainThread;
+            _hueBridgeSetupPage = hueBridgeSetupPage;
+            _philipsHueBridgeSettingsService = philipsHueBridgeSettingsService;
+
+            BindingContext.ErrorTriggered += HandleErrorTriggered;
+            BindingContext.PhilipsHueBridgeConnectionFailed += HandlePhilipsHueBridgeConnectionFailed;
+            signalRService.InitializationFailed += HandleInitializationFailed;
 
             var setupPageToolbarItem = new ToolbarItem { Text = "Setup" };
             setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
@@ -23,19 +36,19 @@ namespace TextMood
                 ItemTemplate = new TextMoodDataTemplateSelector(),
                 BackgroundColor = Color.Transparent
             };
-            textModelList.SetBinding(CollectionView.ItemsSourceProperty, nameof(TextResultsListViewModel.TextList));
+            textModelList.SetBinding(CollectionView.ItemsSourceProperty, nameof(BindingContext.TextList));
 
             var refreshView = new RefreshView
             {
                 RefreshColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor,
                 Content = textModelList
             };
-            refreshView.SetBinding(RefreshView.IsRefreshingProperty, nameof(TextResultsListViewModel.IsRefreshing));
-            refreshView.SetBinding(RefreshView.CommandProperty, nameof(TextResultsListViewModel.PullToRefreshCommand));
+            refreshView.SetBinding(RefreshView.IsRefreshingProperty, nameof(BindingContext.IsRefreshing));
+            refreshView.SetBinding(RefreshView.CommandProperty, nameof(BindingContext.PullToRefreshCommand));
 
             Title = PageTitles.TextResultsPage;
 
-            this.SetBinding(BackgroundColorProperty, nameof(TextResultsListViewModel.BackgroundColor));
+            this.SetBinding(BackgroundColorProperty, nameof(BindingContext.BackgroundColor));
 
             Content = refreshView;
         }
@@ -54,23 +67,20 @@ namespace TextMood
             static bool IsNullOrEmpty(in IEnumerable? enumerable) => !enumerable?.GetEnumerator().MoveNext() ?? true;
         }
 
-        void HandlePhilipsHueBridgeConnectionFailed(object sender, EventArgs e)
+        void HandlePhilipsHueBridgeConnectionFailed(object sender, EventArgs e) => _mainThread.BeginInvokeOnMainThread(async () =>
         {
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                var selectionResult = await DisplayAlert("Could Not Connect to Philips Hue Bridge", "Would you like to setup a bridge, or disable the connection?", "Setup Bridge", "Disable Bridge");
+            var selectionResult = await DisplayAlert("Could Not Connect to Philips Hue Bridge", "Would you like to setup a bridge, or disable the connection?", "Setup Bridge", "Disable Bridge");
 
-                if (selectionResult)
-                {
-                    await NavigateToSetupPage();
-                }
-                else
-                {
-                    PhilipsHueBridgeSettings.IsEnabled = false;
-                    await DisplayAlert("Philips Hue Bridge Connection Disabled", "You can configure the bridge connection anytime by tapping \"Setup\"", "OK");
-                }
-            });
-        }
+            if (selectionResult)
+            {
+                await NavigateToSetupPage();
+            }
+            else
+            {
+                _philipsHueBridgeSettingsService.IsEnabled = false;
+                await DisplayAlert("Philips Hue Bridge Connection Disabled", "You can configure the bridge connection anytime by tapping \"Setup\"", "OK");
+            }
+        });
 
         async void HandleSetupPageToolbarItemClicked(object sender, EventArgs e) => await NavigateToSetupPage();
 
@@ -78,8 +88,8 @@ namespace TextMood
 
         async void HandleInitializationFailed(object sender, string message) => await DisplayErrorMessage(message);
 
-        Task NavigateToSetupPage() => Device.InvokeOnMainThreadAsync(() => Navigation.PushModalAsync(new BaseNavigationPage(new HueBridgeSetupPage())));
+        Task NavigateToSetupPage() => Device.InvokeOnMainThreadAsync(() => Navigation.PushModalAsync(new BaseNavigationPage(_hueBridgeSetupPage)));
 
-        Task DisplayErrorMessage(string message) => Device.InvokeOnMainThreadAsync(() => DisplayAlert("Error", message, "OK "));
+        Task DisplayErrorMessage(string message) => _mainThread.InvokeOnMainThreadAsync(() => DisplayAlert("Error", message, "OK "));
     }
 }

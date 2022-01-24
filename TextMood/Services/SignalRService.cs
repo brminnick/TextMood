@@ -1,13 +1,21 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using TextMood.Shared;
+using Xamarin.Essentials.Interfaces;
 using Xamarin.Forms;
 
 namespace TextMood
 {
-    public abstract class SignalRService : BaseSignalRService
+    public class SignalRService : BaseSignalRService
     {
-        public static async Task Subscribe()
+        readonly IMainThread _mainThread;
+
+        public SignalRService(IMainThread mainThread)
+        {
+            _mainThread = mainThread;
+        }
+
+        public async Task Subscribe()
         {
             var connection = await GetConnection().ConfigureAwait(false);
 
@@ -18,16 +26,16 @@ namespace TextMood
                 var refreshView = (RefreshView)GetTextResultsListPage().Content;
                 var collectionView = (CollectionView)refreshView.Content;
 
-                await Device.InvokeOnMainThreadAsync(() => collectionView.ScrollTo(0)).ConfigureAwait(false);
+                await _mainThread.InvokeOnMainThreadAsync(() => collectionView.ScrollTo(0)).ConfigureAwait(false);
             });
         }
 
-        static TextResultsListPage GetTextResultsListPage()
+        TextResultsListPage GetTextResultsListPage()
         {
             var navigationPage = (NavigationPage)Application.Current.MainPage;
             return (TextResultsListPage)navigationPage.RootPage;
         }
 
-        static TextResultsListViewModel GetTextResultsListViewModel() => (TextResultsListViewModel)GetTextResultsListPage().BindingContext;
+        TextResultsListViewModel GetTextResultsListViewModel() => GetTextResultsListPage().BindingContext;
     }
 }

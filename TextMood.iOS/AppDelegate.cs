@@ -1,4 +1,5 @@
 ﻿using Foundation;
+using Microsoft.Extensions.DependencyInjection;
 using UIKit;
 
 namespace TextMood.iOS
@@ -10,7 +11,8 @@ namespace TextMood.iOS
         {
             global::Xamarin.Forms.Forms.Init();
 
-            LoadApplication(new App());
+            var app = ServiceCollection.ServiceProvider.GetRequiredService<App>();
+            LoadApplication(app);
 
             return base.FinishedLaunching(uiApplication, launchOptions);
         }

@@ -5,9 +5,9 @@ using Twilio.TwiML;
 
 namespace TextMood.Functions
 {
-    public static class TwilioServices
+    public class TwilioServices
     {
-        public static string? GetTextMessageBody(string httpRequestBody, ILogger log)
+        public string? GetTextMessageBody(string httpRequestBody, ILogger log)
         {
             var formValues = httpRequestBody.Split('&')
                                 .Select(value => value.Split('='))
@@ -22,11 +22,11 @@ namespace TextMood.Functions
             return textMessageKeyValuePair?.Value;
         }
 
-        public static string CreateTwilioResponse(string message)
-		{
-			var response = new MessagingResponse().Message(message);
+        public string CreateTwilioResponse(string message)
+        {
+            var response = new MessagingResponse().Message(message);
 
-			return response.ToString().Replace("utf-16", "utf-8");
-		}
+            return response.ToString().Replace("utf-16", "utf-8");
+        }
     }
 }

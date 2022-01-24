@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace TextMood.Shared
 {
     public static class PhilipsHueServices

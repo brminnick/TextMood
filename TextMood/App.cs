@@ -2,13 +2,19 @@
 {
     public class App : Xamarin.Forms.Application
     {
-        public App() => MainPage = new BaseNavigationPage(new TextResultsListPage());
+        readonly SignalRService _signalRService;
+
+        public App(SignalRService signalRService, TextResultsListPage textResultsListPage)
+        {
+            _signalRService = signalRService;
+            MainPage = new BaseNavigationPage(textResultsListPage);
+        }
 
         protected override async void OnStart()
         {
             base.OnStart();
 
-            await SignalRService.Subscribe().ConfigureAwait(false);
+            await _signalRService.Subscribe().ConfigureAwait(false);
         }
     }
 }

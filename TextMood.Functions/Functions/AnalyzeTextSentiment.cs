@@ -17,10 +17,16 @@ using TextMood.Shared;
 namespace TextMood.Functions
 {
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
-    public static class AnalyzeTextSentiment
+    class AnalyzeTextSentiment
     {
+        readonly TwilioServices _twilioServices;
+        readonly TextAnalysisServices _textAnalysisServices;
+
+        public AnalyzeTextSentiment(TwilioServices twilioServices, TextAnalysisServices textAnalysisServices) =>
+            (_twilioServices, _textAnalysisServices) = (twilioServices, textAnalysisServices);
+
         [FunctionName(nameof(AnalyzeTextSentiment))]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post")]HttpRequest req,
             [Queue(QueueNameConstants.TextModelForDatabase)]ICollector<TextMoodModel> textModelForDatabaseCollection,
             [Queue(QueueNameConstants.SendUpdate)]ICollector<TextMoodModel> sendUpdateCollection, ILogger log)
@@ -33,11 +39,11 @@ namespace TextMood.Functions
                 var httpRequestBody = await HttpRequestServices.GetContentAsString(req).ConfigureAwait(false);
 
                 log.LogInformation("Creating New Text Model");
-                var textMessageBody = TwilioServices.GetTextMessageBody(httpRequestBody, log) ?? throw new NullReferenceException("Text Message Body Null");
+                var textMessageBody = _twilioServices.GetTextMessageBody(httpRequestBody, log) ?? throw new NullReferenceException("Text Message Body Null");
                 var textMoodModel = new TextMoodModel(textMessageBody);
 
                 log.LogInformation("Retrieving Sentiment Score");
-                textMoodModel.SentimentScore = await TextAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
+                textMoodModel.SentimentScore = await _textAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
 
                 log.LogInformation("Adding TextMoodModel to Storage Queue");
                 textModelForDatabaseCollection.Add(textMoodModel);
@@ -50,7 +56,7 @@ namespace TextMood.Functions
                 return new ContentResult
                 {
                     StatusCode = (int)HttpStatusCode.OK,
-                    Content = TwilioServices.CreateTwilioResponse(response),
+                    Content = _twilioServices.CreateTwilioResponse(response),
                     ContentType = "application/xml"
                 };
             }

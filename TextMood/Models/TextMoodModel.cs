@@ -18,11 +18,11 @@ namespace TextMood
 
         }
 
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Text { get; set; } = string.Empty;
-        public double? SentimentScore { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
-        public bool IsDeleted { get; set; }
+        public string Id { get; init; } = Guid.NewGuid().ToString();
+        public string Text { get; init; } = string.Empty;
+        public double? SentimentScore { get; init; }
+        public DateTimeOffset CreatedAt { get; init; }
+        public DateTimeOffset UpdatedAt { get; init; }
+        public bool IsDeleted { get; init; }
     }
 }

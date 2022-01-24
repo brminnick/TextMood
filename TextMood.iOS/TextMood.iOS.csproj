@@ -9,9 +9,6 @@
         <RootNamespace>TextMood.iOS</RootNamespace>
         <AssemblyName>TextMood.iOS</AssemblyName>
         <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
         <DebugSymbols>true</DebugSymbols>
@@ -97,13 +94,12 @@
         <Reference Include="Xamarin.iOS" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Xamarin.Forms" Version="4.5.0.142-pre1" />
-        <PackageReference Include="Xamarin.Essentials" Version="1.4.0-pre2" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
-        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="4.1.0-pre2" />
-        <PackageReference Include="Refit" Version="5.0.23" />
-        <PackageReference Include="Polly" Version="7.2.0" />
+        <PackageReference Include="Xamarin.Forms" Version="5.0.0.2291" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.1" />
+        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.4" />
+        <PackageReference Include="Polly" Version="7.2.3" />
+        <PackageReference Include="Xamarin.Essentials.Interfaces" Version="1.7.0" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
     </ItemGroup>
     <ItemGroup>
         <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
@@ -115,7 +111,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Resources\" />
-        <Folder Include="CustomRenderers\" />
     </ItemGroup>
     <ItemGroup>
         <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -128,7 +123,6 @@
     <ItemGroup>
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
-        <Compile Include="CustomRenderers\LargeTitleNavigationRenderer.cs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\TextMood\TextMood.csproj">

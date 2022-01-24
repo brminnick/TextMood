@@ -6,7 +6,7 @@ using AsyncAwaitBestPractices;
 
 namespace TextMood
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public abstract class BaseViewModel : INotifyPropertyChanged
     {
         readonly WeakEventManager _propertyChangedEventManager = new WeakEventManager();
 
@@ -29,6 +29,6 @@ namespace TextMood
         }
 
         protected void OnPropertyChanged([CallerMemberName]in string name = "") =>
-            _propertyChangedEventManager.HandleEvent(this, new PropertyChangedEventArgs(name), nameof(INotifyPropertyChanged.PropertyChanged));
+            _propertyChangedEventManager.RaiseEvent(this, new PropertyChangedEventArgs(name), nameof(INotifyPropertyChanged.PropertyChanged));
     }
 }

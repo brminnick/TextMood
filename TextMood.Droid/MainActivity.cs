@@ -25,7 +25,8 @@ namespace TextMood.Droid
             global::Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
-            LoadApplication(new App());
+            var app = ServiceCollection.ServiceProvider.GetRequiredService<App>();
+            LoadApplication(app);
         }
     }
 }

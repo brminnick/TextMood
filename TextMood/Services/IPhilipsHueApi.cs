@@ -7,6 +7,6 @@ namespace TextMood
     public interface IPhilipsHueApi
     {
         [Get("/nupnp")]
-        Task<List<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges();
+        Task<IReadOnlyList<PhilipsHueBridgeDiscoveryModel>> AutoDetectBridges();
     }
 }

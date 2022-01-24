@@ -7,6 +7,6 @@ namespace TextMood
         public PhilipsHueDeviceTypeModel(string devicetype) => DeviceType = devicetype;
 
         [JsonProperty("devicetype")]
-        public string DeviceType { get; set; }
+        public string DeviceType { get; }
     }
 }

@@ -1,16 +1,14 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
-using Refit;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TextMood
 {
-    abstract class TextResultsService : BaseApiService
+    public class TextResultsService : BaseApiService
     {
-        readonly static Lazy<ITextModelApi> _textModelApiClientHolder = new Lazy<ITextModelApi>(() => RestService.For<ITextModelApi>(BackendConstants.GetEmotionResultsAPIUrl));
+        readonly ITextModelApi _textModelApiClient;
 
-        static ITextModelApi TextModelApiClient => _textModelApiClientHolder.Value;
+        public TextResultsService(ITextModelApi textModelApi) => _textModelApiClient = textModelApi;
 
-        public static Task<List<TextMoodModel>> GetTextModels() => AttemptAndRetry(TextModelApiClient.GetTextModels);
+        public Task<List<TextMoodModel>> GetTextModels() => AttemptAndRetry(_textModelApiClient.GetTextModels);
     }
 }

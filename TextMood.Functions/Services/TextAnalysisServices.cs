@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
-using Microsoft.Rest;
 
 namespace TextMood.Functions
 {
-    static class TextAnalysisServices
+    class TextAnalysisServices
     {
-        readonly static Lazy<TextAnalyticsClient> _textAnalyticsApiClientHolder = new Lazy<TextAnalyticsClient>(() =>
-            new TextAnalyticsClient(new ApiKeyServiceClientCredentials(CognitiveServicesConstants.TextSentimentAPIKey)) { Endpoint = CognitiveServicesConstants.BaseUrl });
+        readonly TextAnalyticsClient _textAnalyticsApiClient;
 
-        static TextAnalyticsClient TextAnalyticsApiClient => _textAnalyticsApiClientHolder.Value;
+        public TextAnalysisServices(TextAnalyticsClient textAnalyticsClient) => _textAnalyticsApiClient = textAnalyticsClient;
 
-        public static async Task<double?> GetSentiment(string text)
+        public async Task<double?> GetSentiment(string text)
         {
             var sentimentDocument = new MultiLanguageBatchInput(new List<MultiLanguageInput> { { new MultiLanguageInput(id: "1", text: text) } });
 
-            var sentimentResults = await TextAnalyticsApiClient.SentimentBatchAsync(sentimentDocument).ConfigureAwait(false);
+            var sentimentResults = await _textAnalyticsApiClient.SentimentBatchAsync(sentimentDocument).ConfigureAwait(false);
 
             if (sentimentResults?.Errors?.Any() is true)
             {
@@ -35,21 +30,6 @@ namespace TextMood.Functions
             return documentResult?.Score;
         }
 
-        class ApiKeyServiceClientCredentials : ServiceClientCredentials
-        {
-            readonly string _subscriptionKey;
 
-            public ApiKeyServiceClientCredentials(string subscriptionKey) => _subscriptionKey = subscriptionKey;
-
-            public override Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                if (request is null)
-                    throw new ArgumentNullException(nameof(request));
-
-                request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-
-                return Task.CompletedTask;
-            }
-        }
     }
 }

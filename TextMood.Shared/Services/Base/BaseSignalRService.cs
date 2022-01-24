@@ -11,33 +11,28 @@ namespace TextMood.Shared
 {
     public abstract class BaseSignalRService
     {
-        readonly static WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
-        readonly static Lazy<HubConnection> _hubHolder = new Lazy<HubConnection>(() =>
+        readonly WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
+        readonly HubConnection _hubConnection = new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).ConfigureLogging(logging =>
         {
-            return new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).ConfigureLogging(logging =>
-            {
-                logging.AddProvider(new DebugLoggerProvider());
-                logging.SetMinimumLevel(LogLevel.Debug);
-            }).Build();
-        });
+            logging.AddProvider(new DebugLoggerProvider());
+            logging.SetMinimumLevel(LogLevel.Debug);
+        }).Build();
 
-        public static event EventHandler<string> InitializationFailed
+        public event EventHandler<string> InitializationFailed
         {
             add => _initializationFailedEventManager.AddEventHandler(value);
             remove => _initializationFailedEventManager.RemoveEventHandler(value);
         }
 
-        public static HubConnectionState HubConnectionState => Hub.State;
+        public HubConnectionState HubConnectionState => _hubConnection.State;
 
-        static HubConnection Hub => _hubHolder.Value;
-
-        protected static async ValueTask<HubConnection> GetConnection()
+        protected async ValueTask<HubConnection> GetConnection()
         {
             if (HubConnectionState is HubConnectionState.Disconnected)
             {
                 try
                 {
-                    await Hub.StartAsync().ConfigureAwait(false);
+                    await _hubConnection.StartAsync().ConfigureAwait(false);
 
                     while (HubConnectionState is HubConnectionState.Connecting)
                         await Task.Delay(100).ConfigureAwait(false);
@@ -51,10 +46,10 @@ namespace TextMood.Shared
                 }
             }
 
-            return Hub;
+            return _hubConnection;
         }
 
-        static void OnInitializationFailed(string message) => _initializationFailedEventManager.HandleEvent(null, message, nameof(InitializationFailed));
+        void OnInitializationFailed(string message) => _initializationFailedEventManager.RaiseEvent(null, message, nameof(InitializationFailed));
 
         class DebugLoggerProvider : ILoggerProvider
         {

@@ -3,7 +3,7 @@ using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace TextMood
 {
-    public class BaseNavigationPage : Xamarin.Forms.NavigationPage
+    class BaseNavigationPage : Xamarin.Forms.NavigationPage
     {
         public BaseNavigationPage(Xamarin.Forms.Page root) : base(root)
         {

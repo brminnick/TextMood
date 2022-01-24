@@ -2,18 +2,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Xamarin.Forms" Version="4.5.0.142-pre1" />
-        <PackageReference Include="Xamarin.Essentials" Version="1.4.0-pre2" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.1" />
-        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="4.1.0-pre2" />
-        <PackageReference Include="Refit" Version="5.0.23" />
-        <PackageReference Include="Polly" Version="7.2.0" />
+        <PackageReference Include="Xamarin.Forms" Version="5.0.0.2291" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.1" />
+        <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.4" />
+        <PackageReference Include="Polly" Version="7.2.3" />
+        <PackageReference Include="Xamarin.Essentials.Interfaces" Version="1.7.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
+        <PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="1.3.2" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Pages\" />
@@ -24,11 +22,16 @@
         <Folder Include="Views\" />
         <Folder Include="Pages\Base\" />
         <Folder Include="Services\Base\" />
-        <Folder Include="Settings\" />
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Services\ConnectivityService.cs" />
       <Compile Remove="Models\PhillipsHueRequestModel.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Xamarin.Essentials.Interfaces" />
+      <None Remove="Microsoft.Extensions.DependencyInjection" />
+      <None Remove="Refit.Newtonsoft.Json" />
+      <None Remove="Xamarin.CommunityToolkit.Markup" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
 </Project>

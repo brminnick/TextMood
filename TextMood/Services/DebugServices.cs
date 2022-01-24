@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace TextMood
 {
-    public static class DebugServices
+    public class DebugServices
     {
         public static void Report(Exception exception,
                                   [CallerMemberName] string callerMemberName = "",

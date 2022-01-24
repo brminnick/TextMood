@@ -5,23 +5,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TextMood.Backend.Common
 {
-    public static class TextMoodDatabase
+    public class TextMoodDatabase
     {
         readonly static string _connectionString = Environment.GetEnvironmentVariable("TextMoodDatabaseConnectionString") ?? string.Empty;
 
-        public static async Task<List<TextMoodModel>> GetAllTextModels()
+        public async Task<List<TextMoodModel>> GetAllTextModels()
         {
             using var context = new DatabaseContext();
             return await context.TextMoodModels.ToListAsync().ConfigureAwait(false);
         }
 
-        public static async Task<TextMoodModel> GetTextModel(string id)
+        public async Task<TextMoodModel> GetTextModel(string id)
         {
             using var context = new DatabaseContext();
             return await context.TextMoodModels.SingleAsync(x => x.Id.Equals(id)).ConfigureAwait(false);
         }
 
-        public static Task<TextMoodModel> InsertTextModel(TextMoodModel text)
+        public Task<TextMoodModel> InsertTextModel(TextMoodModel text)
         {
             return PerformDatabaseWrite(insertTextModelFunction);
 
@@ -39,7 +39,7 @@ namespace TextMood.Backend.Common
             }
         }
 
-        public static Task<TextMoodModel> PatchTextModel(TextMoodModel text)
+        public Task<TextMoodModel> PatchTextModel(TextMoodModel text)
         {
             return PerformDatabaseWrite(patchTextModelFunction);
 
@@ -59,7 +59,7 @@ namespace TextMood.Backend.Common
             }
         }
 
-        public static Task<TextMoodModel> DeleteTextModel(string id)
+        public Task<TextMoodModel> DeleteTextModel(string id)
         {
             return PerformDatabaseWrite(deleteTextModelFunction);
 
@@ -76,7 +76,7 @@ namespace TextMood.Backend.Common
             }
         }
 
-        public static Task<TextMoodModel> RemoveTextModel(string id)
+        public Task<TextMoodModel> RemoveTextModel(string id)
         {
             return PerformDatabaseWrite(removetextDatabaseFunction);
 

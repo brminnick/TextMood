@@ -2,10 +2,10 @@
 
 namespace TextMood
 {
-	public abstract class BaseContentPage<T> : ContentPage where T : BaseViewModel, new()
+	public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel : BaseViewModel
 	{
-		protected BaseContentPage() => BindingContext = ViewModel;
+		protected BaseContentPage(TViewModel viewModel) => base.BindingContext = viewModel;
 
-		protected T ViewModel { get; } = new T();
+		public new TViewModel BindingContext => (TViewModel)base.BindingContext;
 	}
 }
