@@ -12,6 +12,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
         <PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="1.3.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Pages\" />
@@ -32,6 +33,8 @@
       <None Remove="Microsoft.Extensions.DependencyInjection" />
       <None Remove="Refit.Newtonsoft.Json" />
       <None Remove="Xamarin.CommunityToolkit.Markup" />
+      <None Remove="Microsoft.Extensions.Logging" />
+      <None Remove="Microsoft.Extensions.Logging.Console" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
 </Project>

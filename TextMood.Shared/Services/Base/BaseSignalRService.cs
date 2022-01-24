@@ -14,7 +14,7 @@ namespace TextMood.Shared
         readonly WeakEventManager<string> _initializationFailedEventManager = new WeakEventManager<string>();
         readonly HubConnection _hubConnection = new HubConnectionBuilder().WithUrl(SignalRConstants.SignalRHubUrl).ConfigureLogging(logging =>
         {
-            logging.AddProvider(new DebugLoggerProvider());
+            logging.AddConsole();
             logging.SetMinimumLevel(LogLevel.Debug);
         }).Build();
 
@@ -50,36 +50,5 @@ namespace TextMood.Shared
         }
 
         void OnInitializationFailed(string message) => _initializationFailedEventManager.RaiseEvent(null, message, nameof(InitializationFailed));
-
-        class DebugLoggerProvider : ILoggerProvider
-        {
-            private readonly ConcurrentDictionary<string, ILogger> _loggers;
-
-            public DebugLoggerProvider() => _loggers = new ConcurrentDictionary<string, ILogger>();
-
-            public void Dispose()
-            {
-            }
-
-            public ILogger CreateLogger(string categoryName) => _loggers.GetOrAdd(categoryName, new DebugLogger());
-
-            class DebugLogger : ILogger
-            {
-                public void Log<TState>(
-                   LogLevel logLevel, EventId eventId,
-                   TState state, Exception exception,
-                   Func<TState, Exception, string> formatter)
-                {
-                    if (formatter != null)
-                    {
-                        Debug.WriteLine(formatter(state, exception));
-                    }
-                }
-
-                public bool IsEnabled(LogLevel logLevel) => true;
-
-                public IDisposable? BeginScope<TState>(TState state) => null;
-            }
-        }
     }
 }

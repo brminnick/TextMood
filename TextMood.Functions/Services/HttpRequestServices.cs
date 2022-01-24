@@ -7,9 +7,9 @@ namespace TextMood.Functions
 {
     class HttpRequestServices
     {
-        public static async Task<string> GetContentAsString(HttpRequest request)
+        public static async Task<string> GetContentAsString(Stream body)
         {
-            using var streamReader = new StreamReader(request.Body);
+            using var streamReader = new StreamReader(body);
 
             return await streamReader.ReadToEndAsync().ConfigureAwait(false);
         }

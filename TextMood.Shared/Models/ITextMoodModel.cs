@@ -5,12 +5,12 @@ namespace TextMood.Shared
 {
     public interface ITextMoodModel
     {
-        string Id { get; init; }
-        string Text { get; init; }
-        double? SentimentScore { get; init; }
-        DateTimeOffset CreatedAt { get; init; }
-        DateTimeOffset UpdatedAt { get; init; }
-        bool IsDeleted { get; init; }
+        string Id { get; }
+        string Text { get; }
+        double? SentimentScore { get; }
+        DateTimeOffset CreatedAt { get; }
+        DateTimeOffset UpdatedAt { get; }
+        bool IsDeleted { get; }
     }
 }
 

@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-
 using TextMood.Backend.Common;
 using TextMood.Shared;
 
@@ -12,9 +11,11 @@ namespace TextMood.Functions
     [StorageAccount(QueueNameConstants.AzureWebJobsStorage)]
     public class SendUpdate : BaseSignalRService
     {
-        [FunctionName(nameof(SendUpdate))]
-        public static async Task Run([QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, ILogger log)
+        [Function(nameof(SendUpdate))]
+        public async Task Run([Microsoft.Azure.Functions.Worker.QueueTrigger(QueueNameConstants.SendUpdate)]TextMoodModel textModel, FunctionContext context)
         {
+            var log = context.GetLogger<SendUpdate>();
+
             InitializationFailed += HandleInitializationFailed;
 
             try

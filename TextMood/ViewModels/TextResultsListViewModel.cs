@@ -68,7 +68,7 @@ namespace TextMood
 
             TextList.Insert(0, textMoodModel);
 
-            var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+            var averageSentiment = TextList.GetAverageSentimentScore();
 
             SetTextResultsListBackgroundColor(averageSentiment);
 
@@ -81,7 +81,7 @@ namespace TextMood
             {
                 await UpdateTextResultsListFromRemoteDatabase().ConfigureAwait(false);
 
-                var averageSentiment = TextMoodModelServices.GetAverageSentimentScore(TextList);
+                var averageSentiment = TextList.GetAverageSentimentScore();
 
                 SetTextResultsListBackgroundColor(averageSentiment);
 
@@ -98,7 +98,7 @@ namespace TextMood
             try
             {
                 var textMoodList = await _textResultsService.GetTextModels();
-                var recentTextMoodList = TextMoodModelServices.GetRecentTextModels(new List<ITextMoodModel>(textMoodList), TimeSpan.FromHours(1));
+                var recentTextMoodList = textMoodList.FilterRecentTextModels(TimeSpan.FromHours(1));
 
                 TextList.Clear();
 
@@ -114,7 +114,7 @@ namespace TextMood
 
         void SetTextResultsListBackgroundColor(double averageSentiment)
         {
-            var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
+            var (red, green, blue) = averageSentiment.GetRGBValues();
             BackgroundColor = Xamarin.Forms.Color.FromRgba(red, green, blue, 0.5);
         }
 
@@ -125,7 +125,7 @@ namespace TextMood
 
             try
             {
-                var (red, green, blue) = TextMoodModelServices.GetRGBFromSentimentScore(averageSentiment);
+                var (red, green, blue) = averageSentiment.GetRGBValues();
                 var hue = Shared.PhilipsHueServices.ConvertToHue(red, green, blue);
 
                 await _philipsHueServices.UpdateLightBulbColor(_philipsHueBridgeSettingsService.Username, hue).ConfigureAwait(false);

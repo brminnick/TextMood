@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Database\TextMoodDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TextMoodModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Database\TextMoodDatabaseContext.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Database\" />
