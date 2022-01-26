@@ -14,8 +14,9 @@ namespace TextMood.Functions
         public SaveTextModelToDatabase(TextMoodDatabase textMoodDatabase) => _textMoodDatabase = textMoodDatabase;
 
         [Function(nameof(SaveTextModelToDatabase))]
-        public Task Run([Microsoft.Azure.Functions.Worker.QueueTrigger(QueueNameConstants.TextModelForDatabase)] TextMoodModel textModel, ILogger log)
+        public Task Run([Microsoft.Azure.Functions.Worker.QueueTrigger(QueueNameConstants.TextModelForDatabase)] TextMoodModel textModel, FunctionContext context)
         {
+            var log = context.GetLogger<SaveTextModelToDatabase>();
             log.LogInformation("Saving TextModel to Database");
 
             if (textModel.Text.Length > 128)

@@ -15,7 +15,7 @@ namespace TextMood.Functions
         public GetTextModels(TextMoodDatabase textMoodDatabase) => _textMoodDatabase = textMoodDatabase;
 
         [Function(nameof(GetTextModels))]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req, FunctionContext context)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req, FunctionContext context)
         {
             var log = context.GetLogger<GetTextModels>();
             log.LogInformation("Retrieving Text Models from Database");
