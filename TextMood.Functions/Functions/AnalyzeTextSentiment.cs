@@ -20,7 +20,7 @@ namespace TextMood.Functions
             (_twilioServices, _textAnalysisServices) = (twilioServices, textAnalysisServices);
 
         [Function(nameof(AnalyzeTextSentiment))]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req, FunctionContext context)
+        public async Task<AnalyzeTextSentimentOutput> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req, FunctionContext context)
         {
             var log = context.GetLogger<AnalyzeTextSentiment>();
 
@@ -38,9 +38,6 @@ namespace TextMood.Functions
                 log.LogInformation("Retrieving Sentiment Score");
                 textMoodModel.SentimentScore = await _textAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
 
-                log.LogInformation("Adding TextMoodModel to Storage Queue");
-                var output = new AnalyzeTextSentimentOutput(textMoodModel);
-
                 var sentimentResponseText = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
                 log.LogInformation($"Sending OK Response: {sentimentResponseText}");
 
@@ -48,7 +45,8 @@ namespace TextMood.Functions
                 await response.WriteStringAsync(_twilioServices.CreateTwilioResponse(sentimentResponseText)).ConfigureAwait(false);
                 response.Headers.Add("Content-Type", "application/xml");
 
-                return response;
+                log.LogInformation("Adding TextMoodModel to Storage Queue");
+                return new AnalyzeTextSentimentOutput(textMoodModel, response);
             }
             catch (Exception e)
             {
@@ -60,9 +58,10 @@ namespace TextMood.Functions
 
     class AnalyzeTextSentimentOutput
     {
-        public AnalyzeTextSentimentOutput(TextMoodModel textMoodModel)
+        public AnalyzeTextSentimentOutput(TextMoodModel textMoodModel, HttpResponseData httpResponseData)
         {
             TextModelForDatabase = TextModelForSendUpdate = textMoodModel;
+            HttpResponse = httpResponseData;
         }
 
         [QueueOutput(QueueNameConstants.TextModelForDatabase)]
@@ -70,5 +69,7 @@ namespace TextMood.Functions
 
         [QueueOutput(QueueNameConstants.SendUpdate)]
         public TextMoodModel TextModelForSendUpdate { get; }
+
+        public HttpResponseData HttpResponse { get; }
     }
 }
