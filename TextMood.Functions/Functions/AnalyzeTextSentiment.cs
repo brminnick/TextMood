@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
@@ -21,7 +20,7 @@ namespace TextMood.Functions
             (_twilioServices, _textAnalysisServices) = (twilioServices, textAnalysisServices);
 
         [Function(nameof(AnalyzeTextSentiment))]
-        public async Task<AnalyzeTextSentimentOutput> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req, FunctionContext context)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req, FunctionContext context)
         {
             var log = context.GetLogger<AnalyzeTextSentiment>();
 
@@ -40,7 +39,16 @@ namespace TextMood.Functions
                 textMoodModel.SentimentScore = await _textAnalysisServices.GetSentiment(textMoodModel.Text).ConfigureAwait(false) ?? -1;
 
                 log.LogInformation("Adding TextMoodModel to Storage Queue");
-                return new AnalyzeTextSentimentOutput(textMoodModel);
+                var output = new AnalyzeTextSentimentOutput(textMoodModel);
+
+                var sentimentResponseText = $"Text Sentiment: {EmojiServices.GetEmoji(textMoodModel.SentimentScore)}";
+                log.LogInformation($"Sending OK Response: {sentimentResponseText}");
+
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await response.WriteStringAsync(_twilioServices.CreateTwilioResponse(sentimentResponseText)).ConfigureAwait(false);
+                response.Headers.Add("Content-Type", "application/xml");
+
+                return response;
             }
             catch (Exception e)
             {
