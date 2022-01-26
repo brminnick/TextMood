@@ -1,5 +1,7 @@
-﻿using Xamarin.Forms;
-using TextMood.Shared;
+﻿using TextMood.Shared;
+using Xamarin.CommunityToolkit.Markup;
+using Xamarin.Forms;
+using static Xamarin.CommunityToolkit.Markup.GridRowsColumns;
 
 namespace TextMood
 {
@@ -13,41 +15,29 @@ namespace TextMood
             {
 
             }
-            static Grid CreateDataTemplate(ITextMoodModel textModel)
+
+            enum Row { Title, Description }
+
+            static Grid CreateDataTemplate(ITextMoodModel textModel) => new()
             {
-                var emoji = EmojiServices.GetEmoji(textModel.SentimentScore);
+                Padding = new Thickness(20, 5),
+                RowSpacing = 2,
+                ColumnSpacing = 10,
 
-                var titleLabel = new Label
+                RowDefinitions = Rows.Define(
+                        (Row.Title, Auto),
+                        (Row.Description, Auto)),
+
+                Children =
                 {
-                    FontAttributes = FontAttributes.Bold,
-                    Text = textModel.Text
-                };
-                var descriptionLabel = new Label
-                {
-                    Text = $"{emoji} {textModel.CreatedAt.ToLocalTime().ToString("g")}"
-                };
+                    new Label { Text = textModel.Text }.Font(bold: true)
+                        .Row(Row.Title),
 
-                var gridLayout = new Grid
-                {
-                    Padding = new Thickness(20, 5),
-                    RowSpacing = 2,
-                    ColumnSpacing = 10,
+                    new Label { Text = $"{EmojiServices.GetEmoji(textModel.SentimentScore)} {textModel.CreatedAt.ToLocalTime():g}" }
+                        .Row(Row.Description)
 
-                    RowDefinitions = {
-                    new RowDefinition{ Height = new GridLength(0, GridUnitType.Auto) },
-                    new RowDefinition{ Height = new GridLength(0, GridUnitType.Auto) }
-
-                },
-                    ColumnDefinitions = {
-                    new ColumnDefinition{ Width = new GridLength(0, GridUnitType.Auto) }
                 }
-                };
-
-                gridLayout.Children.Add(titleLabel, 0, 0);
-                gridLayout.Children.Add(descriptionLabel, 0, 1);
-
-                return gridLayout;
-            }
+            };
         }
     }
 }

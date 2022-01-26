@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
-using TextMood.Shared;
+using Xamarin.CommunityToolkit.Markup;
 using Xamarin.Essentials.Interfaces;
 using Xamarin.Forms;
 
@@ -27,30 +27,24 @@ namespace TextMood
             BindingContext.PhilipsHueBridgeConnectionFailed += HandlePhilipsHueBridgeConnectionFailed;
             signalRService.InitializationFailed += HandleInitializationFailed;
 
-            var setupPageToolbarItem = new ToolbarItem { Text = "Setup" };
-            setupPageToolbarItem.Clicked += HandleSetupPageToolbarItemClicked;
-            ToolbarItems.Add(setupPageToolbarItem);
-
-            var textModelList = new CollectionView
-            {
-                ItemTemplate = new TextMoodDataTemplateSelector(),
-                BackgroundColor = Color.Transparent
-            };
-            textModelList.SetBinding(CollectionView.ItemsSourceProperty, nameof(BindingContext.TextList));
-
-            var refreshView = new RefreshView
-            {
-                RefreshColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor,
-                Content = textModelList
-            };
-            refreshView.SetBinding(RefreshView.IsRefreshingProperty, nameof(BindingContext.IsRefreshing));
-            refreshView.SetBinding(RefreshView.CommandProperty, nameof(BindingContext.PullToRefreshCommand));
+            ToolbarItems.Add(new ToolbarItem { Text = "Setup" }
+                                .Invoke(setupToolbarItem => setupToolbarItem.Clicked += HandleSetupPageToolbarItemClicked));
 
             Title = PageTitles.TextResultsPage;
 
             this.SetBinding(BackgroundColorProperty, nameof(BindingContext.BackgroundColor));
 
-            Content = refreshView;
+            Content = new RefreshView
+            {
+                RefreshColor = Device.RuntimePlatform is Device.iOS ? ColorConstants.BarTextColor : ColorConstants.BarBackgroundColor,
+                Content = new CollectionView
+                {
+                    ItemTemplate = new TextMoodDataTemplateSelector(),
+                    BackgroundColor = Color.Transparent
+                }.Bind(CollectionView.ItemsSourceProperty, nameof(BindingContext.TextList))
+
+            }.Bind(RefreshView.IsRefreshingProperty, nameof(BindingContext.IsRefreshing))
+             .Bind(RefreshView.CommandProperty, nameof(BindingContext.PullToRefreshCommand));
         }
 
         protected override void OnAppearing()
