@@ -31,6 +31,7 @@ namespace TextMood.Functions
                     services.AddTransient<HttpRequestServices>();
                     services.AddTransient<TwilioServices>();
                     services.AddTransient<TextMoodDatabase>();
+                    services.AddTransient<TextAnalysisServices>();
 
                     services.AddDbContext<TextMoodDatabaseContext>(options => options.UseSqlServer(_connectionString));
                 }).Build();

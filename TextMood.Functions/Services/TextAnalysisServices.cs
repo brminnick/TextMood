@@ -29,7 +29,5 @@ namespace TextMood.Functions
 
             return documentResult?.Score;
         }
-
-
     }
 }
