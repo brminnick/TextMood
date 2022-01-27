@@ -91,6 +91,7 @@
         <ProjectReference Include="..\TextMood\TextMood.csproj">
             <Project>{5650DE0F-6F64-42B8-B8AB-44D408A09ED8}</Project>
             <Name>TextMood</Name>
+            <ReferenceSourceTarget></ReferenceSourceTarget>
         </ProjectReference>
     </ItemGroup>
     <ItemGroup>
