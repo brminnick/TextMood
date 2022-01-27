@@ -99,7 +99,7 @@
         <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.4" />
         <PackageReference Include="Polly" Version="7.2.3" />
         <PackageReference Include="Xamarin.Essentials.Interfaces" Version="1.7.0" />
-        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.2.16" />
     </ItemGroup>
     <ItemGroup>
         <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
