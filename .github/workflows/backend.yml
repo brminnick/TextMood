@@ -30,7 +30,7 @@ jobs:
 
     - name: Remove `#error` From CognitiveServicesConstants.cs
       run: |
-        CognitiveServicesConstants='find . -name CognitiveServicesConstants.cs'
+        CognitiveServicesConstants=`find . -name CognitiveServicesConstants.cs`
         echo CognitiveServicesConstants: $CognitiveServicesConstants
 
         sed -i '' "s/#error/\/\/#error/g" $CognitiveServicesConstants
@@ -59,7 +59,7 @@ jobs:
 
     - name: Remove `#error` From CognitiveServicesConstants.cs
       run: |
-        CognitiveServicesConstants='find . -name CognitiveServicesConstants.cs'
+        CognitiveServicesConstants=`find . -name CognitiveServicesConstants.cs`
         echo CognitiveServicesConstants: $CognitiveServicesConstants
 
         sed -i '' "s/#error/\/\/#error/g" $CognitiveServicesConstants

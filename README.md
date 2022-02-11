@@ -1,3 +1,5 @@
+[![Mobile](https://github.com/brminnick/TextMood/actions/workflows/mobile.yml/badge.svg)](https://github.com/brminnick/TextMood/actions/workflows/mobile.yml) [![Backend](https://github.com/brminnick/TextMood/actions/workflows/backend.yml/badge.svg)](https://github.com/brminnick/TextMood/actions/workflows/backend.yml)
+
 # TextMood
 
 An IoT + Azure sample that detects the sentiment of incoming text messages, performs sentiment analysis on the text, and changes the color of a Philips Hue lightbulb to correspond with the average sentiment.

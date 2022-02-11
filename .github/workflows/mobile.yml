@@ -37,7 +37,7 @@ jobs:
 
       - name: Remove `#error` From BackendConstants.cs
         run: |
-          BackendConstants='find . -name BackendConstants.cs'
+          BackendConstants=`find . -name BackendConstants.cs`
           echo BackendConstants: $BackendConstants
 
           sed -i '' "s/#error/\/\/#error/g" $BackendConstants
