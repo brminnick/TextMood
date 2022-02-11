@@ -100,7 +100,7 @@
         <PackageReference Include="Polly" Version="7.2.3" />
         <PackageReference Include="Xamarin.Essentials.Interfaces" Version="1.7.1" />
         <PackageReference Include="Refit.Newtonsoft.Json" Version="6.3.2" />
-        <PackageReference Include="System.Memory" Version="4.5.0" />
+        <PackageReference Include="System.Memory" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
         <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
