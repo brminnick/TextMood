@@ -41,6 +41,14 @@ jobs:
           echo BackendConstants: $BackendConstants
 
           sed -i '' "s/#error/\/\/#error/g" "$BackendConstants"
+
+      - name: Remove `#error` From SignalRConstants.cs
+        run: |
+          SignalRConstants=`find . -name SignalRConstants.cs`
+          echo SignalRConstants: $SignalRConstants
+
+          sed -i '' "s/#error/\/\/#error/g" "$SignalRConstants"
+          
           
       - name: Build Android App
         run: |                    

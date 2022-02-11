@@ -10,7 +10,7 @@ on:
 
 jobs:
   Build_AzureFunctions:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
       run: dotnet build ./TextMood.Functions/ -c Release
 
   Build_SignalR:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
