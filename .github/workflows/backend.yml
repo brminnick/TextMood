@@ -1,0 +1,54 @@
+name: Backend
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches: 
+      - "*"
+
+jobs:
+  Build_AzureFunctions:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup .NET v6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Setup .NET Core v3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build Functions
+      run: dotnet build ./TextMood.Functions/ -c Release
+
+  Build_SignalR:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup .NET v6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Setup .NET Core v3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build SignalR
+      run: dotnet build ./TextMood.SignalR/ -c Release
