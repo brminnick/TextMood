@@ -64,5 +64,12 @@ jobs:
 
         sed -i '' "s/#error/\/\/#error/g" "$CognitiveServicesConstants"
 
+    - name: Remove `#error` From SignalRConstants.cs
+      run: |
+        SignalRConstants=`find . -name SignalRConstants.cs`
+        echo SignalRConstants: $SignalRConstants
+
+        sed -i '' "s/#error/\/\/#error/g" "$SignalRConstants"
+
     - name: Build SignalR
       run: dotnet build ./TextMood.SignalR/ -c Release
