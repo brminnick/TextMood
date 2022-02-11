@@ -40,7 +40,7 @@ jobs:
           BackendConstants=`find . -name BackendConstants.cs`
           echo BackendConstants: $BackendConstants
 
-          sed -i '' "s/#error/\/\/#error/g" $BackendConstants
+          sed -i '' "s/#error/\/\/#error/g" "$BackendConstants"
           
       - name: Build Android App
         run: |                    
