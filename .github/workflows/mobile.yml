@@ -34,6 +34,13 @@ jobs:
       - name: Restore NuGet 
         run: |
           nuget restore
+
+      - name: Remove `#error` From BackendConstants.cs
+        run: |
+          BackendConstants='find . -name BackendConstants.cs'
+          echo BackendConstants: $BackendConstants
+
+          sed -i '' "s/#error/\/\/#error/g" $BackendConstants
           
       - name: Build Android App
         run: |                    
