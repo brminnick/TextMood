@@ -35,7 +35,7 @@ namespace TextMood.Shared
                     while (HubConnectionState is HubConnectionState.Connecting)
                         await Task.Delay(100).ConfigureAwait(false);
 
-                    if (HubConnectionState != HubConnectionState.Connected)
+                    if (HubConnectionState is not HubConnectionState.Connected)
                         throw new HubException($"{nameof(HubConnectionState)} not connected\n{nameof(HubConnectionState)}:{HubConnectionState}");
                 }
                 catch (Exception e)
