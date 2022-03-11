@@ -14,7 +14,7 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.1.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage" Version="5.0.0" />
-		<PackageReference Include="Twilio" Version="5.72.0" />
+		<PackageReference Include="Twilio" Version="5.72.1" />
 		<PackageReference Include="AsyncAwaitBestPractices" Version="6.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
 	</ItemGroup>
