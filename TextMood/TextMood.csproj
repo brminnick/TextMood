@@ -11,7 +11,7 @@
         <PackageReference Include="Xamarin.Essentials.Interfaces" Version="1.7.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Refit.Newtonsoft.Json" Version="6.3.2" />
-        <PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="2.0.0" />
+        <PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="2.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
