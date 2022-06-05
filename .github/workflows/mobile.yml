@@ -52,4 +52,4 @@ jobs:
           
       - name: Build Android App
         run: |                    
-          mono /Applications/Visual\ studio.app/Contents/Resources/lib/monodevelop/bin/MSBuild/Current/bin/MSBuild.dll ./TextMood.Droid/TextMood.Droid.csproj /verbosity:normal /p:Configuration=Release
+          msbuild ./TextMood.Droid/TextMood.Droid.csproj /verbosity:normal /p:Configuration=Release
