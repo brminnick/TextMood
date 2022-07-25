@@ -94,7 +94,7 @@
         <Reference Include="Xamarin.iOS" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Xamarin.Forms" Version="5.0.0.2478+927-sha.9f26f70d6-azdo.6239473" />
+        <PackageReference Include="Xamarin.Forms" Version="5.0.0.2515+946-sha.94acebbb4-azdo.6439792" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.7" />
         <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.5" />
         <PackageReference Include="Polly" Version="7.2.3" />
