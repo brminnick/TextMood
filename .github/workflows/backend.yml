@@ -1,5 +1,9 @@
 name: Backend
 
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -15,15 +19,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       
-    - name: Setup .NET v6.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET v7.0 + .NET Core 3.1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
-        
-    - name: Setup .NET Core v3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
+        dotnet-quality: 'preview'
+        dotnet-version: |
+          7.0.x
+          3.1.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -51,15 +53,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       
-    - name: Setup .NET v6.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET v7.0 + .NET Core 3.1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
-        
-    - name: Setup .NET Core v3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
+        dotnet-quality: 'preview'
+        dotnet-version: |
+          7.0.x
+          3.1.x
 
     - name: Install dependencies
       run: dotnet restore
