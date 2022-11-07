@@ -20,8 +20,8 @@ jobs:
       with:
         dotnet-quality: 'preview'
         dotnet-version: |
-          '7.0.x'
-          '3.1.x'
+          7.0.x
+          3.1.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -54,8 +54,8 @@ jobs:
       with:
         dotnet-quality: 'preview'
         dotnet-version: |
-          '7.0.x'
-          '3.1.x'
+          7.0.x
+          3.1.x
 
     - name: Install dependencies
       run: dotnet restore
