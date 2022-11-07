@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <UserSecretsId>8fd7d6a4-9bfc-42ac-840b-dc145be7f1cc</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
