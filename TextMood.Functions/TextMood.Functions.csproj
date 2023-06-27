@@ -8,7 +8,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.8" />
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics" Version="4.0.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.14.1" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.16.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.10.0" OutputItemType="Analyzer" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.2.0" />
