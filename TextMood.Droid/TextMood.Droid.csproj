@@ -8,7 +8,7 @@
 		<OutputType>Library</OutputType>
 		<RootNamespace>TextMood.Droid</RootNamespace>
 		<AssemblyName>TextMood.Droid</AssemblyName>
-		<TargetFrameworkVersion>v12.0</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v13.0</TargetFrameworkVersion>
 		<AndroidApplication>True</AndroidApplication>
 		<AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
 		<AndroidResgenClass>Resource</AndroidResgenClass>
@@ -61,7 +61,7 @@
 		<Reference Include="System.Runtime" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Xamarin.Forms" Version="5.0.0.2578" />
+		<PackageReference Include="Xamarin.Forms" Version="5.0.0.2612" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.10" />
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.6" />
 		<PackageReference Include="Polly" Version="7.2.4" />
