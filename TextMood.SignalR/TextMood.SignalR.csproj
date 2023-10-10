@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="AsyncAwaitBestPractices" Version="6.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.12" />
     </ItemGroup>
     <Import Project="..\TextMood.Shared\TextMood.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Shared\TextMood.Shared.projitems')" />
     <Import Project="..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems" Label="Shared" Condition="Exists('..\TextMood.Backend.Shared\TextMood.Backend.Shared.projitems')" />
